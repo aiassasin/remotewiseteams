@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-page font-sans text-body text-ink-secondary;
+  }
+
+  * {
+    @apply border-border;
+  }
+}
+
+@layer components {
+  .rw-label {
+    @apply mb-2 block font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-secondary;
+  }
+
+  .rw-input {
+    @apply w-full rounded-control border border-border bg-white px-[14px] py-[10px] font-sans text-[14px] text-ink placeholder:text-ink-muted transition-[border-color,box-shadow] duration-150;
+    @apply focus:border-border-focus focus:shadow-focus focus:outline-none;
+    @apply disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .rw-input-error {
+    @apply border-danger shadow-focus-error focus:border-danger focus:shadow-focus-error;
+  }
+
+  .rw-field-error {
+    @apply mt-1.5 font-sans text-small text-danger;
+  }
+
+  .rw-card {
+    @apply rounded-card border border-border bg-card p-6;
+  }
+
+  .rw-page-title {
+    @apply font-display text-display text-ink;
+  }
+
+  .rw-section-title {
+    @apply font-display text-section text-ink;
+  }
+}
