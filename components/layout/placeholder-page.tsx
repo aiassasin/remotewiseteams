@@ -3,12 +3,12 @@ import { PageTransition } from "@/components/motion/page-transition";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
+import type { IsoIconName } from "@/components/icons/iso-icon";
 
 export function PlaceholderPage({
   title,
   description,
-  icon: Icon,
+  icon,
   emptyTitle,
   emptyBody,
   actionHref,
@@ -16,7 +16,7 @@ export function PlaceholderPage({
 }: {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: IsoIconName;
   emptyTitle: string;
   emptyBody: string;
   actionHref?: string;
@@ -27,7 +27,7 @@ export function PlaceholderPage({
       <PageHeader title={title} description={description} />
       <div className="rw-card">
         <EmptyState
-          icon={Icon}
+          icon={icon}
           title={emptyTitle}
           description={emptyBody}
           actionLabel={actionHref ? undefined : actionLabel}

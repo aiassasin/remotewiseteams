@@ -49,7 +49,7 @@ export function LoginForm() {
       <PageTransition>
         <div className="rounded-card border border-border bg-card p-8">
           <div className="mb-6 text-center">
-            <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-control bg-primary font-display text-[13px] font-semibold text-white">
+            <div className="rw-logo-badge mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-control font-display text-[13px] font-semibold text-white">
               RW
             </div>
             <h1 className="font-display text-section text-ink">Welcome back.</h1>

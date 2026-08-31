@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Download, LayoutGrid, List, Search, Users } from "lucide-react";
+import { LayoutGrid, List, Search } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
 import { InviteFreelancerModal } from "@/components/freelancers/invite-freelancer-modal";
 import { FreelancerCardGrid } from "@/components/freelancers/freelancer-card-grid";
@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PageTransition } from "@/components/motion/page-transition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { IsoIcon } from "@/components/icons/iso-icon";
 import { formatCurrency, initials } from "@/lib/utils";
 import type { Freelancer, InviteFreelancerInput } from "@/lib/types";
 
@@ -116,10 +117,11 @@ export function FreelancersPageClient({
               onClick={() => exportCsv(filtered)}
               disabled={empty}
             >
-              <Download className="h-4 w-4" aria-hidden />
+              <IsoIcon name="export-csv" size={20} />
               Export CSV
             </Button>
             <Button onClick={() => setInviteOpen(true)}>
+              <IsoIcon name="invite" size={20} />
               Invite freelancer
             </Button>
           </>
@@ -165,7 +167,7 @@ export function FreelancersPageClient({
             </select>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex rounded-control border border-border bg-white p-0.5">
+            <div className="hidden rounded-control border border-border bg-card p-0.5 md:flex">
               <button
                 type="button"
                 aria-label="Table view"
@@ -203,25 +205,38 @@ export function FreelancersPageClient({
       {empty ? (
         <div className="rw-card">
           <EmptyState
-            icon={Users}
-            title="No freelancers yet"
+            icon="invite"
+            title="No freelancers yet."
             description="Invite your first freelancer to send contracts, collect invoices, and pay them from one workspace."
             actionLabel="Invite your first freelancer"
             onAction={() => setInviteOpen(true)}
           />
         </div>
-      ) : view === "table" ? (
-        <FreelancerTable
-          rows={filtered}
-          formatCurrency={formatCurrency}
-          initials={initials}
-        />
       ) : (
-        <FreelancerCardGrid
-          rows={filtered}
-          formatCurrency={formatCurrency}
-          initials={initials}
-        />
+        <>
+          <div className="md:hidden">
+            <FreelancerCardGrid
+              rows={filtered}
+              formatCurrency={formatCurrency}
+              initials={initials}
+            />
+          </div>
+          <div className="hidden md:block">
+            {view === "table" ? (
+              <FreelancerTable
+                rows={filtered}
+                formatCurrency={formatCurrency}
+                initials={initials}
+              />
+            ) : (
+              <FreelancerCardGrid
+                rows={filtered}
+                formatCurrency={formatCurrency}
+                initials={initials}
+              />
+            )}
+          </div>
+        </>
       )}
 
       {!empty && filtered.length === 0 ? (

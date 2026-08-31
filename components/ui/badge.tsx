@@ -11,8 +11,8 @@ const badgeStyles: Record<string, string> = {
   overdue: "bg-danger-light text-danger-text",
   draft: "bg-page text-ink-secondary",
   inactive: "bg-page text-ink-secondary",
-  cancelled: "bg-[#F1F5F9] text-ink-slate",
-  expired: "bg-[#F1F5F9] text-ink-slate",
+  cancelled: "bg-page text-ink-slate",
+  expired: "bg-page text-ink-slate",
   sent: "bg-warning-light text-warning-text",
 };
 

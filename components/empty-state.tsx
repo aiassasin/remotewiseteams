@@ -1,16 +1,18 @@
-import type { LucideIcon } from "lucide-react";
+"use client";
+
+import { IsoIcon, type IsoIconName } from "@/components/icons/iso-icon";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export function EmptyState({
-  icon: Icon,
+  icon,
   title,
   description,
   actionLabel,
   onAction,
   className,
 }: {
-  icon: LucideIcon;
+  icon: IsoIconName;
   title: string;
   description: string;
   actionLabel?: string;
@@ -24,15 +26,15 @@ export function EmptyState({
         className,
       )}
     >
-      <Icon className="h-12 w-12 text-border" strokeWidth={1.25} aria-hidden />
-      <h2 className="mt-4 font-display text-[18px] font-semibold tracking-tight text-ink">
+      <IsoIcon name={icon} size={72} title={title} />
+      <h2 className="mt-5 font-display text-[18px] font-semibold tracking-tight text-ink">
         {title}
       </h2>
-      <p className="mt-4 max-w-[320px] font-sans text-body text-ink-slate">
+      <p className="mt-3 max-w-[320px] font-sans text-body text-ink-slate">
         {description}
       </p>
       {actionLabel && onAction ? (
-        <Button className="mt-4" onClick={onAction}>
+        <Button className="mt-5" onClick={onAction}>
           {actionLabel}
         </Button>
       ) : null}

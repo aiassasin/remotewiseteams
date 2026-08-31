@@ -1,4 +1,3 @@
-import { Wallet } from "lucide-react";
 import { PlaceholderPage } from "@/components/layout/placeholder-page";
 import type { Metadata } from "next";
 
@@ -9,9 +8,9 @@ export default function PayoutsPage() {
     <PlaceholderPage
       title="Payouts"
       description="Stripe transfers to freelancer bank accounts."
-      icon={Wallet}
-      emptyTitle="No payouts yet"
-      emptyBody="Paid invoices will show a transfer here, usually within 1–2 business days."
+      icon="payouts"
+      emptyTitle="No payouts yet."
+      emptyBody="After a client pays, the transfer lands here. Standard payout is 24 hours and free."
     />
   );
 }

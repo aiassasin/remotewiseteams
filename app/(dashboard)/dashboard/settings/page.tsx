@@ -1,4 +1,3 @@
-import { Settings } from "lucide-react";
 import { PlaceholderPage } from "@/components/layout/placeholder-page";
 import type { Metadata } from "next";
 
@@ -9,9 +8,9 @@ export default function SettingsPage() {
     <PlaceholderPage
       title="Settings"
       description="Workspace, billing, and team preferences."
-      icon={Settings}
-      emptyTitle="Workspace settings"
-      emptyBody="Company profile, members, and billing will live here."
+      icon="settings"
+      emptyTitle="Tune the workspace."
+      emptyBody="Profile, appearance, members, and billing land here next. For now, use the sun/moon toggle in the top bar."
     />
   );
 }

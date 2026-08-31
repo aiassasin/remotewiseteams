@@ -13,6 +13,7 @@ function isPublicPath(pathname: string) {
   const publicPrefixes = [
     "/login",
     "/signup",
+    "/pricing",
     "/invite",
     "/sign",
     "/preview",
