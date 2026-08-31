@@ -17,7 +17,10 @@ export async function getSessionUser() {
 }
 
 export async function getCurrentWorkspace(): Promise<
-  | { user: { id: string; email: string; fullName: string }; workspace: Workspace }
+  | {
+      user: { id: string; email: string; fullName: string; avatarUrl: string | null };
+      workspace: Workspace;
+    }
   | null
 > {
   const supabase = createServerSupabaseClient();
@@ -40,7 +43,14 @@ export async function getCurrentWorkspace(): Promise<
   const row = Array.isArray(company) ? company[0] : company;
   if (!row) return null;
 
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("full_name, avatar_url")
+    .eq("user_id", auth.user.id)
+    .maybeSingle();
+
   const fullName =
+    (typeof profile?.full_name === "string" && profile.full_name) ||
     (typeof auth.user.user_metadata?.full_name === "string" && auth.user.user_metadata.full_name) ||
     auth.user.email?.split("@")[0] ||
     "You";
@@ -50,6 +60,7 @@ export async function getCurrentWorkspace(): Promise<
       id: auth.user.id,
       email: auth.user.email ?? "",
       fullName,
+      avatarUrl: typeof profile?.avatar_url === "string" ? profile.avatar_url : null,
     },
     workspace: {
       id: row.id,

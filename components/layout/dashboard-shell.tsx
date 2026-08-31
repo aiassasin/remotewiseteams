@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PageBackNav } from "@/components/layout/page-back-nav";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { SiteFooter } from "@/components/legal/site-footer";
 import { Button } from "@/components/ui/button";
 
 export function DashboardShell({
@@ -13,12 +14,14 @@ export function DashboardShell({
   companyName,
   plan,
   userId,
+  avatarUrl,
 }: {
   children: ReactNode;
   userName?: string;
   companyName?: string;
   plan?: string;
   userId?: string;
+  avatarUrl?: string | null;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -30,6 +33,7 @@ export function DashboardShell({
           companyName={companyName}
           plan={plan}
           userId={userId}
+          avatarUrl={avatarUrl}
         />
       </div>
 
@@ -48,6 +52,7 @@ export function DashboardShell({
               companyName={companyName}
               plan={plan}
               userId={userId}
+              avatarUrl={avatarUrl}
             />
           </div>
         </div>
@@ -68,8 +73,13 @@ export function DashboardShell({
             <PageBackNav />
           </div>
           <ThemeToggle />
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+          ) : null}
         </header>
         <main className="w-full flex-1 px-6 py-6 lg:px-10">{children}</main>
+        <SiteFooter compact />
       </div>
     </div>
   );

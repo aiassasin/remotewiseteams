@@ -19,6 +19,7 @@ export default async function DashboardGroupLayout({
       companyName={current.workspace.name}
       plan={current.workspace.plan}
       userId={current.user.id}
+      avatarUrl={current.user.avatarUrl}
     >
       {children}
     </DashboardShell>

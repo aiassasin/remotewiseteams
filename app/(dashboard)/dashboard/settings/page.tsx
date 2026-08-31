@@ -1,16 +1,31 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { getCurrentWorkspace } from "@/lib/auth/session";
+import { loadSettings } from "@/lib/settings-server";
+import { SettingsView } from "@/components/settings/settings-view";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Settings" };
+export const dynamic = "force-dynamic";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const current = await getCurrentWorkspace();
+  let initial = null;
+  if (current) {
+    try {
+      initial = await loadSettings(
+        current.user.id,
+        current.user.email,
+        current.user.fullName,
+        current.workspace.id,
+      );
+    } catch {
+      initial = null;
+    }
+  }
+
   return (
-    <PlaceholderPage
-      title="Settings"
-      description="Workspace, billing, and team preferences."
-      icon="settings"
-      emptyTitle="Tune the workspace."
-      emptyBody="Profile, appearance, members, and billing land here next. For now, use the sun/moon toggle in the top bar."
-    />
+    <Suspense fallback={<div className="h-40 animate-pulse rounded-card border border-border bg-card" />}>
+      <SettingsView initial={initial} />
+    </Suspense>
   );
 }

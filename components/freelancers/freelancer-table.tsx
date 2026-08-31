@@ -6,6 +6,7 @@ import { MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Freelancer } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { countryFlag } from "@/lib/flags";
 
 export function FreelancerTable({
   rows,
@@ -55,12 +56,21 @@ export function FreelancerTable({
             >
               <td className="px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-light font-sans text-small font-medium text-primary-text">
-                    {initials(row.fullName)}
-                  </div>
+                  {row.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={row.avatarUrl}
+                      alt=""
+                      className="h-8 w-8 shrink-0 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-light font-sans text-small font-medium text-primary-text">
+                      {initials(row.fullName)}
+                    </div>
+                  )}
                   <div className="min-w-0">
                     <p className="truncate font-sans text-[14px] font-medium text-ink">
-                      {row.fullName}
+                      {countryFlag(row.country)} {row.fullName}
                     </p>
                     <p className="truncate font-sans text-small text-ink-muted">
                       {row.email}

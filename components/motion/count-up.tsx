@@ -16,7 +16,7 @@ export function CountUp({
   useEffect(() => {
     const start = performance.now();
     const from = 0;
-    const duration = 700;
+    const duration = 800;
     let frame = 0;
     const tick = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);

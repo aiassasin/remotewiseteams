@@ -14,6 +14,8 @@ const badgeStyles: Record<string, string> = {
   cancelled: "bg-page text-ink-slate",
   expired: "bg-page text-ink-slate",
   sent: "bg-warning-light text-warning-text",
+  payout_processing: "bg-warning-light text-warning-text",
+  paid_out: "bg-success-light text-success-text",
 };
 
 export type BadgeStatus = keyof typeof badgeStyles;

@@ -15,6 +15,7 @@ const NAV: { href: string; label: string; icon: IsoIconName }[] = [
   { href: "/dashboard/invoices", label: "Invoices", icon: "invoices" },
   { href: "/dashboard/payouts", label: "Payouts", icon: "payouts" },
   { href: "/dashboard/standups", label: "Standups", icon: "standups" },
+  { href: "/dashboard/help", label: "Help & Support", icon: "help" },
   { href: "/dashboard/settings", label: "Settings", icon: "settings" },
 ];
 
@@ -24,12 +25,14 @@ export function Sidebar({
   companyName,
   plan,
   userId,
+  avatarUrl,
 }: {
   onNavigate?: () => void;
   userName?: string;
   companyName?: string;
   plan?: string;
   userId?: string;
+  avatarUrl?: string | null;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -66,9 +69,14 @@ export function Sidebar({
 
       <div className="border-t border-white/10 p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-small font-medium text-white">
-            {initials(displayName)}
-          </div>
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-small font-medium text-white">
+              {initials(displayName)}
+            </div>
+          )}
           <div className="min-w-0">
             <p className="truncate font-sans text-[13px] font-medium text-white">
               {displayName}

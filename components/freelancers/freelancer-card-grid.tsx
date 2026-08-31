@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Freelancer } from "@/lib/types";
+import { countryFlag } from "@/lib/flags";
 
 export function FreelancerCardGrid({
   rows,
@@ -22,10 +23,21 @@ export function FreelancerCardGrid({
           className="relative rounded-card border border-border bg-card p-6 text-center transition-colors duration-100 hover:border-border-hover"
           style={{ animationDelay: `${Math.min(index, 7) * 40}ms` }}
         >
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-light font-sans text-[18px] font-medium text-primary-text">
-            {initials(row.fullName)}
-          </div>
-          <h3 className="mt-4 font-display text-card text-ink">{row.fullName}</h3>
+          {row.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={row.avatarUrl}
+              alt=""
+              className="mx-auto h-16 w-16 rounded-full object-cover"
+            />
+          ) : (
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-light font-sans text-[18px] font-medium text-primary-text">
+              {initials(row.fullName)}
+            </div>
+          )}
+          <h3 className="mt-4 font-display text-card text-ink">
+            {countryFlag(row.country)} {row.fullName}
+          </h3>
           <p className="mt-1 font-sans text-[13px] text-ink-slate">
             {row.role ?? "Freelancer"}
           </p>

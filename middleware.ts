@@ -14,6 +14,10 @@ function isPublicPath(pathname: string) {
     "/login",
     "/signup",
     "/pricing",
+    "/privacy",
+    "/terms",
+    "/invoicing-terms",
+    "/cookies",
     "/invite",
     "/sign",
     "/preview",
@@ -22,6 +26,7 @@ function isPublicPath(pathname: string) {
     "/api/invite",
     "/api/sign",
     "/api/e2e",
+    "/api/fx",
   ];
   return publicPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }

@@ -13,6 +13,18 @@ export const ISO_ICON_NAMES = [
   "send-contract",
   "export-csv",
   "payouts",
+  "shield",
+  "clock",
+  "globe",
+  "support",
+  "tip",
+  "promise",
+  "create-invoice",
+  "client-pay",
+  "coverage",
+  "choose-payout",
+  "help",
+  "checklist",
 ] as const;
 
 export type IsoIconName = (typeof ISO_ICON_NAMES)[number];
@@ -28,6 +40,18 @@ const PALETTES: Record<IsoIconName, { a: string; b: string; c: string }> = {
   "send-contract": { a: "#4F46E5", b: "#06B6D4", c: "#10B981" },
   "export-csv": { a: "#0EA5E9", b: "#4F46E5", c: "#10B981" },
   payouts: { a: "#10B981", b: "#059669", c: "#06B6D4" },
+  shield: { a: "#10B981", b: "#4F46E5", c: "#06B6D4" },
+  clock: { a: "#06B6D4", b: "#4F46E5", c: "#10B981" },
+  globe: { a: "#4F46E5", b: "#06B6D4", c: "#6D28D9" },
+  support: { a: "#6D28D9", b: "#4F46E5", c: "#10B981" },
+  tip: { a: "#F59E0B", b: "#4F46E5", c: "#06B6D4" },
+  promise: { a: "#10B981", b: "#059669", c: "#4F46E5" },
+  "create-invoice": { a: "#4F46E5", b: "#06B6D4", c: "#10B981" },
+  "client-pay": { a: "#10B981", b: "#06B6D4", c: "#4F46E5" },
+  coverage: { a: "#6D28D9", b: "#10B981", c: "#4F46E5" },
+  "choose-payout": { a: "#06B6D4", b: "#10B981", c: "#4F46E5" },
+  help: { a: "#4F46E5", b: "#6D28D9", c: "#06B6D4" },
+  checklist: { a: "#10B981", b: "#4F46E5", c: "#06B6D4" },
 };
 
 export function IsoIcon({
@@ -137,12 +161,72 @@ function Glyph({ name }: { name: IsoIconName }) {
         </g>
       );
     case "payouts":
+    case "choose-payout":
       return (
         <g fill="white">
           <circle cx="24" cy="23" r="8" opacity="0.25" />
           <text x="24" y="27" textAnchor="middle" fontSize="11" fontWeight="700">
             $
           </text>
+        </g>
+      );
+    case "shield":
+    case "coverage":
+    case "promise":
+      return (
+        <g stroke="white" strokeWidth="1.8" fill="none">
+          <path d="M24 14l10 4v8c0 6-4.5 10-10 12-5.5-2-10-6-10-12v-8l10-4Z" />
+        </g>
+      );
+    case "clock":
+      return (
+        <g stroke="white" strokeWidth="1.8" fill="none">
+          <circle cx="24" cy="24" r="8" />
+          <path d="M24 20v5l3 2" />
+        </g>
+      );
+    case "globe":
+      return (
+        <g stroke="white" strokeWidth="1.8" fill="none">
+          <circle cx="24" cy="24" r="8" />
+          <path d="M16 24h16M24 16c2.5 2.8 2.5 13.2 0 16M24 16c-2.5 2.8-2.5 13.2 0 16" />
+        </g>
+      );
+    case "support":
+    case "help":
+      return (
+        <g stroke="white" strokeWidth="1.8" fill="none">
+          <circle cx="24" cy="24" r="8" />
+          <path d="M21 21c0-2 1.4-3.2 3-3.2 1.6 0 3 1 3 2.8 0 2-3 2.2-3 4" />
+          <circle cx="24" cy="29" r="0.8" fill="white" />
+        </g>
+      );
+    case "tip":
+      return (
+        <g stroke="white" strokeWidth="1.8" fill="none">
+          <path d="M24 14c4 0 7 3 7 7 0 2.6-1.4 4.2-3 5.4V29h-8v-2.6C18.4 25.2 17 23.6 17 21c0-4 3-7 7-7Z" />
+          <path d="M21 32h6" />
+        </g>
+      );
+    case "create-invoice":
+      return (
+        <g stroke="white" strokeWidth="1.8" fill="none">
+          <rect x="17" y="14" width="14" height="18" rx="2" />
+          <path d="M24 20v8M20 24h8" />
+        </g>
+      );
+    case "client-pay":
+      return (
+        <g stroke="white" strokeWidth="1.8" fill="none">
+          <rect x="15" y="18" width="18" height="12" rx="2" />
+          <path d="M15 22h18" />
+        </g>
+      );
+    case "checklist":
+      return (
+        <g stroke="white" strokeWidth="1.8" fill="none">
+          <rect x="16" y="14" width="16" height="20" rx="2" />
+          <path d="M20 22l2 2 5-5" />
         </g>
       );
     default:

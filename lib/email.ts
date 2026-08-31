@@ -40,3 +40,24 @@ export async function sendInviteEmail(input: {
 
   return { skipped: false as const, id: data?.id ?? null };
 }
+
+export async function sendInvoiceCancelledEmail(input: {
+  to: string;
+  companyName: string;
+  invoiceNumber: string;
+  reason: string;
+}) {
+  const resend = getResend();
+  if (!resend) {
+    return { skipped: true as const, id: null };
+  }
+  const from = process.env.RESEND_FROM_EMAIL || "RemoteWise <invites@remotewise.dev>";
+  const { data, error } = await resend.emails.send({
+    from,
+    to: [input.to],
+    subject: `${input.invoiceNumber} was cancelled`,
+    text: `${input.companyName}: invoice ${input.invoiceNumber} was cancelled. ${input.reason}`,
+  });
+  if (error) throw new Error(error.message);
+  return { skipped: false as const, id: data?.id ?? null };
+}

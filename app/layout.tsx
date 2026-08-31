@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ThemeScript } from "@/components/theme/theme-script";
+import { CookieBanner } from "@/components/legal/cookie-banner";
 import "./globals.css";
 
 const display = Space_Grotesk({
@@ -49,6 +50,7 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
           <Toaster />
+          <CookieBanner />
         </ThemeProvider>
       </body>
     </html>
