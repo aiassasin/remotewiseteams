@@ -7,6 +7,8 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { SiteFooter } from "@/components/legal/site-footer";
 import { PageBackNav } from "@/components/layout/page-back-nav";
 
+export const dynamic = "force-dynamic";
+
 const LINKS = [
   { href: "/freelancer/dashboard", label: "Home" },
   { href: "/freelancer/invoices", label: "Invoices" },

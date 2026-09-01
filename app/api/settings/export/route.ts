@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getCurrentWorkspace, getSessionUser } from "@/lib/auth/session";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ message: "Sign in to continue" }, { status: 401 });

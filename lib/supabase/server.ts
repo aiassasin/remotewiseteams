@@ -3,13 +3,14 @@ import { cookies } from "next/headers";
 import { getSupabasePublishableKey, getSupabaseUrl } from "@/lib/supabase/env";
 
 export function createServerSupabaseClient() {
+  // Read cookies first so Next.js treats the route as dynamic even when
+  // Supabase env vars are missing during CI/build.
+  const cookieStore = cookies();
   const url = getSupabaseUrl();
   const key = getSupabasePublishableKey();
   if (!url || !key) {
     throw new Error("Supabase server client is missing URL or publishable key");
   }
-
-  const cookieStore = cookies();
 
   return createServerClient(url, key, {
     cookies: {

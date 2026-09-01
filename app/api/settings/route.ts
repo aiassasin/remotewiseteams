@@ -5,6 +5,8 @@ import { loadSettings } from "@/lib/settings-server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { ThemePreference } from "@/lib/theme";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ message: "Sign in to continue" }, { status: 401 });

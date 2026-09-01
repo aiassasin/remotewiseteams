@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getCurrentWorkspace } from "@/lib/auth/session";
 import { listRosterFreelancers } from "@/lib/invite-persistence";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const current = await getCurrentWorkspace();
   if (!current) {

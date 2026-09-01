@@ -3,6 +3,8 @@ import { getCurrentWorkspace } from "@/lib/auth/session";
 import { loadContract, listWorkspaceContracts } from "@/lib/contracts-persistence";
 import { loadFreelancer } from "@/lib/invite-persistence";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   _request: Request,
   { params }: { params: { id: string } },

@@ -7,6 +7,8 @@ import { signContractToken } from "@/lib/jwt";
 import type { StoredContract } from "@/lib/store";
 import { hashToken } from "@/lib/token-hash";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const current = await getCurrentWorkspace();
   if (!current) {

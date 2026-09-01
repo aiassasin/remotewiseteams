@@ -9,6 +9,8 @@ import {
 import type { InvoiceLine } from "@/lib/invoices";
 import { PRICING_CURRENCIES, type PricingCurrency } from "@/lib/pricing";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ message: "Sign in to continue" }, { status: 401 });
