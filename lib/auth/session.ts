@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export type Workspace = {
   id: string;
@@ -10,6 +11,7 @@ export type Workspace = {
 };
 
 export async function getSessionUser() {
+  if (!isSupabaseConfigured()) return null;
   const supabase = createServerSupabaseClient();
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) return null;
@@ -23,6 +25,7 @@ export async function getCurrentWorkspace(): Promise<
     }
   | null
 > {
+  if (!isSupabaseConfigured()) return null;
   const supabase = createServerSupabaseClient();
   const { data: auth, error } = await supabase.auth.getUser();
   if (error || !auth.user) return null;
@@ -74,6 +77,7 @@ export async function getCurrentWorkspace(): Promise<
 }
 
 export async function getCurrentFreelancer() {
+  if (!isSupabaseConfigured()) return null;
   const supabase = createServerSupabaseClient();
   const { data: auth, error } = await supabase.auth.getUser();
   if (error || !auth.user) return null;

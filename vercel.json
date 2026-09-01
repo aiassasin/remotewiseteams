@@ -2,5 +2,19 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "buildCommand": "next build",
-  "installCommand": "pnpm install"
+  "installCommand": "pnpm install",
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SUPABASE_URL": "https://xnqwkbwsjsqoyqjbieyz.supabase.co",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXdrYndzanNxb3lxamJpZXl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwNzc2ODAsImV4cCI6MjEwMzY1MzY4MH0.jhZ5aYT7cMqg1vdjPq0VL9HL96AKEwKEjEbSbLgyJ1s",
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_EFCOGIV3QgjjE6JAXu9pAA_hBJXDMoi",
+      "NEXT_PUBLIC_APP_URL": "https://remotewiseteams-aiassasin1.vercel.app"
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://xnqwkbwsjsqoyqjbieyz.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXdrYndzanNxb3lxamJpZXl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwNzc2ODAsImV4cCI6MjEwMzY1MzY4MH0.jhZ5aYT7cMqg1vdjPq0VL9HL96AKEwKEjEbSbLgyJ1s",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_EFCOGIV3QgjjE6JAXu9pAA_hBJXDMoi",
+    "NEXT_PUBLIC_APP_URL": "https://remotewiseteams-aiassasin1.vercel.app"
+  }
 }
