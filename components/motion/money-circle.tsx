@@ -49,12 +49,12 @@ export function MoneyCircle({
         <svg width={size} height={size} viewBox="0 0 128 128" className="-rotate-90">
           <defs>
             <linearGradient id={`${gid}-green`} x1="0" y1="0" x2="1" y2="1">
-              <stop stopColor="#10B981" />
-              <stop offset="1" stopColor="#34D399" />
+              <stop stopColor="#059669" />
+              <stop offset="1" stopColor="#10B981" />
             </linearGradient>
-            <linearGradient id={`${gid}-violet`} x1="0" y1="0" x2="1" y2="1">
-              <stop stopColor="#6D28D9" />
-              <stop offset="1" stopColor="#4F46E5" />
+            <linearGradient id={`${gid}-fees`} x1="0" y1="0" x2="1" y2="1">
+              <stop stopColor="#1D4ED8" />
+              <stop offset="1" stopColor="#2563EB" />
             </linearGradient>
           </defs>
           <circle cx="64" cy="64" r={radius} stroke="rgb(var(--rw-border))" strokeWidth="10" fill="none" />
@@ -73,7 +73,7 @@ export function MoneyCircle({
             cy="64"
             r={radius}
             fill="none"
-            stroke={`url(#${gid}-violet)`}
+            stroke={`url(#${gid}-fees)`}
             strokeWidth="10"
             strokeLinecap="round"
             strokeDasharray={`${feeLen} ${circ}`}
@@ -84,13 +84,13 @@ export function MoneyCircle({
           <p className="font-sans text-[10px] font-medium uppercase tracking-[0.08em] text-ink-muted">
             {label}
           </p>
-          <p className="mt-1 font-display text-[18px] font-semibold leading-tight text-ink" aria-live="polite">
+          <p className="mt-1 font-display text-[20px] font-semibold leading-tight tabular-nums text-ink" aria-live="polite">
             {formattedKeep}
           </p>
         </div>
       </div>
       <p className="mt-2 font-sans text-small text-ink-muted">
-        <span className="text-success">Green</span> you keep · <span className="text-violet">Violet</span> fees
+        <span className="text-success">Green</span> you keep · <span className="text-primary">Blue</span> fees
       </p>
     </div>
   );

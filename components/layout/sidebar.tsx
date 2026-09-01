@@ -5,18 +5,22 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { IsoIcon, type IsoIconName } from "@/components/icons/iso-icon";
 import { RwLogo } from "@/components/brand/rw-logo";
+import { useAppLanguage } from "@/components/i18n/language-provider";
+import { chromeNav } from "@/lib/app-chrome";
 import { cn, initials } from "@/lib/utils";
 import { useTheme } from "@/components/theme/theme-provider";
 
-const NAV: { href: string; label: string; icon: IsoIconName }[] = [
-  { href: "/dashboard/overview", label: "Overview", icon: "overview" },
-  { href: "/dashboard/freelancers", label: "Freelancers", icon: "freelancers" },
-  { href: "/dashboard/contracts", label: "Contracts", icon: "contracts" },
-  { href: "/dashboard/invoices", label: "Invoices", icon: "invoices" },
-  { href: "/dashboard/payouts", label: "Payouts", icon: "payouts" },
-  { href: "/dashboard/standups", label: "Standups", icon: "standups" },
-  { href: "/dashboard/help", label: "Help & Support", icon: "help" },
-  { href: "/dashboard/settings", label: "Settings", icon: "settings" },
+type NavItem = { href: string; key: "overview" | "freelancers" | "contracts" | "invoices" | "payouts" | "standups" | "help" | "settings"; icon: IsoIconName };
+
+const NAV: NavItem[] = [
+  { href: "/dashboard/overview", key: "overview", icon: "overview" },
+  { href: "/dashboard/freelancers", key: "freelancers", icon: "freelancers" },
+  { href: "/dashboard/contracts", key: "contracts", icon: "contracts" },
+  { href: "/dashboard/invoices", key: "invoices", icon: "invoices" },
+  { href: "/dashboard/payouts", key: "payouts", icon: "payouts" },
+  { href: "/dashboard/standups", key: "standups", icon: "standups" },
+  { href: "/dashboard/help", key: "help", icon: "help" },
+  { href: "/dashboard/settings", key: "settings", icon: "settings" },
 ];
 
 export function Sidebar({
@@ -37,6 +41,8 @@ export function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const { setUserId } = useTheme();
+  const { language } = useAppLanguage();
+  const nav = chromeNav(language);
   const displayName = userName || "You";
   const workspaceName = companyName || "Workspace";
 
@@ -58,7 +64,7 @@ export function Sidebar({
             <LinkItem
               key={item.href}
               href={item.href}
-              label={item.label}
+              label={nav[item.key]}
               icon={item.icon}
               active={active}
               onNavigate={onNavigate}
@@ -98,7 +104,7 @@ export function Sidebar({
             router.refresh();
           }}
         >
-          Sign out
+          {nav.signOut}
         </button>
       </div>
     </aside>
@@ -124,9 +130,9 @@ function LinkItem({
       onClick={onNavigate}
       className={cn(
         "flex items-center gap-3 rounded-control px-2.5 py-2 font-sans text-[14px] font-medium transition-colors duration-100",
-        active
-          ? "border-l-[3px] border-cyan bg-sidebar-active pl-[7px] text-white"
-          : "border-l-[3px] border-transparent text-white/55 hover:bg-sidebar-hover hover:text-white",
+          active
+          ? "border-l-[3px] border-primary bg-sidebar-active pl-[7px] text-white"
+          : "border-l-[3px] border-transparent text-white/60 hover:bg-sidebar-hover hover:text-white",
       )}
       aria-current={active ? "page" : undefined}
     >

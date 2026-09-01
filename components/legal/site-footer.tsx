@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { FINLAND_COMPLIANCE } from "@/lib/compliance/finland";
 
 const LINKS = [
@@ -27,12 +28,13 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
             </p>
           ) : null}
         </div>
-        <nav className="flex flex-wrap gap-x-4 gap-y-2" aria-label="Legal">
+        <nav className="flex flex-wrap items-center gap-x-4 gap-y-2" aria-label="Legal">
+          <LanguageSwitcher />
           {LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="font-sans text-[13px] font-medium text-ink-secondary hover:text-ink"
+              className="font-sans text-[13px] font-medium text-primary hover:text-primary-hover"
             >
               {link.label}
             </Link>

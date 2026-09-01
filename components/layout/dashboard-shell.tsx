@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PageBackNav } from "@/components/layout/page-back-nav";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { SiteFooter } from "@/components/legal/site-footer";
 import { Button } from "@/components/ui/button";
 
@@ -72,13 +73,14 @@ export function DashboardShell({
           <div className="min-w-0 flex-1">
             <PageBackNav />
           </div>
+          <LanguageSwitcher />
           <ThemeToggle />
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
           ) : null}
         </header>
-        <main id="main" className="w-full flex-1 px-6 py-6 lg:px-10">
+        <main id="main" className="w-full flex-1 px-6 py-8 lg:px-12">
           {children}
         </main>
         <SiteFooter compact />

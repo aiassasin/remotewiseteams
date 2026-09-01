@@ -74,8 +74,8 @@ const config: Config = {
       boxShadow: {
         focus: "0 0 0 3px rgb(var(--rw-focus) / 1)",
         "focus-error": "0 0 0 3px rgb(var(--rw-danger-light) / 1)",
-        lift: "0 12px 30px rgb(15 23 42 / 0.08)",
-        cta: "0 8px 22px rgb(79 70 229 / 0.38)",
+        lift: "0 12px 30px rgb(11 26 51 / 0.08)",
+        cta: "0 8px 20px rgb(37 99 235 / 0.28)",
       },
       maxWidth: {
         content: "1200px",

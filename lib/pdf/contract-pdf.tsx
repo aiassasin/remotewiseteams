@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 12,
   },
-  brand: { fontSize: 9, color: "#4F46E5", fontFamily: "Helvetica" },
+  brand: { fontSize: 9, color: "#2563EB", fontFamily: "Helvetica" },
   title: { fontSize: 18, fontFamily: "Helvetica-Bold", marginBottom: 6 },
   id: { fontSize: 9, fontFamily: "Courier", color: "#475569" },
   rule: { height: 1, backgroundColor: "#E2E8F0", marginVertical: 12 },

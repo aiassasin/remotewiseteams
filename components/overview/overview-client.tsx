@@ -36,7 +36,7 @@ const CHECK_STEPS = [
   { key: "payout" as const, label: "Complete the first payout" },
 ];
 
-const PIE_COLORS = ["#10B981", "#4F46E5", "#6D28D9", "#06B6D4", "#F59E0B", "#64748B"];
+const PIE_COLORS = ["#059669", "#2563EB", "#0B1A33", "#EA580C", "#64748B", "#DC2626"];
 
 export function OverviewClient({ data, error }: { data: OverviewData | null; error?: string | null }) {
   if (error) {
@@ -72,8 +72,8 @@ export function OverviewClient({ data, error }: { data: OverviewData | null; err
           description="A calm snapshot of your workspace — people, contracts, and money."
           actions={
             <>
-              <Button asChild variant="secondary">
-                <Link href="/dashboard/contracts/new" className="inline-flex items-center gap-2">
+              <Button asChild>
+                <Link href="/dashboard/contracts/new" className="inline-flex items-center gap-2 !text-white">
                   <IsoIcon name="send-contract" size={22} />
                   Send contract
                 </Link>
@@ -166,7 +166,7 @@ export function OverviewClient({ data, error }: { data: OverviewData | null; err
                   <XAxis dataKey="month" stroke="currentColor" fontSize={12} />
                   <YAxis stroke="currentColor" fontSize={12} />
                   <Tooltip />
-                  <Bar dataKey="amount" fill="#4F46E5" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="amount" fill="#2563EB" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
