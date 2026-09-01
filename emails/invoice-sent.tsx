@@ -38,7 +38,7 @@ export function InvoiceSentEmail({
 
 InvoiceSentEmail.PreviewProps = {
   freelancerName: "Ahmed Hassan",
-  companyName: "Northstar Studio",
+  companyName: "Studio Oy",
   invoiceNumber: "INV-ABC",
   amount: "€2,400.00",
   dueDate: "15 Sep 2026",

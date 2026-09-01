@@ -170,7 +170,7 @@ export function SignupWizard() {
                 <Label htmlFor="companyName">Workspace name</Label>
                 <Input
                   id="companyName"
-                  placeholder="Northstar Studio"
+                  placeholder="Studio Oy"
                   value={form.companyName}
                   invalid={Boolean(errors.companyName)}
                   onChange={(event) => update("companyName", event.target.value)}

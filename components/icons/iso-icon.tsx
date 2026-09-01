@@ -25,6 +25,11 @@ export const ISO_ICON_NAMES = [
   "choose-payout",
   "help",
   "checklist",
+  "nda",
+  "msa",
+  "sow",
+  "ica",
+  "scratch",
 ] as const;
 
 export type IsoIconName = (typeof ISO_ICON_NAMES)[number];
@@ -52,6 +57,11 @@ const PALETTES: Record<IsoIconName, { a: string; b: string; c: string }> = {
   "choose-payout": { a: "#06B6D4", b: "#10B981", c: "#4F46E5" },
   help: { a: "#4F46E5", b: "#6D28D9", c: "#06B6D4" },
   checklist: { a: "#10B981", b: "#4F46E5", c: "#06B6D4" },
+  nda: { a: "#10B981", b: "#4F46E5", c: "#06B6D4" },
+  msa: { a: "#4F46E5", b: "#6D28D9", c: "#818CF8" },
+  sow: { a: "#06B6D4", b: "#4F46E5", c: "#10B981" },
+  ica: { a: "#4F46E5", b: "#06B6D4", c: "#10B981" },
+  scratch: { a: "#F59E0B", b: "#4F46E5", c: "#06B6D4" },
 };
 
 export function IsoIcon({
@@ -117,6 +127,7 @@ function Glyph({ name }: { name: IsoIconName }) {
       );
     case "freelancers":
     case "invite":
+    case "ica":
       return (
         <g fill="white">
           <circle cx="24" cy="18" r="3.2" />
@@ -132,6 +143,7 @@ function Glyph({ name }: { name: IsoIconName }) {
       );
     case "contracts":
     case "send-contract":
+    case "msa":
       return (
         <g stroke="white" strokeWidth="1.8" fill="none">
           <path d="M18 15h9l5 5v13H18V15Z" />
@@ -173,6 +185,7 @@ function Glyph({ name }: { name: IsoIconName }) {
     case "shield":
     case "coverage":
     case "promise":
+    case "nda":
       return (
         <g stroke="white" strokeWidth="1.8" fill="none">
           <path d="M24 14l10 4v8c0 6-4.5 10-10 12-5.5-2-10-6-10-12v-8l10-4Z" />
@@ -209,6 +222,7 @@ function Glyph({ name }: { name: IsoIconName }) {
         </g>
       );
     case "create-invoice":
+    case "scratch":
       return (
         <g stroke="white" strokeWidth="1.8" fill="none">
           <rect x="17" y="14" width="14" height="18" rx="2" />
@@ -223,6 +237,7 @@ function Glyph({ name }: { name: IsoIconName }) {
         </g>
       );
     case "checklist":
+    case "sow":
       return (
         <g stroke="white" strokeWidth="1.8" fill="none">
           <rect x="16" y="14" width="16" height="20" rx="2" />

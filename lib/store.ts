@@ -72,8 +72,8 @@ const freelancers = new Map<string, StoredFreelancer>();
 const contracts = new Map<string, StoredContract>();
 
 export const DEFAULT_COMPANY = {
-  id: "company_northstar",
-  name: "Northstar Studio",
+  id: "company_default",
+  name: "Your company",
 };
 
 export function saveInvite(invite: StoredInvite) {

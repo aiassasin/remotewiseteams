@@ -16,10 +16,10 @@ test.describe("Signing flow", () => {
         body: JSON.stringify({
           valid: true,
           contractHtml: "1. Confidentiality\nBoth parties agree to keep secrets.",
-          companyName: "Northstar Studio",
+          companyName: "Studio Oy",
           freelancerName: "Ahmed Hassan",
           freelancerEmail: "ahmed@studio.co",
-          title: "NDA — Northstar Studio",
+          title: "NDA — Studio Oy",
           type: "NDA",
           expiresAt: new Date(Date.now() + 86400000).toISOString(),
           status: "sent",

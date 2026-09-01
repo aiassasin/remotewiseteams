@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/motion/page-transition";
+import { StoredContractBody } from "@/components/contracts/stored-contract-body";
+import { parseStoredDocument } from "@/lib/contracts/document";
 import type { StoredContract } from "@/lib/store";
 
 export function ContractReview({ contractId }: { contractId: string }) {
@@ -32,6 +34,8 @@ export function ContractReview({ contractId }: { contractId: string }) {
   }
 
   if (!contract) return null;
+  const model = parseStoredDocument(contract.bodyHtml);
+  const companyLabel = model?.companyName || contract.companyName;
 
   return (
     <PageTransition>
@@ -44,13 +48,12 @@ export function ContractReview({ contractId }: { contractId: string }) {
           <Button onClick={() => setConfirmOpen(true)}>Send for signature</Button>
         </div>
       </div>
-      <article className="rounded-card border border-border bg-card p-10" style={{ fontFamily: "Georgia, Times, serif" }}>
-        <h1 className="font-display text-section text-ink">{contract.title}</h1>
-        <pre className="mt-6 whitespace-pre-wrap text-[14px] leading-[1.8] text-ink">{contract.bodyHtml}</pre>
+      <article className="rounded-card border border-border bg-card p-6">
+        <StoredContractBody body={contract.bodyHtml} title={contract.title} />
         <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="border-l-[3px] border-success bg-success-light p-4">
             <p className="font-sans text-small uppercase tracking-[0.05em] text-ink-muted">Company</p>
-            <p className="mt-2 font-[cursive] text-[22px] text-ink">{contract.companyName}</p>
+            <p className="mt-2 font-[cursive] text-[22px] text-ink">{companyLabel}</p>
             <p className="font-sans text-small text-ink-secondary">Signed by: {contract.createdBy}</p>
           </div>
           <div className="border border-border p-4">

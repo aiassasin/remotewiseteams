@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { StoredContractBody } from "@/components/contracts/stored-contract-body";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/motion/page-transition";
@@ -68,9 +69,7 @@ export default function ContractDetailPage() {
               </li>
             ) : null}
           </ol>
-          <pre className="mt-8 whitespace-pre-wrap font-[Georgia] text-[14px] leading-[1.8] text-ink">
-            {contract.bodyHtml}
-          </pre>
+          <StoredContractBody body={contract.bodyHtml} title={contract.title} />
         </section>
       </div>
     </PageTransition>

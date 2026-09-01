@@ -13,6 +13,49 @@ function e2eSecret() {
   return process.env.INVITE_JWT_SECRET || "";
 }
 
+async function sendAndSignNda(
+  ownerPage: Page,
+  freelancerPage: Page,
+  input: { language: "en" | "fi"; previewText: string; sectionHeading: string; continueName: string; disclaimer: string },
+) {
+  await ownerPage.goto("/dashboard/contracts/new");
+  await ownerPage.getByRole("link", { name: "Use this template" }).first().click();
+  await expect(ownerPage.getByRole("heading", { name: /Contract details|Sopimuksen tiedot/ })).toBeVisible();
+  if (input.language === "fi") {
+    await ownerPage.locator("#language").selectOption("fi");
+  }
+  await expect(ownerPage.getByText("England and Wales")).toHaveCount(0);
+  await expect(ownerPage.locator("#contract-preview")).toContainText(input.previewText);
+  await expect(ownerPage.locator("#contract-preview")).toContainText(input.disclaimer);
+  await ownerPage.getByRole("button", { name: /Preview contract|Esikatsele sopimus/ }).click();
+  await ownerPage.locator("#freelancer").click();
+  await ownerPage.getByRole("option", { name: /Maya Chen/ }).click();
+  await ownerPage.getByRole("button", { name: input.continueName }).click();
+  await expect(ownerPage).toHaveURL(/\/dashboard\/contracts\/.+\/review/, { timeout: 20_000 });
+  await expect(ownerPage.getByRole("button", { name: "Send for signature" })).toBeVisible({
+    timeout: 15_000,
+  });
+  await ownerPage.getByRole("button", { name: "Send for signature" }).click();
+  const sendResponsePromise = ownerPage.waitForResponse(
+    (response) => response.url().includes("/send") && response.request().method() === "POST",
+  );
+  await ownerPage.getByRole("button", { name: "Send contract" }).click();
+  const sendJson = (await (await sendResponsePromise).json()) as { signingUrl?: string; sent?: boolean };
+  expect(sendJson.sent).toBeTruthy();
+  expect(sendJson.signingUrl).toBeTruthy();
+
+  await freelancerPage.goto(sendJson.signingUrl!);
+  await expect(freelancerPage.getByRole("heading", { name: new RegExp(input.sectionHeading) })).toBeVisible();
+  await expect(freelancerPage.getByText(input.disclaimer)).toBeVisible();
+  await freelancerPage.getByPlaceholder("Type your full legal name to sign").fill("Maya Chen");
+  await freelancerPage.getByText("I have read and agree to this contract").click();
+  await freelancerPage.getByRole("button", { name: "Sign contract" }).click();
+  await expect(freelancerPage.getByText("Contract signed successfully")).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(freelancerPage.getByRole("button", { name: "Download signed PDF" })).toBeVisible();
+}
+
 async function signupOwner(page: Page, input: { fullName: string; email: string; password: string; companyName: string }) {
   await page.goto("/signup");
   await page.getByLabel("Full name").fill(input.fullName);
@@ -35,13 +78,13 @@ test.describe("Live invite and contract flow", () => {
   test("signup → workspace → invite → accept → onboard → send → sign lands in Supabase", async ({
     browser,
   }) => {
-    test.setTimeout(120_000);
+    test.setTimeout(180_000);
     const stamp = Date.now();
     const ownerEmail = `owner-${stamp}@example.com`;
     const freelancerEmail = `maya-${stamp}@example.com`;
     const ownerPassword = "RemoteWise1!";
     const freelancerPassword = "MayaJoins1!";
-    const companyName = `Northstar ${stamp}`;
+    const companyName = `Studio ${stamp}`;
 
     const ownerContext = await browser.newContext();
     const ownerPage = await ownerContext.newPage();
@@ -86,30 +129,19 @@ test.describe("Live invite and contract flow", () => {
     await freelancerPage.getByRole("button", { name: "Go to my dashboard" }).click();
     await expect(freelancerPage).toHaveURL(/\/freelancer\/dashboard/);
 
-    await ownerPage.goto("/dashboard/contracts/new");
-    await ownerPage.getByRole("link", { name: "Use this template" }).first().click();
-    await expect(ownerPage.getByRole("heading", { name: "Contract details" })).toBeVisible();
-    await ownerPage.locator("#freelancer").selectOption({ label: `Maya Chen — ${freelancerEmail}` });
-    await ownerPage.getByRole("button", { name: "Preview contract" }).click();
-    await expect(ownerPage).toHaveURL(/\/dashboard\/contracts\/.+\/review/, { timeout: 20_000 });
-    await expect(ownerPage.getByRole("button", { name: "Send for signature" })).toBeVisible({
-      timeout: 15_000,
+    await sendAndSignNda(ownerPage, freelancerPage, {
+      language: "en",
+      previewText: "Who this agreement is between.",
+      sectionHeading: "Parties",
+      continueName: "Continue to review",
+      disclaimer: "This template is informational, not legal advice.",
     });
-    await ownerPage.getByRole("button", { name: "Send for signature" }).click();
-    const sendResponsePromise = ownerPage.waitForResponse(
-      (response) => response.url().includes("/send") && response.request().method() === "POST",
-    );
-    await ownerPage.getByRole("button", { name: "Send contract" }).click();
-    const sendJson = (await (await sendResponsePromise).json()) as { signingUrl?: string; sent?: boolean };
-    expect(sendJson.sent).toBeTruthy();
-    expect(sendJson.signingUrl).toBeTruthy();
-
-    await freelancerPage.goto(sendJson.signingUrl!);
-    await freelancerPage.getByPlaceholder("Type your full legal name to sign").fill("Maya Chen");
-    await freelancerPage.getByText("I have read and agree to this contract").click();
-    await freelancerPage.getByRole("button", { name: "Sign contract" }).click();
-    await expect(freelancerPage.getByText("Contract signed successfully")).toBeVisible({
-      timeout: 20_000,
+    await sendAndSignNda(ownerPage, freelancerPage, {
+      language: "fi",
+      previewText: "Osapuolet",
+      sectionHeading: "Osapuolet",
+      continueName: "Jatka tarkistukseen",
+      disclaimer: "Tämä malli on informatiivinen, ei oikeudellista neuvontaa.",
     });
 
     const snapshot = await ownerPage.request.get(

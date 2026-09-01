@@ -83,7 +83,7 @@ export function FreelancerInviteEmail({
 }
 
 FreelancerInviteEmail.PreviewProps = {
-  companyName: "Northstar Studio",
+  companyName: "Studio Oy",
   freelancerName: "Ahmed Hassan",
   inviteUrl: "http://localhost:3000/invite/preview",
   note: "We loved your portfolio — excited to start the brand work together.",

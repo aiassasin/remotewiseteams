@@ -33,6 +33,8 @@ export async function POST(request: Request) {
     clauses?: string[];
     expiresAt?: string;
     body?: string;
+    companyName?: string;
+    language?: string;
   };
 
   if (!body.freelancerId || !body.title || !body.body) {
@@ -49,13 +51,16 @@ export async function POST(request: Request) {
   const contract: StoredContract = {
     id,
     companyId: current.workspace.id,
-    companyName: current.workspace.name,
+    companyName: body.companyName?.trim() || current.workspace.name,
     freelancerId: freelancer.id,
     templateId: body.templateId ?? "custom",
     type: body.type ?? "Custom",
     title: body.title,
     bodyHtml: body.body,
-    variables: body.variables ?? {},
+    variables: {
+      ...(body.variables ?? {}),
+      ...(body.language ? { CONTRACT_LANGUAGE: body.language } : {}),
+    },
     clauses: body.clauses ?? [],
     status: "draft",
     token,

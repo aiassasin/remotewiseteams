@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Lock } from "lucide-react";
+import { StoredContractBody } from "@/components/contracts/stored-contract-body";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -118,9 +119,8 @@ export function SignContractClient({ token }: { token: string }) {
           </div>
         </aside>
         <main className="min-w-0 flex-1 p-6">
-          <article className="rounded-card border border-border bg-white p-8" style={{ fontFamily: "Georgia, Times, serif" }}>
-            <h1 className="font-display text-section text-ink">{data.title}</h1>
-            <pre className="mt-6 whitespace-pre-wrap text-[14px] leading-[1.8]">{data.contractHtml}</pre>
+          <article className="rounded-card border border-border bg-card p-4">
+            <StoredContractBody body={data.contractHtml ?? ""} title={data.title} />
             <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="border-l-[3px] border-success bg-success-light p-4">
                 <p className="font-sans text-small uppercase text-ink-muted">{data.companyName}</p>

@@ -182,7 +182,7 @@ export function ProfileOnboarding() {
               </motion.div>
               <h1 className="mt-6 font-display text-display text-ink">You&apos;re in, {name.split(" ")[0]}.</h1>
               <p className="mt-3 font-sans text-body text-ink-secondary">
-                Northstar Studio will be notified that you&apos;ve joined. You&apos;ll get an email when your first contract is ready to sign.
+                Your workspace will be notified that you&apos;ve joined. You&apos;ll get an email when your first contract is ready to sign.
               </p>
               <Button className="mt-8" size="full" onClick={() => router.push("/freelancer/dashboard")}>
                 Go to my dashboard
