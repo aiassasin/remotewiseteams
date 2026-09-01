@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { PricingNav } from "@/components/pricing/pricing-nav";
 import { SiteFooter } from "@/components/legal/site-footer";
+import { pageMeta } from "@/lib/seo";
 
 export function LegalShell({
   title,
@@ -15,7 +16,7 @@ export function LegalShell({
   return (
     <div className="min-h-screen bg-page">
       <PricingNav />
-      <main className="mx-auto w-full max-w-3xl px-6 py-12 lg:px-10">
+      <main id="main" className="mx-auto w-full max-w-3xl px-6 py-12 lg:px-10">
         <p className="font-sans text-small font-medium uppercase tracking-[0.05em] text-primary-text">
           Legal
         </p>
@@ -33,7 +34,7 @@ export function LegalShell({
 export const LEGAL_UPDATED = "1 September 2026";
 
 export function legalMetadata(title: string, description: string): Metadata {
-  return { title, description };
+  return pageMeta(title, description);
 }
 
 export function LegalH2({ children }: { children: ReactNode }) {

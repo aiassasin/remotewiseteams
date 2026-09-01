@@ -78,7 +78,9 @@ export function DashboardShell({
             <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
           ) : null}
         </header>
-        <main className="w-full flex-1 px-6 py-6 lg:px-10">{children}</main>
+        <main id="main" className="w-full flex-1 px-6 py-6 lg:px-10">
+          {children}
+        </main>
         <SiteFooter compact />
       </div>
     </div>

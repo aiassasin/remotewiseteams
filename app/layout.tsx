@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { CookieBanner } from "@/components/legal/cookie-banner";
+import { AnalyticsGate } from "@/components/observability/analytics-gate";
+import { pageMeta } from "@/lib/seo";
 import "./globals.css";
 
 const display = Space_Grotesk({
@@ -24,12 +26,11 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  ...pageMeta("RemoteWise Teams"),
   title: {
     default: "RemoteWise Teams",
     template: "%s · RemoteWise Teams",
   },
-  description:
-    "Contracts, invoices, and payouts for agencies and their freelancers.",
 };
 
 export default function RootLayout({
@@ -48,9 +49,16 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-page font-sans antialiased">
         <ThemeProvider>
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-control focus:bg-card focus:px-3 focus:py-2 focus:text-ink focus:shadow-focus"
+          >
+            Skip to content
+          </a>
           {children}
           <Toaster />
           <CookieBanner />
+          <AnalyticsGate />
         </ThemeProvider>
       </body>
     </html>

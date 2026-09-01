@@ -41,7 +41,9 @@ export default async function FreelancerLayout({ children }: { children: ReactNo
           <ThemeToggle />
         </div>
       </header>
-      <main className="w-full flex-1 px-6 py-6 lg:px-10">{children}</main>
+      <main id="main" className="w-full flex-1 px-6 py-6 lg:px-10">
+        {children}
+      </main>
       <SiteFooter compact />
     </div>
   );

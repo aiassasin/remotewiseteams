@@ -95,7 +95,7 @@ export function FeeCalculator({ side }: FeeCalculatorProps) {
             <label htmlFor="invoice-amount" className="rw-label">
               Invoice amount
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <input
                 id="invoice-amount"
                 className="rw-input"
