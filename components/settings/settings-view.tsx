@@ -597,6 +597,15 @@ function BillingTab({ plan }: { plan: string }) {
           </div>
         ))}
       </div>
+      <div className="mt-8 rounded-card border border-border bg-card p-5">
+        <h3 className="font-display text-card text-ink">Y-tunnus + bookkeeping add-on</h3>
+        <p className="mt-2 font-sans text-[14px] leading-relaxed text-ink-secondary">
+          Light entrepreneur mode does not need a Finnish Business ID. When you are ready, add a Y-tunnus on the Company tab and we can attach a bookkeeping export to every payout. $49 when you opt in — never required to start.
+        </p>
+        <Button asChild variant="secondary" size="sm" className="mt-4">
+          <a href="/dashboard/settings?tab=company">Add Y-tunnus</a>
+        </Button>
+      </div>
     </div>
   );
 }

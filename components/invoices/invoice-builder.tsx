@@ -14,6 +14,7 @@ import {
   type PricingCurrency,
 } from "@/lib/pricing";
 import type { FreelancerBillingProfile, InvoiceLine } from "@/lib/invoices";
+import { DEFAULT_VAT_RATE, VAT_RATE_LABELS, VAT_RATES, type VatRate } from "@/lib/compliance/vat";
 
 export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile }) {
   const router = useRouter();
@@ -31,7 +32,15 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
   const [bankIban, setBankIban] = useState(profile.bankIban);
   const [bankName, setBankName] = useState(profile.bankName);
   const [notes, setNotes] = useState("");
-  const [lines, setLines] = useState<InvoiceLine[]>([{ description: "", quantity: 1, unitPrice: 0 }]);
+  const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().slice(0, 10));
+  const [dueDate, setDueDate] = useState("");
+  const [paymentTerms, setPaymentTerms] = useState("14 days net");
+  const [vatExempt, setVatExempt] = useState(false);
+  const [sellerBusinessId, setSellerBusinessId] = useState(profile.vatId);
+  const [buyerBusinessId, setBuyerBusinessId] = useState("");
+  const [lines, setLines] = useState<InvoiceLine[]>([
+    { description: "", quantity: 1, unitPrice: 0, vatRate: DEFAULT_VAT_RATE },
+  ]);
 
   const amount = lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0);
   const breakdown = useMemo(
@@ -56,6 +65,12 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
         clientAddress,
         notes,
         lineItems: lines,
+        invoiceDate,
+        dueDate,
+        paymentTerms,
+        vatExempt,
+        sellerBusinessId,
+        buyerBusinessId,
         saveProfile: true,
         taxResidency,
         vatId,
@@ -87,7 +102,31 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
           <div className="mt-4 grid gap-3">
             <Input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Client name" required />
             <Input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="Client email" />
-            <Input value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} placeholder="Client address" />
+            <Input value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} placeholder="Client address" required />
+            <Input value={buyerBusinessId} onChange={(e) => setBuyerBusinessId(e.target.value)} placeholder="Buyer Y-tunnus / VAT ID" />
+          </div>
+        </section>
+
+        <section className="rounded-card border border-border bg-card p-6">
+          <h2 className="rw-section-title">Finnish invoice fields</h2>
+          <p className="mt-1 font-sans text-small text-ink-muted">
+            Accounting Act: invoice date, due date, seller/buyer IDs, VAT breakdown, payment terms.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <label className="font-sans text-small text-ink-secondary">
+              Invoice date
+              <Input className="mt-1" type="date" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} required />
+            </label>
+            <label className="font-sans text-small text-ink-secondary">
+              Due date
+              <Input className="mt-1" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
+            </label>
+            <Input value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} placeholder="Payment terms" required />
+            <Input value={sellerBusinessId} onChange={(e) => setSellerBusinessId(e.target.value)} placeholder="Seller Y-tunnus (optional for light entrepreneurs)" />
+            <label className="flex items-center gap-2 font-sans text-[14px] text-ink sm:col-span-2">
+              <input type="checkbox" checked={vatExempt} onChange={(e) => setVatExempt(e.target.checked)} />
+              VAT-exempt supply
+            </label>
           </div>
         </section>
 
@@ -121,7 +160,7 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
           </div>
           <div className="mt-4 space-y-3">
             {lines.map((line, index) => (
-              <div key={index} className="grid gap-2 sm:grid-cols-[1fr_80px_100px]">
+              <div key={index} className="grid gap-2 sm:grid-cols-[1fr_80px_100px_140px]">
                 <Input
                   value={line.description}
                   onChange={(e) => updateLine(index, { description: e.target.value })}
@@ -133,6 +172,7 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
                   min={1}
                   value={line.quantity}
                   onChange={(e) => updateLine(index, { quantity: Number(e.target.value) })}
+                  aria-label="Quantity"
                 />
                 <Input
                   type="number"
@@ -140,15 +180,33 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
                   step="0.01"
                   value={line.unitPrice || ""}
                   onChange={(e) => updateLine(index, { unitPrice: Number(e.target.value) })}
-                  placeholder="Price"
+                  placeholder="Net price"
                 />
+                <select
+                  className="rw-input"
+                  value={line.vatRate}
+                  onChange={(e) => updateLine(index, { vatRate: Number(e.target.value) as VatRate })}
+                  aria-label="VAT rate"
+                  disabled={vatExempt}
+                >
+                  {VAT_RATES.map((rate) => (
+                    <option key={rate} value={rate}>
+                      {VAT_RATE_LABELS[rate]}
+                    </option>
+                  ))}
+                </select>
               </div>
             ))}
             <Button
               type="button"
               variant="secondary"
               size="sm"
-              onClick={() => setLines((current) => [...current, { description: "", quantity: 1, unitPrice: 0 }])}
+              onClick={() =>
+                setLines((current) => [
+                  ...current,
+                  { description: "", quantity: 1, unitPrice: 0, vatRate: DEFAULT_VAT_RATE },
+                ])
+              }
             >
               Add line
             </Button>
