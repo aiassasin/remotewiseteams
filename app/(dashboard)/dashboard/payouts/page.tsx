@@ -5,13 +5,10 @@ import { PayoutsClient } from "@/components/payouts/payouts-client";
 import { PageHeader } from "@/components/layout/page-header";
 import { PageTransition } from "@/components/motion/page-transition";
 import { EmptyState } from "@/components/empty-state";
-import { pageMeta } from "@/lib/seo";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-export const metadata = pageMeta(
-  "Payouts",
-  "Standard 24h free payouts or Lightning 1%. Platform keeps 5.5%.",
-);
+export const metadata: Metadata = { title: "Payouts" };
 export const dynamic = "force-dynamic";
 
 export default async function PayoutsPage() {
