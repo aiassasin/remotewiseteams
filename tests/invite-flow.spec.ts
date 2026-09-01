@@ -7,7 +7,7 @@ async function openInviteModal(page: Page) {
   await page.goto("/dashboard/freelancers");
   await expect(page.getByRole("heading", { name: "Freelancers", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Invite freelancer" }).first().click();
-  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Invite freelancer" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Invite freelancer" })).toBeVisible();
 }
 
@@ -23,16 +23,16 @@ test.describe("Freelancer invite modal", () => {
       fullPage: true,
       animations: "disabled",
     });
-    await expect(page.getByRole("dialog")).toHaveScreenshot("invite-modal-desktop.png");
+    await expect(page.getByRole("dialog", { name: "Invite freelancer" })).toHaveScreenshot("invite-modal-desktop.png");
 
     await page.setViewportSize({ width: 375, height: 812 });
-    await expect(page.getByRole("dialog")).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Invite freelancer" })).toBeVisible();
     await page.screenshot({
       path: path.join(SCREENSHOT_DIR, "invite-modal-375.png"),
       fullPage: true,
       animations: "disabled",
     });
-    await expect(page.getByRole("dialog")).toHaveScreenshot("invite-modal-mobile.png");
+    await expect(page.getByRole("dialog", { name: "Invite freelancer" })).toHaveScreenshot("invite-modal-mobile.png");
   });
 
   test("shows validation errors for empty submit and invalid email", async ({
@@ -75,7 +75,7 @@ test.describe("Freelancer invite modal", () => {
 
     await page.getByRole("button", { name: "Send invite" }).click();
     await expect(page.getByRole("button", { name: "Sending invite..." })).toBeDisabled();
-    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByRole("dialog", { name: "Invite freelancer" })).toHaveCount(0);
     await expect(page.getByText("Invite sent to ahmed@studio.co")).toBeVisible();
   });
 
@@ -84,6 +84,6 @@ test.describe("Freelancer invite modal", () => {
     await openInviteModal(page);
     await page.getByLabel("Full name").fill("Temp");
     await page.getByRole("button", { name: "Cancel" }).click();
-    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByRole("dialog", { name: "Invite freelancer" })).toHaveCount(0);
   });
 });

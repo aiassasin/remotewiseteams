@@ -74,7 +74,7 @@ function WhyBetter() {
     {
       icon: "payouts",
       title: "Lowest total fee in Finland",
-      body: `${PLATFORM_TAKE_PERCENT}% all-in (${SERVICE_FEE_PERCENT}% service + ${SHIELD_FEE_PERCENT}% Shield). Below UKKO and Laskuttamo combined rates.`,
+      body: `${PLATFORM_TAKE_PERCENT}% all-in (${SERVICE_FEE_PERCENT}% service + ${SHIELD_FEE_PERCENT}% Shield). One number, insurance included, no surprise add-ons.`,
     },
     {
       icon: "shield",

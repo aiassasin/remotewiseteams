@@ -18,5 +18,14 @@ setup("authenticate owner", async ({ page }) => {
     },
   });
   expect(response.ok(), await response.text()).toBeTruthy();
+  await page.context().addCookies([
+    {
+      name: "rw_cookie_consent",
+      value: "necessary",
+      url: "http://127.0.0.1:3000",
+    },
+  ]);
+  await page.goto("/dashboard/overview");
+  await page.evaluate(() => localStorage.setItem("rw_cookie_consent", "necessary"));
   await page.context().storageState({ path: AUTH_FILE });
 });

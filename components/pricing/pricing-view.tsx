@@ -23,7 +23,7 @@ export function PricingView() {
     <div className="min-h-screen bg-page">
       <PricingNav />
 
-      <main className="rw-aurora w-full px-6 py-12 sm:py-16 lg:px-10">
+      <main id="main" className="rw-aurora w-full px-6 py-12 sm:py-16 lg:px-10">
         <section className="max-w-3xl">
           <p className="font-sans text-small font-medium uppercase tracking-[0.05em] text-primary-text">
             Pricing
@@ -263,8 +263,8 @@ function PricingFaq() {
       a: "You do, in this phase. We do not withhold. Country modules (US 1099, UK, Estonia, India, Philippines) land later without changing this fee model.",
     },
     {
-      q: "Are you the cheapest?",
-      a: `Yes. ${PLATFORM_TAKE_PERCENT}% all-in is the lowest total fee in Finland for insured light-entrepreneur invoicing. We did not sit in the middle.`,
+      q: "What is the total fee?",
+      a: `${PLATFORM_TAKE_PERCENT}% all-in (${SERVICE_FEE_PERCENT}% service + ${SHIELD_FEE_PERCENT}% Shield). That is the number we quote before you sign up.`,
     },
     {
       q: "What do companies pay?",

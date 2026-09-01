@@ -19,7 +19,7 @@ import { MoneyCircle } from "@/components/motion/money-circle";
 import { Button } from "@/components/ui/button";
 import { IsoIcon, type IsoIconName } from "@/components/icons/iso-icon";
 import { EmptyState } from "@/components/empty-state";
-import { formatPricingMoney } from "@/lib/pricing";
+import { formatPricingMoney, PLATFORM_TAKE_RATE } from "@/lib/pricing";
 import type { OverviewData } from "@/lib/overview";
 
 const ACTIONS: { href: string; label: string; icon: IsoIconName }[] = [
@@ -134,7 +134,7 @@ export function OverviewClient({ data, error }: { data: OverviewData | null; err
               <div className="mt-3">
                 <MoneyCircle
                   keep={data.paidThisMonth}
-                  fees={data.paidThisMonth * 0.055}
+                  fees={data.paidThisMonth * PLATFORM_TAKE_RATE}
                   label="Paid"
                   formattedKeep={formatPricingMoney(data.paidThisMonth, "EUR")}
                   size={120}

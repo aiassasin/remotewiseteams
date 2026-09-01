@@ -22,13 +22,13 @@ test.describe("Freelancer roster", () => {
     await page.getByLabel("Role / title").fill("Brand Designer");
     await page.getByLabel("Hourly rate").fill("90");
     await page.getByRole("button", { name: "Send invite" }).click();
-    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByRole("dialog", { name: "Invite freelancer" })).toHaveCount(0);
 
-    await expect(page.getByText("Lina Park")).toBeVisible();
+    await expect(page.getByRole("table").getByText("Lina Park")).toBeVisible();
     await page.getByPlaceholder("Search by name or email...").fill("lina");
-    await expect(page.getByText("lina@studio.co", { exact: true })).toBeVisible();
+    await expect(page.getByRole("table").getByText("lina@studio.co", { exact: true })).toBeVisible();
     await page.getByLabel("Filter by status").selectOption("invited");
-    await expect(page.getByText("Brand Designer")).toBeVisible();
+    await expect(page.getByRole("cell", { name: "Brand Designer" })).toBeVisible();
 
     await page.getByRole("button", { name: "Card view" }).click();
     await expect(page.getByRole("link", { name: "View profile" })).toBeVisible();
