@@ -16,6 +16,7 @@ export type InvoiceLine = {
   description: string;
   quantity: number;
   unitPrice: number;
+  vatRate: number;
 };
 
 export type InvoiceRecord = {
@@ -35,6 +36,13 @@ export type InvoiceRecord = {
   shieldFee: number;
   youKeep: number;
   dueDate: string | null;
+  invoiceDate: string | null;
+  paymentTerms: string;
+  vatExempt: boolean;
+  vatTotal: number;
+  netTotal: number;
+  sellerBusinessId: string;
+  buyerBusinessId: string;
   createdAt: string;
   cancelledAt: string | null;
 };

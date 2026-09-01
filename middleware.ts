@@ -27,6 +27,7 @@ function isPublicPath(pathname: string) {
     "/api/sign",
     "/api/e2e",
     "/api/fx",
+    "/api/stripe/webhook",
   ];
   return publicPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }

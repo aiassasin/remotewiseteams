@@ -30,12 +30,50 @@ export function InvoiceList({
   const [rows, setRows] = useState(invoices);
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
+  const [busyId, setBusyId] = useState<string | null>(null);
   const totals = useMemo(() => {
     const open = rows.filter((row) => row.status !== "cancelled");
     const keep = open.reduce((sum, row) => sum + row.youKeep, 0);
     const fees = open.reduce((sum, row) => sum + row.serviceFee + row.shieldFee, 0);
     return { keep, fees };
   }, [rows]);
+
+  async function patchRow(id: string, invoice: InvoiceRecord) {
+    setRows((current) => current.map((row) => (row.id === id ? invoice : row)));
+  }
+
+  async function postAction(id: string, path: string, body?: object) {
+    setBusyId(id);
+    const response = await fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const json = (await response.json()) as {
+      invoice?: InvoiceRecord;
+      url?: string;
+      message?: string;
+      youKeep?: number;
+    };
+    setBusyId(null);
+    if (!response.ok) {
+      toast.error(json.message || "That action did not complete");
+      return;
+    }
+    if (json.url) {
+      window.location.assign(json.url);
+      return;
+    }
+    if (json.invoice) await patchRow(id, json.invoice);
+    else if (json.youKeep !== undefined) {
+      setRows((current) =>
+        current.map((row) =>
+          row.id === id ? { ...row, status: "paid_out", youKeep: json.youKeep ?? row.youKeep } : row,
+        ),
+      );
+    }
+    toast.success("Done.");
+  }
 
   if (!rows.length) {
     return (
@@ -49,7 +87,7 @@ export function InvoiceList({
               : "When you land billed work against a contract, it appears here."
           }
           actionLabel={createHref ? "Create invoice" : undefined}
-          onAction={createHref ? () => window.location.assign(createHref) : undefined}
+          actionHref={createHref}
         />
       </div>
     );
@@ -71,7 +109,22 @@ export function InvoiceList({
           </Button>
         ) : null}
       </div>
-      <div className="overflow-x-auto rounded-card border border-border bg-card">
+
+      <ul className="space-y-3 md:hidden">
+        {rows.map((row) => (
+          <li key={row.id} className="rounded-card border border-border bg-card p-4">
+            <InvoiceCard
+              row={row}
+              role={role}
+              busy={busyId === row.id}
+              onCancel={() => setCancelId(row.id)}
+              onAction={postAction}
+            />
+          </li>
+        ))}
+      </ul>
+
+      <div className="hidden overflow-x-auto rounded-card border border-border bg-card md:block">
         <table className="min-w-[720px] w-full text-left">
           <thead>
             <tr className="border-b border-border">
@@ -102,11 +155,13 @@ export function InvoiceList({
                     <Badge status={row.status}>{row.status.replaceAll("_", " ")}</Badge>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    {role === "freelancer" && canCancelInvoice(row.status) ? (
-                      <Button variant="ghost" size="sm" onClick={() => setCancelId(row.id)}>
-                        Cancel
-                      </Button>
-                    ) : null}
+                    <InvoiceActions
+                      row={row}
+                      role={role}
+                      busy={busyId === row.id}
+                      onCancel={() => setCancelId(row.id)}
+                      onAction={postAction}
+                    />
                   </td>
                 </tr>
               );
@@ -164,6 +219,92 @@ export function InvoiceList({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function InvoiceCard({
+  row,
+  role,
+  busy,
+  onCancel,
+  onAction,
+}: {
+  row: InvoiceRecord;
+  role: "company" | "freelancer";
+  busy: boolean;
+  onCancel: () => void;
+  onAction: (id: string, path: string, body?: object) => void;
+}) {
+  const currency = (row.currency as PricingCurrency) || "EUR";
+  return (
+    <>
+      <p className="font-mono text-mono text-ink">{row.invoiceNumber}</p>
+      <p className="mt-1 font-sans text-[14px] text-ink">{row.clientName || "Client"}</p>
+      <p className="mt-1 font-sans text-[14px] text-ink">{formatPricingMoney(row.amount, currency)}</p>
+      <p className="font-sans text-small text-ink-secondary">
+        You keep {formatPricingMoney(row.youKeep, currency)}
+      </p>
+      <Badge className="mt-2" status={row.status}>
+        {row.status.replaceAll("_", " ")}
+      </Badge>
+      <div className="mt-3">
+        <InvoiceActions row={row} role={role} busy={busy} onCancel={onCancel} onAction={onAction} />
+      </div>
+    </>
+  );
+}
+
+function InvoiceActions({
+  row,
+  role,
+  busy,
+  onCancel,
+  onAction,
+}: {
+  row: InvoiceRecord;
+  role: "company" | "freelancer";
+  busy: boolean;
+  onCancel: () => void;
+  onAction: (id: string, path: string, body?: object) => void;
+}) {
+  return (
+    <div className="flex flex-wrap justify-end gap-2">
+      {role === "freelancer" && row.status === "draft" ? (
+        <Button size="sm" loading={busy} onClick={() => onAction(row.id, `/api/invoices/${row.id}/send`)}>
+          Send
+        </Button>
+      ) : null}
+      {role === "company" &&
+      ["sent", "pending", "approved"].includes(row.status) ? (
+        <Button size="sm" loading={busy} onClick={() => onAction(row.id, `/api/invoices/${row.id}/pay`)}>
+          Pay by card
+        </Button>
+      ) : null}
+      {role === "freelancer" && row.status === "paid" ? (
+        <>
+          <Button
+            size="sm"
+            variant="secondary"
+            loading={busy}
+            onClick={() => onAction(row.id, `/api/invoices/${row.id}/payout`, { speed: "standard" })}
+          >
+            Standard 24h
+          </Button>
+          <Button
+            size="sm"
+            loading={busy}
+            onClick={() => onAction(row.id, `/api/invoices/${row.id}/payout`, { speed: "lightning" })}
+          >
+            Lightning 1%
+          </Button>
+        </>
+      ) : null}
+      {role === "freelancer" && canCancelInvoice(row.status) ? (
+        <Button variant="ghost" size="sm" onClick={onCancel}>
+          Cancel
+        </Button>
+      ) : null}
     </div>
   );
 }

@@ -49,6 +49,12 @@ export async function POST(request: Request) {
     clientAddress?: string;
     notes?: string;
     lineItems?: InvoiceLine[];
+    invoiceDate?: string;
+    dueDate?: string;
+    paymentTerms?: string;
+    vatExempt?: boolean;
+    sellerBusinessId?: string;
+    buyerBusinessId?: string;
     saveProfile?: boolean;
     taxResidency?: string;
     vatId?: string;
@@ -68,9 +74,12 @@ export async function POST(request: Request) {
   const currency = (PRICING_CURRENCIES as readonly string[]).includes(body.currency ?? "")
     ? (body.currency as PricingCurrency)
     : "EUR";
-  const lineItems = (body.lineItems ?? []).filter(
-    (line) => line.description.trim() && line.quantity > 0 && line.unitPrice >= 0,
-  );
+  const lineItems = (body.lineItems ?? [])
+    .filter((line) => line.description.trim() && line.quantity > 0 && line.unitPrice >= 0)
+    .map((line) => ({
+      ...line,
+      vatRate: typeof line.vatRate === "number" ? line.vatRate : 25.5,
+    }));
   if (!lineItems.length) {
     return NextResponse.json({ message: "Add at least one line item" }, { status: 400 });
   }
@@ -86,6 +95,12 @@ export async function POST(request: Request) {
       clientAddress: body.clientAddress?.trim() || profile.defaultClientAddress,
       notes: body.notes?.trim() || "",
       lineItems,
+      invoiceDate: body.invoiceDate,
+      dueDate: body.dueDate,
+      paymentTerms: body.paymentTerms,
+      vatExempt: body.vatExempt,
+      sellerBusinessId: body.sellerBusinessId,
+      buyerBusinessId: body.buyerBusinessId,
       profile: {
         ...profile,
         taxResidency: body.taxResidency?.trim() || profile.taxResidency,

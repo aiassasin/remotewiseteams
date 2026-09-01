@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { IsoIcon, type IsoIconName } from "@/components/icons/iso-icon";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ export function EmptyState({
   description,
   actionLabel,
   onAction,
+  actionHref,
   className,
 }: {
   icon: IsoIconName;
@@ -17,6 +19,7 @@ export function EmptyState({
   description: string;
   actionLabel?: string;
   onAction?: () => void;
+  actionHref?: string;
   className?: string;
 }) {
   return (
@@ -33,7 +36,11 @@ export function EmptyState({
       <p className="mt-3 max-w-[320px] font-sans text-body text-ink-slate">
         {description}
       </p>
-      {actionLabel && onAction ? (
+      {actionLabel && actionHref ? (
+        <Button className="mt-5" asChild>
+          <Link href={actionHref}>{actionLabel}</Link>
+        </Button>
+      ) : actionLabel && onAction ? (
         <Button className="mt-5" onClick={onAction}>
           {actionLabel}
         </Button>

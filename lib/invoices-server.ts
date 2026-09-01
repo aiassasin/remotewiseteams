@@ -1,4 +1,7 @@
-import { calculateFreelancerPayout, type PricingCurrency } from "@/lib/pricing";
+import { calculateFreelancerPayout, formatPricingMoney, type PricingCurrency } from "@/lib/pricing";
+import { vatAmount, type VatRate } from "@/lib/compliance/vat";
+import { sendInvoiceSentEmail } from "@/lib/email";
+import { appUrl } from "@/lib/stripe/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
@@ -19,7 +22,12 @@ function asNumber(value: unknown) {
 }
 
 function mapInvoice(row: Record<string, unknown>): InvoiceRecord {
-  const lines = Array.isArray(row.line_items) ? (row.line_items as InvoiceLine[]) : [];
+  const lines = Array.isArray(row.line_items)
+    ? (row.line_items as InvoiceLine[]).map((line) => ({
+        ...line,
+        vatRate: typeof line.vatRate === "number" ? line.vatRate : 25.5,
+      }))
+    : [];
   return {
     id: asString(row.id),
     companyId: asString(row.company_id),
@@ -37,6 +45,13 @@ function mapInvoice(row: Record<string, unknown>): InvoiceRecord {
     shieldFee: asNumber(row.shield_fee),
     youKeep: asNumber(row.you_keep),
     dueDate: typeof row.due_date === "string" ? row.due_date : null,
+    invoiceDate: typeof row.invoice_date === "string" ? row.invoice_date : null,
+    paymentTerms: asString(row.payment_terms) || "14 days net",
+    vatExempt: Boolean(row.vat_exempt),
+    vatTotal: asNumber(row.vat_total),
+    netTotal: asNumber(row.net_total),
+    sellerBusinessId: asString(row.seller_business_id),
+    buyerBusinessId: asString(row.buyer_business_id),
     createdAt: asString(row.created_at),
     cancelledAt: typeof row.cancelled_at === "string" ? row.cancelled_at : null,
   };
@@ -116,11 +131,22 @@ export async function createInvoice(input: {
   notes: string;
   lineItems: InvoiceLine[];
   profile: FreelancerBillingProfile;
+  invoiceDate?: string;
+  dueDate?: string;
+  paymentTerms?: string;
+  vatExempt?: boolean;
+  sellerBusinessId?: string;
+  buyerBusinessId?: string;
 }) {
   const amount = input.lineItems.reduce(
     (sum, line) => sum + Math.max(line.quantity, 0) * Math.max(line.unitPrice, 0),
     0,
   );
+  const vatExempt = Boolean(input.vatExempt);
+  const vatTotal = input.lineItems.reduce((sum, line) => {
+    const net = Math.max(line.quantity, 0) * Math.max(line.unitPrice, 0);
+    return sum + vatAmount(net, line.vatRate as VatRate, vatExempt);
+  }, 0);
   const breakdown = calculateFreelancerPayout(amount, "standard", input.currency);
   const supabase = createServerSupabaseClient();
   const row = {
@@ -139,6 +165,14 @@ export async function createInvoice(input: {
     service_fee: breakdown.serviceFee,
     shield_fee: breakdown.shieldFee,
     you_keep: breakdown.youKeep,
+    invoice_date: input.invoiceDate || new Date().toISOString().slice(0, 10),
+    due_date: input.dueDate || null,
+    payment_terms: input.paymentTerms || "14 days net",
+    vat_exempt: vatExempt,
+    vat_total: Math.round(vatTotal * 100) / 100,
+    net_total: breakdown.amount,
+    seller_business_id: input.sellerBusinessId || input.profile.vatId || "",
+    buyer_business_id: input.buyerBusinessId || "",
     sender_snapshot: {
       fullName: input.profile.fullName,
       address: input.profile.addressLine1,
@@ -164,7 +198,23 @@ export async function sendInvoice(id: string, freelancerId: string) {
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Only draft invoices can be sent");
-  return mapInvoice(data as Record<string, unknown>);
+  const mapped = mapInvoice(data as Record<string, unknown>);
+  const [{ data: company }, { data: freelancer }] = await Promise.all([
+    supabase.from("companies").select("name").eq("id", mapped.companyId).maybeSingle(),
+    supabase.from("freelancers").select("full_name").eq("id", freelancerId).maybeSingle(),
+  ]);
+  if (mapped.clientEmail) {
+    await sendInvoiceSentEmail({
+      to: mapped.clientEmail,
+      freelancerName: freelancer?.full_name || "Freelancer",
+      companyName: company?.name || "Your client",
+      invoiceNumber: mapped.invoiceNumber,
+      amount: formatPricingMoney(mapped.amount, mapped.currency as PricingCurrency),
+      dueDate: mapped.dueDate || "on receipt",
+      invoiceUrl: `${appUrl()}/dashboard/invoices`,
+    }).catch(() => undefined);
+  }
+  return mapped;
 }
 
 export async function cancelInvoice(input: {
