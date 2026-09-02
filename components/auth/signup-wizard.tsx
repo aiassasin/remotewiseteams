@@ -17,7 +17,7 @@ const EMPTY = {
   email: "",
   password: "",
   companyName: "",
-  accentColor: "#4F46E5",
+  accentColor: "#2563EB",
 };
 
 export function SignupWizard() {
@@ -194,7 +194,7 @@ export function SignupWizard() {
                         style={{
                           backgroundColor: accent.value,
                           boxShadow: selected ? "0 0 0 3px #EEF2FF" : undefined,
-                          outline: selected ? "2px solid #4F46E5" : "none",
+                          outline: selected ? "2px solid #2563EB" : "none",
                           outlineOffset: 2,
                         }}
                       />

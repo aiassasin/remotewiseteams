@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   const email = body.email?.trim().toLowerCase() ?? "";
   const password = body.password ?? "";
   const companyName = body.companyName?.trim() ?? "";
-  const accentColor = body.accentColor ?? "#4F46E5";
+  const accentColor = body.accentColor ?? "#2563EB";
 
   if (!fullName) {
     return NextResponse.json({ message: "Enter your full name", field: "fullName" }, { status: 400 });

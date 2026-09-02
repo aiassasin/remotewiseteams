@@ -49,10 +49,12 @@ export function composeAddress(parts: {
   postalCode: string;
   country: string;
 }) {
-  return [parts.line1, parts.line2, [parts.postalCode, parts.city].filter(Boolean).join(" "), parts.country]
+  const street = [parts.line1, parts.line2, [parts.postalCode, parts.city].filter(Boolean).join(" ")]
     .map((part) => part.trim())
-    .filter(Boolean)
-    .join(", ");
+    .filter(Boolean);
+  if (!street.length) return "";
+  const country = parts.country.trim();
+  return [...street, country].filter(Boolean).join(", ");
 }
 
 export function buildContractDocument(input: {

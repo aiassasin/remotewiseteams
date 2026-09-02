@@ -29,7 +29,7 @@ export function FreelancerInviteEmail({
       <Preview>{companyName} invited you to join their freelance workspace</Preview>
       <Body style={{ backgroundColor: "#F8FAFC", margin: 0, padding: "32px 16px", fontFamily: "Inter, Helvetica, Arial, sans-serif" }}>
         <Container style={{ backgroundColor: "#FFFFFF", borderRadius: "8px", maxWidth: "560px", padding: "40px 32px" }}>
-          <Text style={{ margin: 0, color: "#4F46E5", fontSize: "13px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+          <Text style={{ margin: 0, color: "#2563EB", fontSize: "13px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
             RemoteWise
           </Text>
           <Text style={{ margin: "8px 0 0", color: "#475569", fontSize: "14px" }}>
@@ -55,7 +55,7 @@ export function FreelancerInviteEmail({
             <Button
               href={inviteUrl}
               style={{
-                backgroundColor: "#4F46E5",
+                backgroundColor: "#2563EB",
                 color: "#FFFFFF",
                 borderRadius: "999px",
                 padding: "12px 24px",

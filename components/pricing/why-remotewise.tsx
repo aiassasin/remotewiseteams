@@ -52,7 +52,7 @@ function HowWeWork() {
           aria-hidden
           className="pointer-events-none absolute left-[12%] right-[12%] top-[26px] hidden h-[3px] rounded-full lg:block"
           style={{
-            background: "linear-gradient(90deg, #6D28D9 0%, #4F46E5 50%, #06B6D4 100%)",
+            background: "linear-gradient(90deg, #0B1A33 0%, #2563EB 70%, #059669 100%)",
           }}
         />
         <ol className="relative grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
