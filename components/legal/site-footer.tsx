@@ -1,15 +1,21 @@
-import Link from "next/link";
-import { FINLAND_COMPLIANCE } from "@/lib/compliance/finland";
+"use client";
 
-const LINKS = [
-  { href: "/pricing", label: "Pricing" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
-  { href: "/invoicing-terms", label: "Invoicing terms" },
-  { href: "/cookies", label: "Cookies" },
+import Link from "next/link";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { FINLAND_COMPLIANCE } from "@/lib/compliance/finland";
+import { useT } from "@/components/i18n/language-provider";
+
+const LINK_KEYS = [
+  { href: "/pricing", key: "footer.pricing" as const },
+  { href: "/privacy", key: "footer.privacy" as const },
+  { href: "/terms", key: "footer.terms" as const },
+  { href: "/invoicing-terms", key: "footer.invoicingTerms" as const },
+  { href: "/cookies", key: "footer.cookies" as const },
 ];
 
 export function SiteFooter({ compact = false }: { compact?: boolean }) {
+  const t = useT();
+
   return (
     <footer className="border-t border-border bg-card">
       <div
@@ -22,19 +28,18 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
             {FINLAND_COMPLIANCE.operatorName} · {FINLAND_COMPLIANCE.legalEntityName} · Finland
           </p>
           {!compact ? (
-            <p className="mt-1 max-w-xl font-sans text-small text-ink-muted">
-              Fees are public. No tax withholding in this phase — you report income in your country.
-            </p>
+            <p className="mt-1 max-w-xl font-sans text-small text-ink-muted">{t("footer.feesPublic")}</p>
           ) : null}
         </div>
-        <nav className="flex flex-wrap gap-x-4 gap-y-2" aria-label="Legal">
-          {LINKS.map((link) => (
+        <nav className="flex flex-wrap items-center gap-x-4 gap-y-2" aria-label={t("common.legal")}>
+          <LanguageSwitcher />
+          {LINK_KEYS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="font-sans text-[13px] font-medium text-ink-secondary hover:text-ink"
+              className="font-sans text-[13px] font-medium text-primary hover:text-primary-hover"
             >
-              {link.label}
+              {t(link.key)}
             </Link>
           ))}
         </nav>
