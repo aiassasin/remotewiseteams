@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageTransition } from "@/components/motion/page-transition";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { useT } from "@/components/i18n/language-provider";
 
 export function LoginForm() {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/dashboard/overview";
@@ -34,7 +36,7 @@ export function LoginForm() {
         field?: string;
       };
       if (!response.ok) {
-        setErrors({ [data.field || "password"]: data.message || "Could not sign in" });
+        setErrors({ [data.field || "password"]: data.message || t("auth.signInFailed") });
         return;
       }
       router.push(data.redirect || next);
@@ -52,14 +54,12 @@ export function LoginForm() {
             <div className="rw-logo-badge mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-control font-display text-[13px] font-semibold text-white">
               RW
             </div>
-            <h1 className="font-display text-section text-ink">Welcome back.</h1>
-            <p className="mt-2 font-sans text-body text-ink-secondary">
-              Sign in to manage contracts, invoices, and payouts.
-            </p>
+            <h1 className="font-display text-section text-ink">{t("auth.welcomeBack")}</h1>
+            <p className="mt-2 font-sans text-body text-ink-secondary">{t("auth.signInHint")}</p>
           </div>
           <form className="space-y-4" onSubmit={onSubmit} noValidate>
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("common.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -71,7 +71,7 @@ export function LoginForm() {
               {errors.email ? <p className="rw-field-error">{errors.email}</p> : null}
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("common.password")}</Label>
               <Input
                 id="password"
                 type="password"
@@ -83,13 +83,13 @@ export function LoginForm() {
               {errors.password ? <p className="rw-field-error">{errors.password}</p> : null}
             </div>
             <Button type="submit" size="full" loading={submitting}>
-              {submitting ? "Signing in..." : "Sign in"}
+              {submitting ? t("auth.signingIn") : t("auth.signIn")}
             </Button>
           </form>
           <p className="mt-6 text-center font-sans text-[14px] text-ink-secondary">
-            New to RemoteWise?{" "}
+            {t("auth.newHere")}{" "}
             <Link href="/signup" className="font-medium text-primary hover:text-primary-hover">
-              Create a workspace
+              {t("auth.createWorkspace")}
             </Link>
           </p>
         </div>

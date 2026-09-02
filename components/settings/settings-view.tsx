@@ -20,24 +20,27 @@ import {
   type SettingsTab,
 } from "@/lib/settings";
 import type { ThemePreference } from "@/lib/theme";
+import { useT } from "@/components/i18n/language-provider";
+import type { MessageKey } from "@/lib/i18n";
 
-const TAB_LABEL: Record<SettingsTab, string> = {
-  profile: "Profile",
-  appearance: "Appearance",
-  company: "Company",
-  members: "Members",
-  notifications: "Notifications",
-  billing: "Billing & plan",
-  security: "Security",
-  privacy: "Data & privacy",
+const TAB_KEY: Record<SettingsTab, MessageKey> = {
+  profile: "settings.tabProfile",
+  appearance: "settings.tabAppearance",
+  company: "settings.tabCompany",
+  members: "settings.tabMembers",
+  notifications: "settings.tabNotifications",
+  billing: "settings.tabBilling",
+  security: "settings.tabSecurity",
+  privacy: "settings.tabPrivacy",
 };
 
 export function SettingsView({ initial }: { initial: SettingsPayload | null }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { setPreference } = useTheme();
+  const t = useT();
   const [data, setData] = useState<SettingsPayload | null>(initial);
-  const [error, setError] = useState<string | null>(initial ? null : "Could not load settings.");
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(!initial);
 
   const requested = searchParams.get("tab");
@@ -51,14 +54,14 @@ export function SettingsView({ initial }: { initial: SettingsPayload | null }) {
     fetch("/api/settings")
       .then(async (response) => {
         const json = (await response.json()) as { settings?: SettingsPayload; message?: string };
-        if (!response.ok || !json.settings) throw new Error(json.message || "Could not load settings");
+        if (!response.ok || !json.settings) throw new Error(json.message || t("settings.loadFailed"));
         if (!cancelled) {
           setData(json.settings);
           setError(null);
         }
       })
       .catch((err: unknown) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : "Could not load settings");
+        if (!cancelled) setError(err instanceof Error ? err.message : t("settings.loadFailed"));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -66,7 +69,7 @@ export function SettingsView({ initial }: { initial: SettingsPayload | null }) {
     return () => {
       cancelled = true;
     };
-  }, [initial]);
+  }, [initial, t]);
 
   function selectTab(next: SettingsTab) {
     const params = new URLSearchParams(searchParams.toString());
@@ -82,7 +85,7 @@ export function SettingsView({ initial }: { initial: SettingsPayload | null }) {
   if (loading) {
     return (
       <PageTransition>
-        <PageHeader title="Settings" description="Workspace, billing, and your account." />
+        <PageHeader title={t("settings.title")} description={t("settings.shortDescription")} />
         <div className="grid gap-3 sm:grid-cols-2">
           {Array.from({ length: 4 }).map((_, index) => (
             <div key={index} className="h-32 animate-pulse rounded-card border border-border bg-card" />
@@ -95,13 +98,13 @@ export function SettingsView({ initial }: { initial: SettingsPayload | null }) {
   if (error || !data) {
     return (
       <PageTransition>
-        <PageHeader title="Settings" description="Workspace, billing, and your account." />
+        <PageHeader title={t("settings.title")} description={t("settings.shortDescription")} />
         <div className="rw-card">
           <EmptyState
             icon="settings"
-            title="Settings did not load."
-            description={error || "Refresh and try again."}
-            actionLabel="Retry"
+            title={t("settings.loadError")}
+            description={error || t("settings.refreshTry")}
+            actionLabel={t("common.retry")}
             onAction={() => window.location.reload()}
           />
         </div>
@@ -111,9 +114,9 @@ export function SettingsView({ initial }: { initial: SettingsPayload | null }) {
 
   return (
     <PageTransition>
-      <PageHeader title="Settings" description="Profile, appearance, company, members, and billing." />
+      <PageHeader title={t("settings.title")} description={t("settings.description")} />
       <div className="flex flex-col gap-6 lg:flex-row">
-        <nav className="flex gap-1 overflow-x-auto lg:w-56 lg:flex-col lg:overflow-visible" aria-label="Settings sections">
+        <nav className="flex gap-1 overflow-x-auto lg:w-56 lg:flex-col lg:overflow-visible" aria-label={t("settings.sections")}>
           {SETTINGS_TABS.map((item) => (
             <button
               key={item}
@@ -124,7 +127,7 @@ export function SettingsView({ initial }: { initial: SettingsPayload | null }) {
               }`}
               aria-current={tab === item ? "page" : undefined}
             >
-              {TAB_LABEL[item]}
+              {t(TAB_KEY[item])}
             </button>
           ))}
         </nav>
@@ -160,6 +163,7 @@ function ProfileTab({
   data: SettingsPayload;
   onChange: (next: SettingsPayload) => void;
 }) {
+  const t = useT();
   const [fullName, setFullName] = useState(data.profile.fullName);
   const [headline, setHeadline] = useState(data.profile.headline);
   const [saving, setSaving] = useState(false);
@@ -175,16 +179,16 @@ function ProfileTab({
     setSaving(false);
     if (!response.ok) {
       const json = (await response.json()) as { message?: string };
-      toast.error(json.message || "Could not save profile");
+      toast.error(json.message || t("settings.profileFailed"));
       return;
     }
     onChange({ ...data, profile: { ...data.profile, fullName, headline } });
-    toast.success("Profile saved");
+    toast.success(t("settings.profileSaved"));
   }
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <h2 className="rw-section-title">Profile</h2>
+      <h2 className="rw-section-title">{t("settings.tabProfile")}</h2>
       <AvatarField
         url={data.profile.avatarUrl}
         name={fullName}
@@ -192,24 +196,24 @@ function ProfileTab({
       />
       <div>
         <label htmlFor="settings-name" className="rw-label">
-          Name
+          {t("common.name")}
         </label>
         <Input id="settings-name" value={fullName} onChange={(event) => setFullName(event.target.value)} required />
       </div>
       <div>
         <label htmlFor="settings-headline" className="rw-label">
-          Headline
+          {t("settings.headline")}
         </label>
         <Input
           id="settings-headline"
           value={headline}
           onChange={(event) => setHeadline(event.target.value)}
-          placeholder="Founder, RemoteWise"
+          placeholder={t("settings.headlinePlaceholder")}
         />
       </div>
       <p className="font-sans text-small text-ink-muted">{data.profile.email}</p>
       <Button type="submit" loading={saving}>
-        Save profile
+        {t("settings.saveProfile")}
       </Button>
     </form>
   );
@@ -226,6 +230,7 @@ function AvatarField({
   kind?: "avatar" | "logo";
   onUploaded: (url: string) => void;
 }) {
+  const t = useT();
   const [uploading, setUploading] = useState(false);
 
   async function onFile(file: File | undefined) {
@@ -238,11 +243,11 @@ function AvatarField({
     setUploading(false);
     const json = (await response.json()) as { url?: string; message?: string };
     if (!response.ok || !json.url) {
-      toast.error(json.message || "Upload failed");
+      toast.error(json.message || t("settings.uploadFailed"));
       return;
     }
     onUploaded(json.url);
-    toast.success(kind === "logo" ? "Logo updated" : "Photo updated");
+    toast.success(kind === "logo" ? t("settings.logoUpdated") : t("settings.photoUpdated"));
   }
 
   return (
@@ -257,7 +262,7 @@ function AvatarField({
       )}
       <div>
         <label className="rw-cta inline-flex cursor-pointer rounded-control px-4 py-2 font-sans text-[13px] font-semibold">
-          {uploading ? "Uploading…" : kind === "logo" ? "Upload logo" : "Upload photo"}
+          {uploading ? t("settings.uploading") : kind === "logo" ? t("settings.uploadLogo") : t("settings.uploadPhoto")}
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/gif"
@@ -266,7 +271,7 @@ function AvatarField({
             onChange={(event) => void onFile(event.target.files?.[0])}
           />
         </label>
-        <p className="mt-1 font-sans text-small text-ink-muted">JPEG, PNG, WebP or GIF. 5 MB max.</p>
+        <p className="mt-1 font-sans text-small text-ink-muted">{t("settings.uploadHint")}</p>
       </div>
     </div>
   );
@@ -279,6 +284,7 @@ function AppearanceTab({
   theme: ThemePreference;
   onChange: (theme: ThemePreference) => void;
 }) {
+  const t = useT();
   async function choose(next: ThemePreference) {
     onChange(next);
     await fetch("/api/settings", {
@@ -290,8 +296,8 @@ function AppearanceTab({
 
   return (
     <div>
-      <h2 className="rw-section-title">Appearance</h2>
-      <p className="mt-2 font-sans text-body text-ink-secondary">Saved to your account and this browser.</p>
+      <h2 className="rw-section-title">{t("settings.tabAppearance")}</h2>
+      <p className="mt-2 font-sans text-body text-ink-secondary">{t("settings.appearanceHint")}</p>
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
         {(["light", "dark", "system"] as const).map((option) => (
           <button
@@ -302,7 +308,9 @@ function AppearanceTab({
               theme === option ? "border-primary bg-primary-light" : "border-border"
             }`}
           >
-            <p className="font-display text-card capitalize text-ink">{option}</p>
+            <p className="font-display text-card text-ink">
+              {option === "light" ? t("theme.lightName") : option === "dark" ? t("theme.darkName") : t("theme.systemName")}
+            </p>
           </button>
         ))}
       </div>
@@ -317,6 +325,7 @@ function CompanyTab({
   data: SettingsPayload;
   onChange: (next: SettingsPayload) => void;
 }) {
+  const t = useT();
   const company = data.company;
   const [form, setForm] = useState<CompanyPayload>(
     company ?? {
@@ -338,8 +347,8 @@ function CompanyTab({
     return (
       <EmptyState
         icon="settings"
-        title="No company workspace."
-        description="Company details live on the contractor OS. Sign up as a company to edit them."
+        title={t("settings.noCompanyTitle")}
+        description={t("settings.noCompanyBody")}
       />
     );
   }
@@ -365,16 +374,16 @@ function CompanyTab({
     });
     setSaving(false);
     if (!response.ok) {
-      toast.error("Could not save company");
+      toast.error(t("settings.companyFailed"));
       return;
     }
     onChange({ ...data, company: form });
-    toast.success("Company saved");
+    toast.success(t("settings.companySaved"));
   }
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <h2 className="rw-section-title">Company</h2>
+      <h2 className="rw-section-title">{t("settings.tabCompany")}</h2>
       <AvatarField
         url={form.logoUrl}
         name={form.name}
@@ -386,14 +395,14 @@ function CompanyTab({
       />
       {(
         [
-          ["name", "Company name"],
-          ["yTunnus", "Y-tunnus"],
-          ["vatId", "VAT ID"],
-          ["addressLine1", "Address"],
-          ["addressLine2", "Address line 2"],
-          ["city", "City"],
-          ["postalCode", "Postal code"],
-          ["country", "Country"],
+          ["name", t("settings.companyName")],
+          ["yTunnus", t("settings.yTunnus")],
+          ["vatId", t("settings.vatId")],
+          ["addressLine1", t("settings.address")],
+          ["addressLine2", t("settings.address2")],
+          ["city", t("settings.city")],
+          ["postalCode", t("settings.postalCode")],
+          ["country", t("settings.country")],
         ] as const
       ).map(([key, label]) => (
         <div key={key}>
@@ -409,7 +418,7 @@ function CompanyTab({
         </div>
       ))}
       <Button type="submit" loading={saving}>
-        Save company
+        {t("settings.saveCompany")}
       </Button>
     </form>
   );
@@ -422,6 +431,7 @@ function MembersTab({
   data: SettingsPayload;
   onChange: (next: SettingsPayload) => void;
 }) {
+  const t = useT();
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const members = data.members;
@@ -437,11 +447,11 @@ function MembersTab({
     setBusy(false);
     const json = (await response.json()) as { message?: string };
     if (!response.ok) {
-      toast.error(json.message || "Could not invite");
+      toast.error(json.message || t("settings.inviteFailed"));
       return;
     }
     setEmail("");
-    toast.success("Member added");
+    toast.success(t("settings.memberAdded"));
     const reload = await fetch("/api/settings");
     const next = (await reload.json()) as { settings?: SettingsPayload };
     if (next.settings) onChange(next.settings);
@@ -451,32 +461,32 @@ function MembersTab({
     const response = await fetch(`/api/settings/members?id=${id}`, { method: "DELETE" });
     if (!response.ok) {
       const json = (await response.json()) as { message?: string };
-      toast.error(json.message || "Could not remove");
+      toast.error(json.message || t("settings.removeFailed"));
       return;
     }
     onChange({ ...data, members: members.filter((row) => row.id !== id) });
-    toast.success("Member removed");
+    toast.success(t("settings.memberRemoved"));
   }
 
   if (!members.length) {
     return (
       <div>
-        <h2 className="rw-section-title">Members</h2>
+        <h2 className="rw-section-title">{t("settings.tabMembers")}</h2>
         <EmptyState
           icon="freelancers"
-          title="Only you so far."
-          description="Invite a teammate who already has a RemoteWise account."
+          title={t("settings.onlyYou")}
+          description={t("settings.inviteTeammate")}
         />
         <form onSubmit={invite} className="mt-4 flex gap-2">
           <Input
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            placeholder="teammate@company.com"
+            placeholder={t("settings.teammatePlaceholder")}
             required
           />
           <Button type="submit" loading={busy}>
-            Invite
+            {t("common.invite")}
           </Button>
         </form>
       </div>
@@ -485,7 +495,7 @@ function MembersTab({
 
   return (
     <div>
-      <h2 className="rw-section-title">Members</h2>
+      <h2 className="rw-section-title">{t("settings.tabMembers")}</h2>
       <ul className="mt-4 divide-y divide-border">
         {members.map((row) => (
           <MemberRow key={row.id} row={row} onRemove={() => void remove(row.id)} />
@@ -508,6 +518,7 @@ function MembersTab({
 }
 
 function MemberRow({ row, onRemove }: { row: MemberPayload; onRemove: () => void }) {
+  const t = useT();
   return (
     <li className="flex items-center justify-between gap-3 py-3">
       <div>
@@ -518,7 +529,7 @@ function MemberRow({ row, onRemove }: { row: MemberPayload; onRemove: () => void
       </div>
       {row.role !== "owner" ? (
         <Button variant="ghost" size="sm" onClick={onRemove}>
-          Remove
+          {t("settings.remove")}
         </Button>
       ) : null}
     </li>
@@ -532,13 +543,14 @@ function NotificationsTab({
   data: SettingsPayload;
   onChange: (next: SettingsPayload) => void;
 }) {
+  const t = useT();
   const notes = data.notifications;
   const items: { key: keyof NotificationPayload; label: string }[] = [
-    { key: "invoicePaid", label: "Invoice paid" },
-    { key: "contractSigned", label: "Contract signed" },
-    { key: "payoutSent", label: "Payout sent" },
-    { key: "weeklyDigest", label: "Weekly digest" },
-    { key: "productUpdates", label: "Product updates" },
+    { key: "invoicePaid", label: t("settings.notifyInvoicePaid") },
+    { key: "contractSigned", label: t("settings.notifyContractSigned") },
+    { key: "payoutSent", label: t("settings.notifyPayoutSent") },
+    { key: "weeklyDigest", label: t("settings.notifyWeekly") },
+    { key: "productUpdates", label: t("settings.notifyProduct") },
   ];
 
   async function toggle(key: keyof NotificationPayload) {
@@ -553,7 +565,7 @@ function NotificationsTab({
 
   return (
     <div>
-      <h2 className="rw-section-title">Notifications</h2>
+      <h2 className="rw-section-title">{t("settings.tabNotifications")}</h2>
       <ul className="mt-4 space-y-3">
         {items.map((item) => (
           <li key={item.key}>
@@ -569,17 +581,18 @@ function NotificationsTab({
 }
 
 function BillingTab({ plan }: { plan: string }) {
+  const t = useT();
   return (
     <div>
-      <h2 className="rw-section-title">Billing & plan</h2>
+      <h2 className="rw-section-title">{t("settings.tabBilling")}</h2>
       <p className="mt-2 font-sans text-body text-ink-secondary">
-        You are on the <span className="capitalize text-ink">{plan}</span> plan. The contractor OS stays free.
+        {t("settings.onPlan", { plan })}
       </p>
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
         {[
-          { name: "Free", price: "$0", current: plan === "free" },
-          { name: "Growth", price: "$49/mo", current: plan === "growth" },
-          { name: "Scale", price: "$149/mo", current: plan === "scale" },
+          { name: t("settings.planFree"), price: "$0", current: plan === "free" },
+          { name: t("settings.planGrowth"), price: "$49/mo", current: plan === "growth" },
+          { name: t("settings.planScale"), price: "$149/mo", current: plan === "scale" },
         ].map((item) => (
           <div
             key={item.name}
@@ -588,22 +601,22 @@ function BillingTab({ plan }: { plan: string }) {
             <p className="font-display text-card text-ink">{item.name}</p>
             <p className="mt-1 font-sans text-[14px] text-ink-secondary">{item.price}</p>
             {item.current ? (
-              <p className="mt-3 font-sans text-small text-primary-text">Current</p>
+              <p className="mt-3 font-sans text-small text-primary-text">{t("settings.current")}</p>
             ) : (
               <Button asChild variant="secondary" size="sm" className="mt-3">
-                <a href="/pricing">Compare</a>
+                <a href="/pricing">{t("settings.compare")}</a>
               </Button>
             )}
           </div>
         ))}
       </div>
       <div className="mt-8 rounded-card border border-border bg-card p-5">
-        <h3 className="font-display text-card text-ink">Y-tunnus + bookkeeping add-on</h3>
+        <h3 className="font-display text-card text-ink">{t("settings.addonTitle")}</h3>
         <p className="mt-2 font-sans text-[14px] leading-relaxed text-ink-secondary">
-          Light entrepreneur mode does not need a Finnish Business ID. When you are ready, add a Y-tunnus on the Company tab and we can attach a bookkeeping export to every payout. $49 when you opt in — never required to start.
+          {t("settings.addonBody")}
         </p>
         <Button asChild variant="secondary" size="sm" className="mt-4">
-          <a href="/dashboard/settings?tab=company">Add Y-tunnus</a>
+          <a href="/dashboard/settings?tab=company">{t("settings.addYTunnus")}</a>
         </Button>
       </div>
     </div>
@@ -611,6 +624,7 @@ function BillingTab({ plan }: { plan: string }) {
 }
 
 function SecurityTab({ email }: { email: string }) {
+  const t = useT();
   const [password, setPassword] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -625,22 +639,22 @@ function SecurityTab({ email }: { email: string }) {
     setSaving(false);
     if (!response.ok) {
       const json = (await response.json()) as { message?: string };
-      toast.error(json.message || "Could not update password");
+      toast.error(json.message || t("settings.passwordFailed"));
       return;
     }
     setPassword("");
-    toast.success("Password updated");
+    toast.success(t("settings.passwordUpdated"));
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="rw-section-title">Security</h2>
-        <p className="mt-2 font-sans text-body text-ink-secondary">Signed in as {email}.</p>
+        <h2 className="rw-section-title">{t("settings.tabSecurity")}</h2>
+        <p className="mt-2 font-sans text-body text-ink-secondary">{t("settings.signedInAs", { email })}</p>
       </div>
       <form onSubmit={onSubmit} className="space-y-3">
         <label className="rw-label" htmlFor="new-password">
-          New password
+          {t("settings.newPassword")}
         </label>
         <Input
           id="new-password"
@@ -651,42 +665,40 @@ function SecurityTab({ email }: { email: string }) {
           required
         />
         <Button type="submit" loading={saving}>
-          Update password
+          {t("settings.updatePassword")}
         </Button>
       </form>
       <div className="rounded-card border border-border bg-page p-4">
-        <p className="font-sans text-[14px] font-medium text-ink">This session</p>
-        <p className="mt-1 font-sans text-small text-ink-muted">Current browser · active now</p>
+        <p className="font-sans text-[14px] font-medium text-ink">{t("settings.thisSession")}</p>
+        <p className="mt-1 font-sans text-small text-ink-muted">{t("settings.currentBrowser")}</p>
       </div>
     </div>
   );
 }
 
 function PrivacyTab() {
+  const t = useT();
   async function requestDelete() {
-    if (!window.confirm("Request account deletion? Legally retained invoices stay for six years.")) return;
+    if (!window.confirm(t("settings.deleteConfirm"))) return;
     const response = await fetch("/api/settings/delete", { method: "POST" });
     const json = (await response.json()) as { message?: string };
     if (!response.ok) {
-      toast.error(json.message || "Could not request deletion");
+      toast.error(json.message || t("settings.deleteFailed"));
       return;
     }
-    toast.success(json.message || "Deletion requested");
+    toast.success(json.message || t("settings.deleteRequested"));
   }
 
   return (
     <div className="space-y-4">
-      <h2 className="rw-section-title">Data & privacy</h2>
-      <p className="font-sans text-body text-ink-secondary">
-        Export a JSON copy of your account, invoices, and settings. Deletion erases what the law does not
-        require us to keep.
-      </p>
+      <h2 className="rw-section-title">{t("settings.tabPrivacy")}</h2>
+      <p className="font-sans text-body text-ink-secondary">{t("settings.privacyBody")}</p>
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="secondary">
-          <a href="/api/settings/export">Export data</a>
+          <a href="/api/settings/export">{t("settings.exportData")}</a>
         </Button>
         <Button variant="danger" onClick={() => void requestDelete()}>
-          Delete account
+          {t("settings.deleteAccount")}
         </Button>
       </div>
     </div>

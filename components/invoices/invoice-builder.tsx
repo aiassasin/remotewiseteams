@@ -15,8 +15,10 @@ import {
 } from "@/lib/pricing";
 import type { FreelancerBillingProfile, InvoiceLine } from "@/lib/invoices";
 import { DEFAULT_VAT_RATE, VAT_RATE_LABELS, VAT_RATES, type VatRate } from "@/lib/compliance/vat";
+import { useT } from "@/components/i18n/language-provider";
 
 export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile }) {
+  const t = useT();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [currency, setCurrency] = useState<PricingCurrency>(DEFAULT_PRICING_CURRENCY);
@@ -85,10 +87,10 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
     setSaving(false);
     const json = (await response.json()) as { invoice?: { id: string }; message?: string };
     if (!response.ok) {
-      toast.error(json.message || "Could not save invoice");
+      toast.error(json.message || t("invoices.saveFailed"));
       return;
     }
-    toast.success("Draft saved. Profile reused next time.");
+    toast.success(t("invoices.draftSaved"));
     router.push("/freelancer/invoices");
     router.refresh();
   }
@@ -97,61 +99,59 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
     <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="space-y-6">
         <section className="rounded-card border border-border bg-card p-6">
-          <h2 className="rw-section-title">Client</h2>
-          <p className="mt-1 font-sans text-small text-ink-muted">Saved on your profile and auto-filled next time.</p>
+          <h2 className="rw-section-title">{t("invoices.clientSection")}</h2>
+          <p className="mt-1 font-sans text-small text-ink-muted">{t("invoices.clientHint")}</p>
           <div className="mt-4 grid gap-3">
-            <Input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Client name" required />
-            <Input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="Client email" />
-            <Input value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} placeholder="Client address" required />
-            <Input value={buyerBusinessId} onChange={(e) => setBuyerBusinessId(e.target.value)} placeholder="Buyer Y-tunnus / VAT ID" />
+            <Input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder={t("invoices.clientName")} required />
+            <Input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder={t("invoices.clientEmail")} />
+            <Input value={clientAddress} onChange={(e) => setClientAddress(e.target.value)} placeholder={t("invoices.clientAddress")} required />
+            <Input value={buyerBusinessId} onChange={(e) => setBuyerBusinessId(e.target.value)} placeholder={t("invoices.buyerId")} />
           </div>
         </section>
 
         <section className="rounded-card border border-border bg-card p-6">
-          <h2 className="rw-section-title">Finnish invoice fields</h2>
-          <p className="mt-1 font-sans text-small text-ink-muted">
-            Accounting Act: invoice date, due date, seller/buyer IDs, VAT breakdown, payment terms.
-          </p>
+          <h2 className="rw-section-title">{t("invoices.finnishFields")}</h2>
+          <p className="mt-1 font-sans text-small text-ink-muted">{t("invoices.finnishHint")}</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <label className="font-sans text-small text-ink-secondary">
-              Invoice date
+              {t("invoices.invoiceDate")}
               <Input className="mt-1" type="date" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} required />
             </label>
             <label className="font-sans text-small text-ink-secondary">
-              Due date
+              {t("invoices.dueDate")}
               <Input className="mt-1" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
             </label>
-            <Input value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} placeholder="Payment terms" required />
-            <Input value={sellerBusinessId} onChange={(e) => setSellerBusinessId(e.target.value)} placeholder="Seller Y-tunnus (optional for light entrepreneurs)" />
+            <Input value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} placeholder={t("invoices.paymentTerms")} required />
+            <Input value={sellerBusinessId} onChange={(e) => setSellerBusinessId(e.target.value)} placeholder={t("invoices.sellerId")} />
             <label className="flex items-center gap-2 font-sans text-[14px] text-ink sm:col-span-2">
               <input type="checkbox" checked={vatExempt} onChange={(e) => setVatExempt(e.target.checked)} />
-              VAT-exempt supply
+              {t("invoices.vatExempt")}
             </label>
           </div>
         </section>
 
         <section className="rounded-card border border-border bg-card p-6">
-          <h2 className="rw-section-title">Your billing details</h2>
+          <h2 className="rw-section-title">{t("invoices.billingDetails")}</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <Input value={taxResidency} onChange={(e) => setTaxResidency(e.target.value)} placeholder="Tax residency" />
-            <Input value={vatId} onChange={(e) => setVatId(e.target.value)} placeholder="VAT ID" />
-            <Input value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder="Your address" />
-            <Input value={addressCity} onChange={(e) => setAddressCity(e.target.value)} placeholder="City" />
-            <Input value={addressPostalCode} onChange={(e) => setAddressPostalCode(e.target.value)} placeholder="Postal code" />
-            <Input value={addressCountry} onChange={(e) => setAddressCountry(e.target.value)} placeholder="Country" />
-            <Input value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="Bank name" />
-            <Input value={bankIban} onChange={(e) => setBankIban(e.target.value)} placeholder="IBAN" />
+            <Input value={taxResidency} onChange={(e) => setTaxResidency(e.target.value)} placeholder={t("invoices.taxResidency")} />
+            <Input value={vatId} onChange={(e) => setVatId(e.target.value)} placeholder={t("invoices.vatId")} />
+            <Input value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder={t("invoices.yourAddress")} />
+            <Input value={addressCity} onChange={(e) => setAddressCity(e.target.value)} placeholder={t("invoices.city")} />
+            <Input value={addressPostalCode} onChange={(e) => setAddressPostalCode(e.target.value)} placeholder={t("invoices.postalCode")} />
+            <Input value={addressCountry} onChange={(e) => setAddressCountry(e.target.value)} placeholder={t("invoices.country")} />
+            <Input value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder={t("invoices.bankName")} />
+            <Input value={bankIban} onChange={(e) => setBankIban(e.target.value)} placeholder={t("invoices.iban")} />
           </div>
         </section>
 
         <section className="rounded-card border border-border bg-card p-6">
           <div className="flex items-center justify-between">
-            <h2 className="rw-section-title">Line items</h2>
+            <h2 className="rw-section-title">{t("invoices.lineItems")}</h2>
             <select
               className="rw-input w-[120px]"
               value={currency}
               onChange={(e) => setCurrency(e.target.value as PricingCurrency)}
-              aria-label="Currency"
+              aria-label={t("common.currency")}
             >
               {PRICING_CURRENCIES.map((code) => (
                 <option key={code}>{code}</option>
@@ -164,7 +164,7 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
                 <Input
                   value={line.description}
                   onChange={(e) => updateLine(index, { description: e.target.value })}
-                  placeholder="Description"
+                  placeholder={t("invoices.description")}
                   required
                 />
                 <Input
@@ -172,7 +172,7 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
                   min={1}
                   value={line.quantity}
                   onChange={(e) => updateLine(index, { quantity: Number(e.target.value) })}
-                  aria-label="Quantity"
+                  aria-label={t("invoices.quantity")}
                 />
                 <Input
                   type="number"
@@ -180,13 +180,13 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
                   step="0.01"
                   value={line.unitPrice || ""}
                   onChange={(e) => updateLine(index, { unitPrice: Number(e.target.value) })}
-                  placeholder="Net price"
+                  placeholder={t("invoices.netPrice")}
                 />
                 <select
                   className="rw-input"
                   value={line.vatRate}
                   onChange={(e) => updateLine(index, { vatRate: Number(e.target.value) as VatRate })}
-                  aria-label="VAT rate"
+                  aria-label={t("invoices.vatRate")}
                   disabled={vatExempt}
                 >
                   {VAT_RATES.map((rate) => (
@@ -208,12 +208,12 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
                 ])
               }
             >
-              Add line
+              {t("invoices.addLine")}
             </Button>
           </div>
         </section>
         <Button type="submit" loading={saving}>
-          Save draft
+          {t("invoices.saveDraft")}
         </Button>
       </div>
 
@@ -221,12 +221,12 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
         <MoneyCircle
           keep={breakdown.youKeep}
           fees={breakdown.totalFees}
-          label="You receive"
+          label={t("invoices.youReceive")}
           formattedKeep={formatPricingMoney(breakdown.youKeep, currency)}
           size={150}
         />
         <p className="mt-3 text-center font-sans text-small text-ink-secondary">
-          Invoice {formatPricingMoney(breakdown.amount, currency)}
+          {t("invoices.invoiceTotal", { amount: formatPricingMoney(breakdown.amount, currency) })}
         </p>
       </aside>
     </form>

@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { EmptyState } from "@/components/empty-state";
 import { SiteFooter } from "@/components/legal/site-footer";
 import { RwLogo } from "@/components/brand/rw-logo";
+import { useT } from "@/components/i18n/language-provider";
 
 export default function NotFound() {
+  const t = useT();
   return (
     <div className="flex min-h-screen flex-col bg-page">
       <header className="flex h-14 items-center px-6">
@@ -13,17 +17,17 @@ export default function NotFound() {
         <div className="max-w-lg">
           <EmptyState
             icon="help"
-            title="That page is not here."
-            description="The link may be old, or the page moved. Start from pricing or sign in — we will get you back to work."
-            actionLabel="Go to pricing"
+            title={t("errors.notFoundTitle")}
+            description={t("errors.notFoundBody")}
+            actionLabel={t("errors.goPricing")}
             actionHref="/pricing"
           />
           <p className="mt-4 text-center font-sans text-small text-ink-muted">
-            Prefer a human?{" "}
+            {t("errors.preferHuman")}{" "}
             <Link href="/dashboard/help" className="text-primary underline-offset-2 hover:underline">
-              Help &amp; Support
+              {t("nav.help")}
             </Link>
-            . We reply within 24h.
+            . {t("errors.reply24h")}
           </p>
         </div>
       </main>

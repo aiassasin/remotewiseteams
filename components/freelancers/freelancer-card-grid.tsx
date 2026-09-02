@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Freelancer } from "@/lib/types";
 import { countryFlag } from "@/lib/flags";
+import { useT } from "@/components/i18n/language-provider";
 
 export function FreelancerCardGrid({
   rows,
@@ -15,6 +16,7 @@ export function FreelancerCardGrid({
   formatCurrency: (amount: number | null | undefined, currency?: string) => string;
   initials: (name: string) => string;
 }) {
+  const t = useT();
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {rows.map((row, index) => (
@@ -39,7 +41,7 @@ export function FreelancerCardGrid({
             {countryFlag(row.country)} {row.fullName}
           </h3>
           <p className="mt-1 font-sans text-[13px] text-ink-slate">
-            {row.role ?? "Freelancer"}
+            {row.role ?? t("common.freelancers")}
           </p>
           <div className="mt-3 flex justify-center">
             <Badge status={row.status}>{row.status}</Badge>
@@ -48,10 +50,13 @@ export function FreelancerCardGrid({
             {formatCurrency(row.hourlyRate, row.currency)}
           </p>
           <p className="mt-2 font-sans text-small text-ink-muted">
-            {row.contractCount} contracts · {row.invoiceCount} invoices
+            {t("freelancers.contractsInvoices", {
+              contracts: row.contractCount,
+              invoices: row.invoiceCount,
+            })}
           </p>
           <Button asChild variant="secondary" size="full" className="mt-4">
-            <Link href={`/dashboard/freelancers/${row.id}`}>View profile</Link>
+            <Link href={`/dashboard/freelancers/${row.id}`}>{t("freelancers.viewProfile")}</Link>
           </Button>
         </article>
       ))}

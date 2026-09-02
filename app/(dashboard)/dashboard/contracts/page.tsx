@@ -6,9 +6,11 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PageTransition } from "@/components/motion/page-transition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/language-provider";
 import type { StoredContract } from "@/lib/store";
 
 export default function ContractsListPage() {
+  const t = useT();
   const [contracts, setContracts] = useState<StoredContract[]>([]);
 
   useEffect(() => {
@@ -24,20 +26,20 @@ export default function ContractsListPage() {
   return (
     <PageTransition>
       <PageHeader
-        title="Contracts"
-        description="Create, send, and track e-signed agreements."
+        title={t("contracts.title")}
+        description={t("contracts.description")}
         actions={
           <Button asChild>
-            <Link href="/dashboard/contracts/new">New contract</Link>
+            <Link href="/dashboard/contracts/new">{t("contracts.newContract")}</Link>
           </Button>
         }
       />
       <div className="mb-6 grid grid-cols-2 gap-4 xl:grid-cols-4">
         {[
-          { label: "Total contracts", value: contracts.length },
-          { label: "Signed this month", value: signed },
-          { label: "Awaiting signature", value: awaiting },
-          { label: "Expired", value: expired },
+          { label: t("contracts.totalContracts"), value: contracts.length },
+          { label: t("contracts.signedThisMonth"), value: signed },
+          { label: t("contracts.awaitingSignature"), value: awaiting },
+          { label: t("contracts.expired"), value: expired },
         ].map((metric) => (
           <div key={metric.label} className="rw-card">
             <p className="font-sans text-small uppercase tracking-[0.05em] text-ink-muted">
@@ -51,11 +53,16 @@ export default function ContractsListPage() {
         <table className="w-full min-w-[720px] text-left">
           <thead>
             <tr className="border-b border-border">
-              {["Contract", "Status", "Sent", "Signed", ""].map((heading) => (
-                <th key={heading || "a"} className="px-4 py-3 font-sans text-small uppercase tracking-[0.05em] text-ink-muted">
-                  {heading}
-                </th>
-              ))}
+              {[t("contracts.contractCol"), t("common.status"), t("contracts.sentCol"), t("contracts.signedCol"), ""].map(
+                (heading) => (
+                  <th
+                    key={heading || "a"}
+                    className="px-4 py-3 font-sans text-small uppercase tracking-[0.05em] text-ink-muted"
+                  >
+                    {heading}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
           <tbody>
@@ -78,7 +85,7 @@ export default function ContractsListPage() {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Link href={`/dashboard/contracts/${row.id}`} className="font-sans text-[13px] text-primary">
-                    View
+                    {t("common.view")}
                   </Link>
                 </td>
               </tr>

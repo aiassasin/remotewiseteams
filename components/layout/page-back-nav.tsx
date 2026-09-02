@@ -3,33 +3,31 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useT } from "@/components/i18n/language-provider";
+import type { MessageKey } from "@/lib/i18n";
 
-const SEGMENT_LABELS: Record<string, string> = {
-  dashboard: "Dashboard",
-  overview: "Overview",
-  freelancers: "Freelancers",
-  contracts: "Contracts",
-  invoices: "Invoices",
-  payouts: "Payouts",
-  standups: "Standups",
-  settings: "Settings",
-  new: "New",
-  review: "Review",
+const SEGMENT_KEYS: Record<string, MessageKey> = {
+  dashboard: "common.dashboard",
+  overview: "nav.overview",
+  freelancers: "nav.freelancers",
+  contracts: "nav.contracts",
+  invoices: "nav.invoices",
+  payouts: "nav.payouts",
+  standups: "nav.standups",
+  settings: "nav.settings",
+  help: "nav.help",
+  new: "common.new",
+  review: "common.review",
 };
-
-function labelFor(segment: string) {
-  if (SEGMENT_LABELS[segment]) return SEGMENT_LABELS[segment];
-  if (/^[0-9a-f-]{8,}$/i.test(segment)) return "Details";
-  return segment.replaceAll("-", " ").replace(/^\w/, (char) => char.toUpperCase());
-}
 
 export function PageBackNav() {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useT();
   const parts = pathname.split("/").filter(Boolean);
   const crumbs = parts.map((part, index) => ({
     href: `/${parts.slice(0, index + 1).join("/")}`,
-    label: labelFor(part),
+    label: labelFor(part, t),
   }));
 
   const parentHref =
@@ -47,11 +45,11 @@ export function PageBackNav() {
           router.push(parentHref);
         }}
         className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-border bg-card text-ink hover:border-border-hover"
-        aria-label="Go back"
+        aria-label={t("common.goBack")}
       >
         <ArrowLeft className="h-4 w-4" />
       </button>
-      <nav aria-label="Breadcrumb" className="min-w-0">
+      <nav aria-label={t("common.breadcrumb")} className="min-w-0">
         <ol className="flex min-w-0 flex-wrap items-center gap-1.5 font-sans text-[13px]">
           {crumbs.map((crumb, index) => {
             const last = index === crumbs.length - 1;
@@ -72,4 +70,11 @@ export function PageBackNav() {
       </nav>
     </div>
   );
+}
+
+function labelFor(segment: string, t: ReturnType<typeof useT>) {
+  const key = SEGMENT_KEYS[segment];
+  if (key) return t(key);
+  if (/^[0-9a-f-]{8,}$/i.test(segment)) return t("common.details");
+  return segment.replaceAll("-", " ").replace(/^\w/, (char) => char.toUpperCase());
 }

@@ -1,10 +1,7 @@
 import { getCurrentWorkspace } from "@/lib/auth/session";
 import { listInvoices } from "@/lib/invoices-server";
 import type { InvoiceRecord } from "@/lib/invoices";
-import { InvoiceList } from "@/components/invoices/invoice-list";
-import { PageHeader } from "@/components/layout/page-header";
-import { PageTransition } from "@/components/motion/page-transition";
-import { EmptyState } from "@/components/empty-state";
+import { InvoicesPageClient } from "@/components/invoices/invoices-page-client";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -23,18 +20,11 @@ export default async function InvoicesPage() {
   }
 
   return (
-    <PageTransition>
-      <PageHeader
-        title="Invoices"
-        description="Approve freelancer invoices and send payouts through Stripe."
-      />
-      {error ? (
-        <div className="rw-card">
-          <EmptyState icon="invoices" title="Invoices did not load." description={error} />
-        </div>
-      ) : (
-        <InvoiceList invoices={invoices} role="company" />
-      )}
-    </PageTransition>
+    <InvoicesPageClient
+      invoices={invoices}
+      error={error}
+      role="company"
+      descriptionKey="invoices.description"
+    />
   );
 }

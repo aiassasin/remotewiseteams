@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/language-provider";
 
 const COOKIE_KEY = "rw_cookie_consent";
 
@@ -34,6 +35,7 @@ function writeConsent(value: Consent) {
 
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
+  const t = useT();
 
   useEffect(() => {
     setVisible(readConsent() === null);
@@ -46,6 +48,10 @@ export function CookieBanner() {
     setVisible(false);
   }
 
+  const body = t("cookies.body", { policy: t("cookies.policy") });
+  const policy = t("cookies.policy");
+  const parts = body.split(policy);
+
   return (
     <div
       role="dialog"
@@ -56,21 +62,21 @@ export function CookieBanner() {
       <div className="mx-auto flex max-w-5xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2 id="cookie-banner-title" className="font-display text-card text-ink">
-            Cookies
+            {t("cookies.title")}
           </h2>
           <p id="cookie-banner-body" className="mt-1 max-w-2xl font-sans text-[13px] leading-relaxed text-ink-secondary">
-            We use necessary cookies to keep you signed in. Analytics cookies are optional. Read the{" "}
+            {parts[0]}
             <Link href="/cookies" className="font-medium text-primary underline-offset-2 hover:underline">
-              cookie policy
+              {policy}
             </Link>
-            .
+            {parts[1] ?? ""}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={() => choose("necessary")}>
-            Necessary only
+            {t("cookies.necessary")}
           </Button>
-          <Button onClick={() => choose("all")}>Accept all</Button>
+          <Button onClick={() => choose("all")}>{t("cookies.acceptAll")}</Button>
         </div>
       </div>
     </div>

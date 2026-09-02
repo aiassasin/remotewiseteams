@@ -28,12 +28,11 @@ export async function loadOverview(companyId: string): Promise<OverviewData> {
   for (let i = 5; i >= 0; i -= 1) {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-    const label = date.toLocaleString("en", { month: "short" });
     const amount = invoices
       .filter((row) => ["paid", "paid_out", "payout_processing"].includes(row.status))
       .filter((row) => row.createdAt.startsWith(key))
       .reduce((sum, row) => sum + row.youKeep, 0);
-    months.push({ month: label, amount });
+    months.push({ month: key, amount });
   }
 
   const counts = new Map<string, number>();

@@ -1,10 +1,7 @@
 import { getCurrentWorkspace } from "@/lib/auth/session";
 import { listInvoices } from "@/lib/invoices-server";
 import type { InvoiceRecord } from "@/lib/invoices";
-import { PayoutsClient } from "@/components/payouts/payouts-client";
-import { PageHeader } from "@/components/layout/page-header";
-import { PageTransition } from "@/components/motion/page-transition";
-import { EmptyState } from "@/components/empty-state";
+import { PayoutsPageClient } from "@/components/payouts/payouts-client";
 import { pageMeta } from "@/lib/seo";
 import { redirect } from "next/navigation";
 
@@ -25,19 +22,5 @@ export default async function PayoutsPage() {
     error = err instanceof Error ? err.message : "Could not load payouts";
   }
 
-  return (
-    <PageTransition>
-      <PageHeader
-        title="Payouts"
-        description="After the client pays, the freelancer chooses Standard (24h, free) or Lightning (1%). RemoteWise keeps 5.5%."
-      />
-      {error ? (
-        <div className="rw-card">
-          <EmptyState icon="payouts" title="Payouts did not load." description={error} />
-        </div>
-      ) : (
-        <PayoutsClient invoices={invoices} role="company" />
-      )}
-    </PageTransition>
-  );
+  return <PayoutsPageClient invoices={invoices} error={error} role="company" />;
 }

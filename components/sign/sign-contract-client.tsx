@@ -6,6 +6,7 @@ import { Check, Lock } from "lucide-react";
 import { StoredContractBody } from "@/components/contracts/stored-contract-body";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/components/i18n/language-provider";
 
 type SignPayload = {
   valid: boolean;
@@ -21,6 +22,7 @@ type SignPayload = {
 };
 
 export function SignContractClient({ token }: { token: string }) {
+  const t = useT();
   const [data, setData] = useState<SignPayload | null>(null);
   const [name, setName] = useState("");
   const [agreed, setAgreed] = useState(false);
@@ -54,7 +56,7 @@ export function SignContractClient({ token }: { token: string }) {
   if (!data.valid) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-page">
-        <p className="font-sans text-body text-danger">This signing link is invalid or expired.</p>
+        <p className="font-sans text-body text-danger">{t("sign.invalid")}</p>
       </div>
     );
   }
@@ -72,10 +74,10 @@ export function SignContractClient({ token }: { token: string }) {
             <Check className="h-12 w-12" />
           </motion.div>
           <h1 className="mt-6 font-display text-[28px] font-semibold text-ink">
-            Contract signed successfully
+            {t("sign.successTitle")}
           </h1>
           <p className="mt-3 font-sans text-body text-ink-secondary">
-            A copy of the signed contract has been sent to {data.freelancerEmail}
+            {t("sign.successBody", { email: data.freelancerEmail ?? "" })}
           </p>
           {downloadUrl ? (
             <a href={downloadUrl} download="signed-contract.pdf">
@@ -141,7 +143,7 @@ export function SignContractClient({ token }: { token: string }) {
                   I have read and agree to this contract
                 </label>
                 <Button className="mt-4 w-full" disabled={!canSign} onClick={sign}>
-                  Sign contract
+                  {t("sign.cta")}
                 </Button>
                 <p className="mt-3 font-sans text-small text-ink-muted">
                   By signing, you agree this electronic signature is legally binding under the US ESIGN Act and EU eIDAS Regulation.

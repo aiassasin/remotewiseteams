@@ -6,16 +6,45 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { MoneyCircle } from "@/components/motion/money-circle";
+import { PageHeader } from "@/components/layout/page-header";
+import { PageTransition } from "@/components/motion/page-transition";
+import { useT } from "@/components/i18n/language-provider";
 import { formatPricingMoney, type PricingCurrency } from "@/lib/pricing";
 import type { InvoiceRecord } from "@/lib/invoices";
 
-export function PayoutsClient({
+export function PayoutsPageClient({
+  invoices,
+  error,
+  role,
+}: {
+  invoices: InvoiceRecord[];
+  error: string | null;
+  role: "company" | "freelancer";
+}) {
+  const t = useT();
+
+  return (
+    <PageTransition>
+      <PageHeader title={t("payouts.title")} description={t("payouts.description")} />
+      {error ? (
+        <div className="rw-card">
+          <EmptyState icon="payouts" title={t("payouts.loadError")} description={error} />
+        </div>
+      ) : (
+        <PayoutsClient invoices={invoices} role={role} />
+      )}
+    </PageTransition>
+  );
+}
+
+function PayoutsClient({
   invoices,
   role,
 }: {
   invoices: InvoiceRecord[];
   role: "company" | "freelancer";
 }) {
+  const t = useT();
   const [rows, setRows] = useState(invoices);
   const [busyId, setBusyId] = useState<string | null>(null);
   const eligible = rows.filter((row) => row.status === "paid" || row.status === "paid_out");
@@ -35,7 +64,7 @@ export function PayoutsClient({
     const json = (await response.json()) as { message?: string; youKeep?: number };
     setBusyId(null);
     if (!response.ok) {
-      toast.error(json.message || "Payout did not start");
+      toast.error(json.message || t("payouts.payoutFailed"));
       return;
     }
     setRows((current) =>
@@ -43,7 +72,7 @@ export function PayoutsClient({
         row.id === id ? { ...row, status: "paid_out", youKeep: json.youKeep ?? row.youKeep } : row,
       ),
     );
-    toast.success(speed === "lightning" ? "Lightning payout queued." : "Standard 24h payout queued.");
+    toast.success(speed === "lightning" ? t("payouts.lightningQueued") : t("payouts.standardQueued"));
   }
 
   if (!eligible.length) {
@@ -51,13 +80,9 @@ export function PayoutsClient({
       <div className="rw-card">
         <EmptyState
           icon="payouts"
-          title="No payouts yet."
-          description={
-            role === "freelancer"
-              ? "After a client pays, choose Standard (24 hours, free) or Lightning (1%)."
-              : "When a freelancer is paid out, the transfer lands here. Standard is 24 hours and free."
-          }
-          actionLabel="Open invoices"
+          title={t("payouts.emptyTitle")}
+          description={role === "freelancer" ? t("payouts.emptyFreelancer") : t("payouts.emptyCompany")}
+          actionLabel={t("payouts.openInvoices")}
           actionHref={role === "freelancer" ? "/freelancer/invoices" : "/dashboard/invoices"}
         />
       </div>
@@ -69,7 +94,7 @@ export function PayoutsClient({
       <MoneyCircle
         keep={totals.keep}
         fees={totals.fees}
-        label="Paid out / ready"
+        label={t("payouts.paidOutReady")}
         formattedKeep={formatPricingMoney(totals.keep, "EUR")}
         size={140}
       />
@@ -88,7 +113,7 @@ export function PayoutsClient({
         <table className="min-w-[720px] w-full text-left">
           <thead>
             <tr className="border-b border-border">
-              {["Invoice", "You keep", "Status", ""].map((head) => (
+              {[t("invoices.invoiceCol"), t("payouts.youKeep"), t("common.status"), ""].map((head) => (
                 <th
                   key={head || "actions"}
                   className="px-4 py-3 font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-muted"
@@ -108,7 +133,7 @@ export function PayoutsClient({
                     {formatPricingMoney(row.youKeep, currency)}
                   </td>
                   <td className="px-4 py-3">
-                    <Badge status={row.status}>{row.status.replaceAll("_", " ")}</Badge>
+                    <Badge status={row.status}>{row.status}</Badge>
                   </td>
                   <td className="px-4 py-3 text-right">
                     {row.status === "paid" && role === "freelancer" ? (
@@ -119,10 +144,10 @@ export function PayoutsClient({
                           loading={busyId === row.id}
                           onClick={() => payout(row.id, "standard")}
                         >
-                          Standard 24h
+                          {t("invoices.standard24h")}
                         </Button>
                         <Button size="sm" loading={busyId === row.id} onClick={() => payout(row.id, "lightning")}>
-                          Lightning 1%
+                          {t("invoices.lightning")}
                         </Button>
                       </div>
                     ) : null}
@@ -148,21 +173,22 @@ function PayoutCard({
   canPayout: boolean;
   onPayout: (id: string, speed: "standard" | "lightning") => void;
 }) {
+  const t = useT();
   const currency = (row.currency as PricingCurrency) || "EUR";
   return (
     <li className="rounded-card border border-border bg-card p-4">
       <p className="font-mono text-mono text-ink">{row.invoiceNumber}</p>
       <p className="mt-1 font-sans text-[14px] text-ink">{formatPricingMoney(row.youKeep, currency)}</p>
       <Badge className="mt-2" status={row.status}>
-        {row.status.replaceAll("_", " ")}
+        {row.status}
       </Badge>
       {row.status === "paid" && canPayout ? (
         <div className="mt-3 flex flex-col gap-2">
           <Button size="sm" variant="secondary" loading={busy} onClick={() => onPayout(row.id, "standard")}>
-            Standard 24h
+            {t("invoices.standard24h")}
           </Button>
           <Button size="sm" loading={busy} onClick={() => onPayout(row.id, "lightning")}>
-            Lightning 1%
+            {t("invoices.lightning")}
           </Button>
         </div>
       ) : null}
