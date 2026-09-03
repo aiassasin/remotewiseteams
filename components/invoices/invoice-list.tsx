@@ -131,7 +131,7 @@ export function InvoiceList({
               {["Invoice", "Client", "Amount", "You keep", "Status", ""].map((head) => (
                 <th
                   key={head || "actions"}
-                  className="px-4 py-3 font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-muted"
+                  className="px-4 py-4 font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-slate"
                 >
                   {head}
                 </th>
@@ -145,10 +145,10 @@ export function InvoiceList({
                 <tr key={row.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3 font-mono text-mono text-ink">{row.invoiceNumber}</td>
                   <td className="px-4 py-3 font-sans text-[14px] text-ink">{row.clientName || "—"}</td>
-                  <td className="px-4 py-3 font-sans text-[14px] text-ink">
+                  <td className="px-4 py-4 font-sans text-[15px] font-semibold tabular-nums text-ink">
                     {formatPricingMoney(row.amount, currency)}
                   </td>
-                  <td className="px-4 py-3 font-sans text-[14px] text-ink">
+                  <td className="px-4 py-4 font-sans text-[15px] font-semibold tabular-nums text-ink">
                     {formatPricingMoney(row.youKeep, currency)}
                   </td>
                   <td className="px-4 py-3">
@@ -241,8 +241,8 @@ function InvoiceCard({
     <>
       <p className="font-mono text-mono text-ink">{row.invoiceNumber}</p>
       <p className="mt-1 font-sans text-[14px] text-ink">{row.clientName || "Client"}</p>
-      <p className="mt-1 font-sans text-[14px] text-ink">{formatPricingMoney(row.amount, currency)}</p>
-      <p className="font-sans text-small text-ink-secondary">
+      <p className="rw-figure">{formatPricingMoney(row.amount, currency)}</p>
+      <p className="mt-1 font-sans text-small text-ink-slate">
         You keep {formatPricingMoney(row.youKeep, currency)}
       </p>
       <Badge className="mt-2" status={row.status}>

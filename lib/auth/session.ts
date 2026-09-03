@@ -68,7 +68,7 @@ export async function getCurrentWorkspace(): Promise<
     workspace: {
       id: row.id,
       name: row.name,
-      accentColor: row.accent_color || "#4F46E5",
+      accentColor: row.accent_color || "#2563EB",
       plan: row.plan,
       logoUrl: row.logo_url,
       role: (membership?.role as Workspace["role"]) || "member",

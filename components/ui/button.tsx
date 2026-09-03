@@ -11,11 +11,13 @@ const buttonVariants = cva(
       variant: {
         primary: "rw-cta hover:-translate-y-px active:translate-y-0",
         secondary:
-          "border border-border bg-card text-ink hover:border-border-hover hover:bg-page hover:-translate-y-px active:translate-y-0",
-        ghost: "bg-transparent text-ink-secondary hover:bg-page hover:text-ink",
+          "border border-border bg-card text-ink hover:border-primary hover:text-primary hover:-translate-y-px active:translate-y-0",
+        ghost: "bg-transparent text-ink-secondary hover:bg-page hover:text-primary",
+        attention:
+          "bg-warning text-white hover:bg-[#c2410c] hover:-translate-y-px active:translate-y-0",
         danger:
-          "bg-danger text-white hover:bg-[#e11d48] hover:-translate-y-px active:translate-y-0",
-        text: "bg-transparent px-0 font-medium text-ink-secondary shadow-none hover:text-ink",
+          "bg-danger text-white hover:bg-[#b91c1c] hover:-translate-y-px active:translate-y-0",
+        text: "bg-transparent px-0 font-medium text-primary shadow-none hover:text-primary-hover",
       },
       size: {
         default: "px-[18px] py-[10px]",

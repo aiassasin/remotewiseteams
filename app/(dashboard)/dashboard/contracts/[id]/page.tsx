@@ -49,7 +49,7 @@ export default function ContractDetailPage() {
             ) : null}
             {contract.status === "sent" ? (
               <form action={`/api/contracts/${contract.id}/remind`} method="post">
-                <Button variant="secondary" size="full" type="submit">
+                <Button variant="attention" size="full" type="submit">
                   Send reminder
                 </Button>
               </form>
