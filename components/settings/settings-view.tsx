@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/empty-state";
 import { useTheme } from "@/components/theme/theme-provider";
+import { useT } from "@/components/i18n/language-provider";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { initials } from "@/lib/utils";
 import {
   SETTINGS_TABS,
@@ -20,7 +22,6 @@ import {
   type SettingsTab,
 } from "@/lib/settings";
 import type { ThemePreference } from "@/lib/theme";
-import { useT } from "@/components/i18n/language-provider";
 import type { MessageKey } from "@/lib/i18n";
 
 const TAB_KEY: Record<SettingsTab, MessageKey> = {
@@ -314,6 +315,13 @@ function AppearanceTab({
           </button>
         ))}
       </div>
+      <div className="mt-8">
+        <p className="rw-label">{t("common.language")}</p>
+        <p className="mt-1 font-sans text-body text-ink-secondary">{t("settings.languageHint")}</p>
+        <div className="mt-3">
+          <LanguageSwitcher />
+        </div>
+      </div>
     </div>
   );
 }
@@ -506,7 +514,7 @@ function MembersTab({
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="teammate@company.com"
+          placeholder={t("settings.teammatePlaceholder")}
           required
         />
         <Button type="submit" loading={busy}>

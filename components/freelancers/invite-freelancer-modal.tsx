@@ -145,7 +145,7 @@ export function InviteFreelancerModal({
                 id={`${formId}-name`}
                 name="name"
                 autoComplete="name"
-                placeholder="Ahmed Hassan"
+                placeholder={t("freelancers.namePlaceholder")}
                 value={form.name}
                 invalid={Boolean(errors.name)}
                 disabled={submitting}
@@ -165,7 +165,7 @@ export function InviteFreelancerModal({
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="ahmed@studio.co"
+                placeholder={t("freelancers.emailPlaceholder")}
                 value={form.email}
                 invalid={Boolean(errors.email)}
                 disabled={submitting}
@@ -200,7 +200,7 @@ export function InviteFreelancerModal({
                   min={0}
                   step="0.01"
                   inputMode="decimal"
-                  placeholder="85"
+                  placeholder={t("freelancers.ratePlaceholder")}
                   value={form.rate}
                   invalid={Boolean(errors.rate)}
                   disabled={submitting}

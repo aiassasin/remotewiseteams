@@ -8,8 +8,8 @@ import { EmptyState } from "@/components/empty-state";
 import { MoneyCircle } from "@/components/motion/money-circle";
 import { PageHeader } from "@/components/layout/page-header";
 import { PageTransition } from "@/components/motion/page-transition";
-import { useT } from "@/components/i18n/language-provider";
-import { formatPricingMoney, type PricingCurrency } from "@/lib/pricing";
+import { useFormat, useT } from "@/components/i18n/language-provider";
+import { type PricingCurrency } from "@/lib/pricing";
 import type { InvoiceRecord } from "@/lib/invoices";
 
 export function PayoutsPageClient({
@@ -45,6 +45,7 @@ function PayoutsClient({
   role: "company" | "freelancer";
 }) {
   const t = useT();
+  const format = useFormat();
   const [rows, setRows] = useState(invoices);
   const [busyId, setBusyId] = useState<string | null>(null);
   const eligible = rows.filter((row) => row.status === "paid" || row.status === "paid_out");
@@ -95,7 +96,7 @@ function PayoutsClient({
         keep={totals.keep}
         fees={totals.fees}
         label={t("payouts.paidOutReady")}
-        formattedKeep={formatPricingMoney(totals.keep, "EUR")}
+        formattedKeep={format.moneyExact(totals.keep, "EUR")}
         size={140}
       />
       <ul className="space-y-3 md:hidden">
@@ -130,7 +131,7 @@ function PayoutsClient({
                 <tr key={row.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3 font-mono text-mono text-ink">{row.invoiceNumber}</td>
                   <td className="px-4 py-3 font-sans text-[14px] text-ink">
-                    {formatPricingMoney(row.youKeep, currency)}
+                    {format.moneyExact(row.youKeep, currency)}
                   </td>
                   <td className="px-4 py-3">
                     <Badge status={row.status}>{row.status}</Badge>
@@ -174,11 +175,12 @@ function PayoutCard({
   onPayout: (id: string, speed: "standard" | "lightning") => void;
 }) {
   const t = useT();
+  const format = useFormat();
   const currency = (row.currency as PricingCurrency) || "EUR";
   return (
     <li className="rounded-card border border-border bg-card p-4">
       <p className="font-mono text-mono text-ink">{row.invoiceNumber}</p>
-      <p className="mt-1 font-sans text-[14px] text-ink">{formatPricingMoney(row.youKeep, currency)}</p>
+      <p className="mt-1 font-sans text-[14px] text-ink">{format.moneyExact(row.youKeep, currency)}</p>
       <Badge className="mt-2" status={row.status}>
         {row.status}
       </Badge>

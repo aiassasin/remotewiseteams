@@ -15,8 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { MoneyCircle } from "@/components/motion/money-circle";
-import { useT } from "@/components/i18n/language-provider";
-import { formatPricingMoney, type PricingCurrency } from "@/lib/pricing";
+import { useFormat, useT } from "@/components/i18n/language-provider";
+import { type PricingCurrency } from "@/lib/pricing";
 import { canCancelInvoice, type InvoiceRecord } from "@/lib/invoices";
 
 export function InvoiceList({
@@ -29,6 +29,7 @@ export function InvoiceList({
   createHref?: string;
 }) {
   const t = useT();
+  const format = useFormat();
   const [rows, setRows] = useState(invoices);
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
@@ -107,7 +108,7 @@ export function InvoiceList({
           keep={totals.keep}
           fees={totals.fees}
           label={t("invoices.youReceive")}
-          formattedKeep={formatPricingMoney(totals.keep, "EUR")}
+          formattedKeep={format.moneyExact(totals.keep, "EUR")}
           size={140}
         />
         {createHref ? (
@@ -153,10 +154,10 @@ export function InvoiceList({
                   <td className="px-4 py-3 font-mono text-mono text-ink">{row.invoiceNumber}</td>
                   <td className="px-4 py-3 font-sans text-[14px] text-ink">{row.clientName || "—"}</td>
                   <td className="px-4 py-4 font-sans text-[15px] font-semibold tabular-nums text-ink">
-                    {formatPricingMoney(row.amount, currency)}
+                    {format.moneyExact(row.amount, currency)}
                   </td>
                   <td className="px-4 py-4 font-sans text-[15px] font-semibold tabular-nums text-ink">
-                    {formatPricingMoney(row.youKeep, currency)}
+                    {format.moneyExact(row.youKeep, currency)}
                   </td>
                   <td className="px-4 py-3">
                     <Badge status={row.status}>{row.status}</Badge>
@@ -241,14 +242,15 @@ function InvoiceCard({
   onAction: (id: string, path: string, body?: object) => void;
 }) {
   const t = useT();
+  const format = useFormat();
   const currency = (row.currency as PricingCurrency) || "EUR";
   return (
     <>
       <p className="font-mono text-mono text-ink">{row.invoiceNumber}</p>
       <p className="mt-1 font-sans text-[14px] text-ink">{row.clientName || t("common.client")}</p>
-      <p className="rw-figure">{formatPricingMoney(row.amount, currency)}</p>
+      <p className="rw-figure">{format.moneyExact(row.amount, currency)}</p>
       <p className="mt-1 font-sans text-small text-ink-slate">
-        {t("invoices.youKeepAmount", { amount: formatPricingMoney(row.youKeep, currency) })}
+        {t("invoices.youKeepAmount", { amount: format.moneyExact(row.youKeep, currency) })}
       </p>
       <Badge className="mt-2" status={row.status}>
         {row.status}

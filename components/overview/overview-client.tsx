@@ -19,8 +19,9 @@ import { MoneyCircle } from "@/components/motion/money-circle";
 import { Button } from "@/components/ui/button";
 import { IsoIcon, type IsoIconName } from "@/components/icons/iso-icon";
 import { EmptyState } from "@/components/empty-state";
-import { useAppLanguage, useT } from "@/components/i18n/language-provider";
-import { formatPricingMoney, PLATFORM_TAKE_RATE } from "@/lib/pricing";
+import { useAppLanguage, useFormat, useT } from "@/components/i18n/language-provider";
+import { localeTag } from "@/lib/format";
+import { PLATFORM_TAKE_RATE } from "@/lib/pricing";
 import { statusMessageKey } from "@/lib/i18n";
 import type { OverviewData } from "@/lib/overview";
 
@@ -31,6 +32,7 @@ const CHECK_KEYS = ["invite", "contract", "invoice", "payout"] as const;
 export function OverviewClient({ data, error }: { data: OverviewData | null; error?: string | null }) {
   const t = useT();
   const { language } = useAppLanguage();
+  const format = useFormat();
 
   const actions: { href: string; label: string; icon: IsoIconName }[] = [
     { href: "/dashboard/freelancers", label: t("overview.inviteFreelancer"), icon: "invite" },
@@ -151,7 +153,7 @@ export function OverviewClient({ data, error }: { data: OverviewData | null; err
                   keep={data.paidThisMonth}
                   fees={data.paidThisMonth * PLATFORM_TAKE_RATE}
                   label={t("common.paid")}
-                  formattedKeep={formatPricingMoney(data.paidThisMonth, "EUR")}
+                  formattedKeep={format.moneyExact(data.paidThisMonth, "EUR")}
                   size={120}
                 />
               </div>
@@ -222,8 +224,20 @@ export function OverviewClient({ data, error }: { data: OverviewData | null; err
             <ul className="mt-4 space-y-3">
               {data.activity.map((item) => (
                 <li key={item.id}>
-                  <p className="font-sans text-[14px] font-medium text-ink">{item.title}</p>
-                  {item.body ? <p className="font-sans text-small text-ink-muted">{item.body}</p> : null}
+                  <p className="font-sans text-[14px] font-medium text-ink">
+                    {item.eventType === "invoice_paid"
+                      ? t("overview.activityPaid", { ref: item.title.replace(/\s+paid$/i, "") })
+                      : item.eventType === "invoice_cancelled"
+                        ? t("overview.activityCancelled", {
+                            ref: item.title.replace(/\s+was cancelled$/i, ""),
+                          })
+                        : item.title}
+                  </p>
+                  {item.body ? (
+                    <p className="font-sans text-small text-ink-muted">
+                      {item.eventType === "invoice_paid" ? t("overview.activityPaidBody") : item.body}
+                    </p>
+                  ) : null}
                 </li>
               ))}
             </ul>
@@ -253,7 +267,7 @@ export function OverviewClient({ data, error }: { data: OverviewData | null; err
 function formatMonthLabel(value: string, language: string) {
   if (/^\d{4}-\d{2}$/.test(value)) {
     const [year, month] = value.split("-").map(Number);
-    return new Date(year, month - 1, 1).toLocaleString(language, { month: "short" });
+    return new Date(year, month - 1, 1).toLocaleString(localeTag(language), { month: "short" });
   }
   return value;
 }

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageTransition } from "@/components/motion/page-transition";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { useT } from "@/components/i18n/language-provider";
 
 type InviteState = {
   valid: boolean;
@@ -28,6 +30,7 @@ function passwordScore(value: string) {
 }
 
 export function AcceptInviteClient({ token }: { token: string }) {
+  const t = useT();
   const router = useRouter();
   const [mode, setMode] = useState<"choose" | "create" | "signin">("choose");
   const [invite, setInvite] = useState<InviteState | null>(null);
@@ -60,15 +63,21 @@ export function AcceptInviteClient({ token }: { token: string }) {
 
   const score = passwordScore(password);
   const strength =
-    score <= 1 ? "Weak" : score === 2 ? "Okay" : score === 3 ? "Strong" : "Excellent";
+    score <= 1
+      ? t("invite.weak")
+      : score === 2
+        ? t("invite.okay")
+        : score === 3
+          ? t("invite.strong")
+          : t("invite.excellent");
 
   async function handleJoin(event: React.FormEvent) {
     event.preventDefault();
     const next: Record<string, string> = {};
-    if (!name.trim()) next.name = "Full name is required";
-    if (password.length < 8) next.password = "Password must be at least 8 characters";
-    if (password !== confirm) next.confirm = "Passwords do not match";
-    if (!country) next.country = "Select a country";
+    if (!name.trim()) next.name = t("invite.nameRequired");
+    if (password.length < 8) next.password = t("invite.passwordMin");
+    if (password !== confirm) next.confirm = t("invite.passwordMismatch");
+    if (!country) next.country = t("invite.countryRequired");
     setErrors(next);
     if (Object.keys(next).length) return;
 
@@ -81,8 +90,8 @@ export function AcceptInviteClient({ token }: { token: string }) {
       });
       const data = (await response.json()) as { redirect?: string; message?: string; field?: string };
       if (!response.ok) {
-        if (data.field) setErrors({ [data.field]: data.message ?? "Could not join" });
-        else setErrors({ password: data.message ?? "Could not join workspace" });
+        if (data.field) setErrors({ [data.field]: data.message ?? t("invite.joinFailed") });
+        else setErrors({ password: data.message ?? t("invite.joinWorkspaceFailed") });
         return;
       }
       router.push(data.redirect || "/onboarding/profile");
@@ -90,6 +99,8 @@ export function AcceptInviteClient({ token }: { token: string }) {
       setSubmitting(false);
     }
   }
+
+  const company = invite?.companyName || t("invite.fallbackCompany");
 
   return (
     <div
@@ -101,6 +112,9 @@ export function AcceptInviteClient({ token }: { token: string }) {
         backgroundSize: "16px 16px",
       }}
     >
+      <div className="absolute right-4 top-4">
+        <LanguageSwitcher />
+      </div>
       <PageTransition>
         <div className="w-full max-w-modal rounded-card border border-border bg-card p-8">
           <div className="mb-6 text-center">
@@ -108,66 +122,62 @@ export function AcceptInviteClient({ token }: { token: string }) {
               RW
             </div>
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-light font-display text-[16px] font-semibold text-primary-text">
-              {(invite?.companyName || "NS").slice(0, 2).toUpperCase()}
+              {company.slice(0, 2).toUpperCase()}
             </div>
             <h1 className="mt-4 font-display text-section text-ink">
-              {invite?.companyName || "Your client"} invited you to join their workspace
+              {t("invite.invitedYou", { company })}
             </h1>
-            <p className="mt-2 font-sans text-body text-ink-secondary">
-              You&apos;ll be able to view contracts, submit invoices, and receive payments.
-            </p>
+            <p className="mt-2 font-sans text-body text-ink-secondary">{t("invite.body")}</p>
           </div>
 
           {loading ? (
-            <p className="text-center font-sans text-body text-ink-muted">Checking invite…</p>
+            <p className="text-center font-sans text-body text-ink-muted">{t("invite.checking")}</p>
           ) : !invite?.valid ? (
             <p className="text-center font-sans text-body text-danger">
-              {invite?.used
-                ? "This invite has already been used."
-                : "This invite is invalid or has expired."}
+              {invite?.used ? t("invite.used") : t("invite.invalid")}
             </p>
           ) : mode === "choose" ? (
             <div className="space-y-3">
               <Button variant="secondary" size="full" onClick={() => setMode("signin")}>
-                I already have a RemoteWise account
+                {t("invite.haveAccount")}
               </Button>
               <Button size="full" onClick={() => setMode("create")}>
-                Create my account
+                {t("invite.createAccount")}
               </Button>
             </div>
           ) : mode === "signin" ? (
             <form className="space-y-4" onSubmit={(event) => event.preventDefault()}>
               <div>
-                <Label htmlFor="signin-email">Email</Label>
+                <Label htmlFor="signin-email">{t("common.email")}</Label>
                 <Input id="signin-email" value={invite.email} readOnly />
               </div>
               <div>
-                <Label htmlFor="signin-password">Password</Label>
-                <Input id="signin-password" type="password" placeholder="Your password" />
+                <Label htmlFor="signin-password">{t("common.password")}</Label>
+                <Input id="signin-password" type="password" placeholder={t("invite.yourPassword")} />
               </div>
               <Button size="full" type="submit">
-                Sign in
+                {t("common.signIn")}
               </Button>
               <Button variant="text" type="button" onClick={() => setMode("choose")}>
-                Back
+                {t("common.back")}
               </Button>
             </form>
           ) : (
             <form className="space-y-4" onSubmit={handleJoin} noValidate>
               <div>
-                <Label htmlFor="name">Full name</Label>
+                <Label htmlFor="name">{t("auth.fullName")}</Label>
                 <Input id="name" value={name} onChange={(event) => setName(event.target.value)} invalid={Boolean(errors.name)} />
                 {errors.name ? <p className="rw-field-error">{errors.name}</p> : null}
               </div>
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("common.email")}</Label>
                 <div className="relative">
                   <Input id="email" value={invite.email} readOnly className="pr-10" />
                   <Lock className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" aria-hidden />
                 </div>
               </div>
               <div>
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("common.password")}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -188,7 +198,7 @@ export function AcceptInviteClient({ token }: { token: string }) {
                 {errors.password ? <p className="rw-field-error">{errors.password}</p> : null}
               </div>
               <div>
-                <Label htmlFor="confirm">Confirm password</Label>
+                <Label htmlFor="confirm">{t("common.confirmPassword")}</Label>
                 <Input
                   id="confirm"
                   type="password"
@@ -199,10 +209,10 @@ export function AcceptInviteClient({ token }: { token: string }) {
                 {errors.confirm ? <p className="rw-field-error">{errors.confirm}</p> : null}
               </div>
               <div>
-                <Label htmlFor="country">Country</Label>
+                <Label htmlFor="country">{t("invoices.country")}</Label>
                 <Input
                   id="country-search"
-                  placeholder="Search countries"
+                  placeholder={t("common.searchCountries")}
                   value={countryQuery}
                   onChange={(event) => setCountryQuery(event.target.value)}
                 />
@@ -212,7 +222,7 @@ export function AcceptInviteClient({ token }: { token: string }) {
                   value={country}
                   onChange={(event) => setCountry(event.target.value)}
                 >
-                  <option value="">Select a country</option>
+                  <option value="">{t("common.selectCountry")}</option>
                   {filteredCountries.map((item) => (
                     <option key={item.code} value={item.code}>
                       {item.name}
@@ -222,11 +232,11 @@ export function AcceptInviteClient({ token }: { token: string }) {
                 {errors.country ? <p className="rw-field-error">{errors.country}</p> : null}
               </div>
               <div>
-                <Label htmlFor="timezone">Timezone</Label>
+                <Label htmlFor="timezone">{t("common.timezone")}</Label>
                 <Input id="timezone" value={timezone} onChange={(event) => setTimezone(event.target.value)} />
               </div>
               <Button type="submit" size="full" loading={submitting}>
-                Join workspace
+                {t("invite.join")}
               </Button>
             </form>
           )}

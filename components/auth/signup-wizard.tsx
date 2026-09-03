@@ -55,7 +55,7 @@ export function SignupWizard() {
     setErrors(next);
     if (Object.keys(next).length) return;
     if (!form.companyName.trim()) {
-      const guessed = `${form.fullName.trim().split(" ")[0] || "My"}'s studio`;
+      const guessed = t("auth.studioGuess", { name: form.fullName.trim().split(" ")[0] || t("common.you") });
       setForm((current) => ({ ...current, companyName: guessed }));
     }
     setStep(2);
@@ -174,7 +174,7 @@ export function SignupWizard() {
                 <Label htmlFor="companyName">{t("auth.workspaceName")}</Label>
                 <Input
                   id="companyName"
-                  placeholder="Studio Oy"
+                  placeholder={t("auth.workspacePlaceholder")}
                   value={form.companyName}
                   invalid={Boolean(errors.companyName)}
                   onChange={(event) => update("companyName", event.target.value)}

@@ -9,13 +9,14 @@ import { PageTransition } from "@/components/motion/page-transition";
 import { initials } from "@/lib/utils";
 import type { StoredFreelancer } from "@/lib/store";
 import Link from "next/link";
-import { useT } from "@/components/i18n/language-provider";
+import { useFormat, useT } from "@/components/i18n/language-provider";
 import { statusMessageKey } from "@/lib/i18n";
 
 const TAB_KEYS = ["overview", "contracts", "invoices", "activity"] as const;
 
 export function FreelancerProfileClient() {
   const t = useT();
+  const format = useFormat();
   const params = useParams<{ id: string }>();
   const [tab, setTab] = useState<(typeof TAB_KEYS)[number]>("overview");
   const [data, setData] = useState<{
@@ -159,7 +160,7 @@ export function FreelancerProfileClient() {
               <p className="font-sans text-body text-ink-slate">{t("freelancers.noInvoices")}</p>
             ) : (
               <p className="font-sans text-body text-ink-slate">
-                {t("freelancers.invitedAt", { date: new Date(person.createdAt).toLocaleString() })}
+                {t("freelancers.invitedAt", { date: format.dateTime(person.createdAt) })}
               </p>
             )}
           </div>

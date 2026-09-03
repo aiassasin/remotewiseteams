@@ -1,15 +1,24 @@
+"use client";
+
 import { IsoIcon, type IsoIconName } from "@/components/icons/iso-icon";
+import { useT } from "@/components/i18n/language-provider";
+import type { MessageKey } from "@/lib/i18n";
 import { PLATFORM_TAKE_PERCENT, SERVICE_FEE_PERCENT, SHIELD_FEE_PERCENT } from "@/lib/pricing";
 
+const TAKE = {
+  take: PLATFORM_TAKE_PERCENT,
+  service: SERVICE_FEE_PERCENT,
+  shield: SHIELD_FEE_PERCENT,
+};
+
 export function WhyRemoteWise() {
+  const t = useT();
   return (
     <section className="mt-16" aria-labelledby="why-remotewise-heading">
       <h2 id="why-remotewise-heading" className="rw-section-title">
-        Why RemoteWise
+        {t("pricing.whyTitle")}
       </h2>
-      <p className="mt-2 max-w-2xl font-sans text-body text-ink-secondary">
-        Lowest total fee in Finland, insurance on every invoice, and a free contractor OS for companies.
-      </p>
+      <p className="mt-2 max-w-2xl font-sans text-body text-ink-secondary">{t("pricing.whySub")}</p>
       <HowWeWork />
       <WhyBetter />
       <SmartTips />
@@ -19,33 +28,18 @@ export function WhyRemoteWise() {
 }
 
 function HowWeWork() {
+  const t = useT();
   const steps: { icon: IsoIconName; title: string; body: string }[] = [
-    {
-      icon: "create-invoice",
-      title: "Create the invoice",
-      body: "Add the client, line items, and currency. Creating an invoice is free.",
-    },
-    {
-      icon: "client-pay",
-      title: "The client pays us",
-      body: "Money lands with RemoteWise. We are the billing party, not you personally.",
-    },
-    {
-      icon: "coverage",
-      title: "Shield is issued",
-      body: `We deduct ${PLATFORM_TAKE_PERCENT}% and attach a coverage certificate to that paid invoice.`,
-    },
-    {
-      icon: "choose-payout",
-      title: "You choose payout",
-      body: "24 hours free, Lightning in minutes, or financing before the client pays.",
-    },
+    { icon: "create-invoice", title: t("pricing.how1title"), body: t("pricing.how1body") },
+    { icon: "client-pay", title: t("pricing.how2title"), body: t("pricing.how2body") },
+    { icon: "coverage", title: t("pricing.how3title"), body: t("pricing.how3body", TAKE) },
+    { icon: "choose-payout", title: t("pricing.how4title"), body: t("pricing.how4body") },
   ];
 
   return (
     <div className="mt-10" aria-labelledby="how-we-work-heading">
       <h3 id="how-we-work-heading" className="font-display text-card text-ink">
-        How we work
+        {t("pricing.howTitle")}
       </h3>
       <div className="relative mt-6">
         <div
@@ -70,77 +64,51 @@ function HowWeWork() {
 }
 
 function WhyBetter() {
-  const cards: { icon: IsoIconName; title: string; body: string }[] = [
-    {
-      icon: "payouts",
-      title: "Lowest total fee in Finland",
-      body: `${PLATFORM_TAKE_PERCENT}% all-in (${SERVICE_FEE_PERCENT}% service + ${SHIELD_FEE_PERCENT}% Shield). One number, insurance included, no surprise add-ons.`,
-    },
-    {
-      icon: "shield",
-      title: "Insurance built in",
-      body: "Accident, liability, and legal-expense cover on every paid invoice. Certificate attached automatically.",
-    },
-    {
-      icon: "clock",
-      title: "24h free payout",
-      body: "After the client pays, standard payout is free within 24 hours. Lightning is optional.",
-    },
-    {
-      icon: "globe",
-      title: "No company needed",
-      body: "Light entrepreneur mode. Invoice as yourself. Register a Y-tunnus later if you want one.",
-    },
-    {
-      icon: "freelancers",
-      title: "Free contractor OS",
-      body: "Companies invite unlimited freelancers, send contracts, and pay invoices at $0/month.",
-    },
-    {
-      icon: "support",
-      title: "Human support in 24h",
-      body: "Finnish and English. A person replies within a working day — not a ticket black hole.",
-    },
+  const t = useT();
+  const cards: { icon: IsoIconName; titleKey: MessageKey; bodyKey: MessageKey }[] = [
+    { icon: "payouts", titleKey: "pricing.better1title", bodyKey: "pricing.better1body" },
+    { icon: "shield", titleKey: "pricing.better2title", bodyKey: "pricing.better2body" },
+    { icon: "clock", titleKey: "pricing.better3title", bodyKey: "pricing.better3body" },
+    { icon: "globe", titleKey: "pricing.better4title", bodyKey: "pricing.better4body" },
+    { icon: "freelancers", titleKey: "pricing.better5title", bodyKey: "pricing.better5body" },
+    { icon: "support", titleKey: "pricing.better6title", bodyKey: "pricing.better6body" },
   ];
 
   return (
     <div className="mt-12" aria-labelledby="why-better-heading">
       <h3 id="why-better-heading" className="font-display text-card text-ink">
-        Why we are better
+        {t("pricing.betterTitle")}
       </h3>
       <ul className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {cards.map((card) => (
-          <li key={card.title} className="rounded-card border border-border bg-card p-5">
-            <IsoIcon name={card.icon} size={44} title={card.title} />
-            <h4 className="mt-4 font-display text-card text-ink">{card.title}</h4>
-            <p className="mt-2 font-sans text-[14px] leading-relaxed text-ink-secondary">{card.body}</p>
-          </li>
-        ))}
+        {cards.map((card) => {
+          const title = t(card.titleKey);
+          const body = t(card.bodyKey, TAKE);
+          return (
+            <li key={card.titleKey} className="rounded-card border border-border bg-card p-5">
+              <IsoIcon name={card.icon} size={44} title={title} />
+              <h4 className="mt-4 font-display text-card text-ink">{title}</h4>
+              <p className="mt-2 font-sans text-[14px] leading-relaxed text-ink-secondary">{body}</p>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
 }
 
 function SmartTips() {
-  const freelancer = [
-    "Invoice weekly, not monthly",
-    "Attach the signed contract before starting work",
-    "Save your tax residency and IBAN once — every invoice fills itself",
-  ];
-  const company = [
-    "Collect the W-8/W-9 equivalent early",
-    "Use milestones for projects over €2,000",
-    "Pay through RemoteWise so Shield and reporting stay attached",
-  ];
+  const t = useT();
+  const freelancer = [t("pricing.tipF1"), t("pricing.tipF2"), t("pricing.tipF3")];
+  const company = [t("pricing.tipC1"), t("pricing.tipC2"), t("pricing.tipC3")];
 
   return (
     <div className="mt-12" aria-labelledby="smart-tips-heading">
       <h3 id="smart-tips-heading" className="font-display text-card text-ink">
-        Smart tips
+        {t("pricing.tipsTitle")}
       </h3>
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <TipColumn title="For freelancers" items={freelancer} />
-        <TipColumn title="For companies" items={company} />
+        <TipColumn title={t("pricing.tipsFreelancers")} items={freelancer} />
+        <TipColumn title={t("pricing.tipsCompanies")} items={company} />
       </div>
     </div>
   );
@@ -165,23 +133,24 @@ function TipColumn({ title, items }: { title: string; items: string[] }) {
 }
 
 function OurPromise() {
+  const t = useT();
   const items = [
-    "Transparent fees — every line visible before you send",
-    "Payout on time or we cover the delay",
-    "Cancel any invoice before it is paid",
-    "Export your data anytime",
-    "24h human support",
+    t("pricing.promise1"),
+    t("pricing.promise2"),
+    t("pricing.promise3"),
+    t("pricing.promise4"),
+    t("pricing.promise5"),
   ];
 
   return (
     <div className="mt-12" aria-labelledby="promise-heading">
       <h3 id="promise-heading" className="font-display text-card text-ink">
-        Our promise to you
+        {t("pricing.promiseTitle")}
       </h3>
       <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {items.map((item) => (
           <li key={item} className="rounded-card border border-border bg-card p-4">
-            <IsoIcon name="promise" size={32} title="Promise" />
+            <IsoIcon name="promise" size={32} title={t("pricing.promiseAria")} />
             <p className="mt-3 font-sans text-[13px] leading-relaxed text-ink">{item}</p>
           </li>
         ))}

@@ -10,15 +10,23 @@ import {
   DEFAULT_PRICING_CURRENCY,
   PRICING_CURRENCIES,
   calculateFreelancerPayout,
-  formatPricingMoney,
   type PricingCurrency,
 } from "@/lib/pricing";
 import type { FreelancerBillingProfile, InvoiceLine } from "@/lib/invoices";
-import { DEFAULT_VAT_RATE, VAT_RATE_LABELS, VAT_RATES, type VatRate } from "@/lib/compliance/vat";
-import { useT } from "@/components/i18n/language-provider";
+import { DEFAULT_VAT_RATE, VAT_RATES, type VatRate } from "@/lib/compliance/vat";
+import { useFormat, useT } from "@/components/i18n/language-provider";
+import type { MessageKey } from "@/lib/i18n";
+
+const VAT_LABEL: Record<VatRate, MessageKey> = {
+  25.5: "invoices.vatGeneral",
+  14: "invoices.vatFood",
+  10: "invoices.vatBooks",
+  0: "invoices.vatZero",
+};
 
 export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile }) {
   const t = useT();
+  const format = useFormat();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [currency, setCurrency] = useState<PricingCurrency>(DEFAULT_PRICING_CURRENCY);
@@ -36,7 +44,7 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
   const [notes, setNotes] = useState("");
   const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().slice(0, 10));
   const [dueDate, setDueDate] = useState("");
-  const [paymentTerms, setPaymentTerms] = useState("14 days net");
+  const [paymentTerms, setPaymentTerms] = useState("");
   const [vatExempt, setVatExempt] = useState(false);
   const [sellerBusinessId, setSellerBusinessId] = useState(profile.vatId);
   const [buyerBusinessId, setBuyerBusinessId] = useState("");
@@ -69,7 +77,7 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
         lineItems: lines,
         invoiceDate,
         dueDate,
-        paymentTerms,
+        paymentTerms: paymentTerms || t("invoices.termsDefault"),
         vatExempt,
         sellerBusinessId,
         buyerBusinessId,
@@ -121,7 +129,7 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
               {t("invoices.dueDate")}
               <Input className="mt-1" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
             </label>
-            <Input value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} placeholder={t("invoices.paymentTerms")} required />
+            <Input value={paymentTerms || t("invoices.termsDefault")} onChange={(e) => setPaymentTerms(e.target.value)} placeholder={t("invoices.termsDefault")} required />
             <Input value={sellerBusinessId} onChange={(e) => setSellerBusinessId(e.target.value)} placeholder={t("invoices.sellerId")} />
             <label className="flex items-center gap-2 font-sans text-[14px] text-ink sm:col-span-2">
               <input type="checkbox" checked={vatExempt} onChange={(e) => setVatExempt(e.target.checked)} />
@@ -191,7 +199,7 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
                 >
                   {VAT_RATES.map((rate) => (
                     <option key={rate} value={rate}>
-                      {VAT_RATE_LABELS[rate]}
+                      {t(VAT_LABEL[rate])}
                     </option>
                   ))}
                 </select>
@@ -222,11 +230,11 @@ export function InvoiceBuilder({ profile }: { profile: FreelancerBillingProfile 
           keep={breakdown.youKeep}
           fees={breakdown.totalFees}
           label={t("invoices.youReceive")}
-          formattedKeep={formatPricingMoney(breakdown.youKeep, currency)}
+          formattedKeep={format.moneyExact(breakdown.youKeep, currency)}
           size={150}
         />
         <p className="mt-3 text-center font-sans text-small text-ink-secondary">
-          {t("invoices.invoiceTotal", { amount: formatPricingMoney(breakdown.amount, currency) })}
+          {t("invoices.invoiceTotal", { amount: format.moneyExact(breakdown.amount, currency) })}
         </p>
       </aside>
     </form>

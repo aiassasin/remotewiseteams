@@ -9,8 +9,11 @@ import { PageTransition } from "@/components/motion/page-transition";
 import { StoredContractBody } from "@/components/contracts/stored-contract-body";
 import { parseStoredDocument } from "@/lib/contracts/document";
 import type { StoredContract } from "@/lib/store";
+import { useFormat, useT } from "@/components/i18n/language-provider";
 
 export function ContractReview({ contractId }: { contractId: string }) {
+  const t = useT();
+  const format = useFormat();
   const router = useRouter();
   const [contract, setContract] = useState<StoredContract | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -41,24 +44,28 @@ export function ContractReview({ contractId }: { contractId: string }) {
     <PageTransition>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Button variant="text" onClick={() => router.back()}>
-          ← Edit details
+          {t("contracts.editDetails")}
         </Button>
         <div className="flex gap-2">
-          <Button variant="secondary">Download preview PDF</Button>
-          <Button onClick={() => setConfirmOpen(true)}>Send for signature</Button>
+          <Button variant="secondary">{t("contracts.downloadPreview")}</Button>
+          <Button onClick={() => setConfirmOpen(true)}>{t("contracts.sendForSignature")}</Button>
         </div>
       </div>
       <article className="rounded-card border border-border bg-card p-6">
         <StoredContractBody body={contract.bodyHtml} title={contract.title} />
         <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="border-l-[3px] border-success bg-success-light p-4">
-            <p className="font-sans text-small uppercase tracking-[0.05em] text-ink-muted">Company</p>
+            <p className="font-sans text-small uppercase tracking-[0.05em] text-ink-muted">{t("contracts.company")}</p>
             <p className="mt-2 font-[cursive] text-[22px] text-ink">{companyLabel}</p>
-            <p className="font-sans text-small text-ink-secondary">Signed by: {contract.createdBy}</p>
+            <p className="font-sans text-small text-ink-secondary">
+              {t("contracts.signedByLabel", { name: contract.createdBy })}
+            </p>
           </div>
           <div className="border border-border p-4">
-            <p className="font-sans text-small uppercase tracking-[0.05em] text-ink-muted">Freelancer</p>
-            <p className="mt-6 font-sans text-body text-ink-muted">Awaiting signature</p>
+            <p className="font-sans text-small uppercase tracking-[0.05em] text-ink-muted">
+              {t("contracts.freelancerParty")}
+            </p>
+            <p className="mt-6 font-sans text-body text-ink-muted">{t("contracts.awaitingSignature")}</p>
           </div>
         </div>
       </article>
@@ -66,19 +73,17 @@ export function ContractReview({ contractId }: { contractId: string }) {
       {confirmOpen && !sent ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-modal rounded-card border border-border bg-card p-8">
-            <h2 className="font-display text-section text-ink">Send contract for signature</h2>
-            <p className="mt-3 font-sans text-body text-ink-secondary">
-              This will send an email to the freelancer with a secure link to review and sign this contract. Once signed, a timestamped PDF will be generated and sent to both parties.
-            </p>
+            <h2 className="font-display text-section text-ink">{t("contracts.sendModalTitle")}</h2>
+            <p className="mt-3 font-sans text-body text-ink-secondary">{t("contracts.sendModalBody")}</p>
             <dl className="mt-4 space-y-1 font-sans text-[14px] text-ink">
-              <div>Contract type: {contract.type}</div>
-              <div>Expires: {new Date(contract.expiresAt).toLocaleDateString()}</div>
+              <div>{t("contracts.contractType", { type: contract.type })}</div>
+              <div>{t("sign.expires", { date: format.date(contract.expiresAt) })}</div>
             </dl>
             <div className="mt-6 flex justify-end gap-3">
               <Button variant="text" onClick={() => setConfirmOpen(false)}>
-                Go back
+                {t("contracts.goBack")}
               </Button>
-              <Button onClick={send}>Send contract</Button>
+              <Button onClick={send}>{t("contracts.sendContract")}</Button>
             </div>
           </div>
         </div>
@@ -95,7 +100,7 @@ export function ContractReview({ contractId }: { contractId: string }) {
             >
               <Check className="h-8 w-8" />
             </motion.div>
-            <p className="mt-4 font-display text-section text-ink">Contract sent</p>
+            <p className="mt-4 font-display text-section text-ink">{t("contracts.sentToast")}</p>
             {signingUrl ? (
               <p className="mt-2 font-mono text-mono text-ink-muted">{signingUrl}</p>
             ) : null}

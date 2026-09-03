@@ -6,11 +6,12 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PageTransition } from "@/components/motion/page-transition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useT } from "@/components/i18n/language-provider";
+import { useT, useFormat } from "@/components/i18n/language-provider";
 import type { StoredContract } from "@/lib/store";
 
 export default function ContractsListPage() {
   const t = useT();
+  const format = useFormat();
   const [contracts, setContracts] = useState<StoredContract[]>([]);
 
   useEffect(() => {
@@ -78,10 +79,10 @@ export default function ContractsListPage() {
                   <Badge status={row.status}>{row.status}</Badge>
                 </td>
                 <td className="px-4 py-3 font-sans text-[13px] text-ink-secondary">
-                  {row.sentAt ? new Date(row.sentAt).toLocaleDateString() : "—"}
+                  {row.sentAt ? format.date(row.sentAt) : "—"}
                 </td>
                 <td className="px-4 py-3 font-sans text-[13px] text-ink-secondary">
-                  {row.signedAt ? new Date(row.signedAt).toLocaleDateString() : "—"}
+                  {row.signedAt ? format.date(row.signedAt) : "—"}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Link href={`/dashboard/contracts/${row.id}`} className="font-sans text-[13px] text-primary">

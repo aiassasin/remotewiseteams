@@ -11,7 +11,7 @@ export async function loadOverview(companyId: string): Promise<OverviewData> {
     supabase.from("contracts").select("id, status").eq("company_id", companyId),
     supabase
       .from("activity_events")
-      .select("id, title, body, created_at, href")
+      .select("id, event_type, title, body, created_at, href")
       .eq("company_id", companyId)
       .order("created_at", { ascending: false })
       .limit(8),
@@ -57,6 +57,7 @@ export async function loadOverview(companyId: string): Promise<OverviewData> {
       body: (row.body as string | null) ?? null,
       createdAt: row.created_at as string,
       href: (row.href as string | null) ?? null,
+      eventType: (row.event_type as string) || "",
     })),
     checklist: {
       invite: freelancers.length > 0,

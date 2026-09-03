@@ -11,9 +11,9 @@ import { PageTransition } from "@/components/motion/page-transition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { IsoIcon } from "@/components/icons/iso-icon";
-import { formatCurrency, initials } from "@/lib/utils";
+import { initials } from "@/lib/utils";
 import type { Freelancer, InviteFreelancerInput } from "@/lib/types";
-import { useT } from "@/components/i18n/language-provider";
+import { useFormat, useT } from "@/components/i18n/language-provider";
 
 type ViewMode = "table" | "cards";
 type StatusFilter = "all" | "active" | "invited" | "inactive";
@@ -50,6 +50,7 @@ export function FreelancersPageClient({
   initialFreelancers: Freelancer[];
 }) {
   const t = useT();
+  const format = useFormat();
   const [inviteOpen, setInviteOpen] = useState(false);
   const [freelancers, setFreelancers] = useState(initialFreelancers);
   const [query, setQuery] = useState("");
@@ -228,7 +229,7 @@ export function FreelancersPageClient({
           <div className="md:hidden">
             <FreelancerCardGrid
               rows={filtered}
-              formatCurrency={formatCurrency}
+              formatCurrency={format.money}
               initials={initials}
             />
           </div>
@@ -236,13 +237,13 @@ export function FreelancersPageClient({
             {view === "table" ? (
               <FreelancerTable
                 rows={filtered}
-                formatCurrency={formatCurrency}
+                formatCurrency={format.money}
                 initials={initials}
               />
             ) : (
               <FreelancerCardGrid
                 rows={filtered}
-                formatCurrency={formatCurrency}
+                formatCurrency={format.money}
                 initials={initials}
               />
             )}

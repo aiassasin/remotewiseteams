@@ -25,7 +25,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
       >
         <div>
           <p className="font-sans text-small text-ink-muted">
-            {FINLAND_COMPLIANCE.operatorName} · {FINLAND_COMPLIANCE.legalEntityName} · Finland
+            {FINLAND_COMPLIANCE.operatorName} · {FINLAND_COMPLIANCE.legalEntityName} · {t("common.finland")}
           </p>
           {!compact ? (
             <p className="mt-1 max-w-xl font-sans text-small text-ink-muted">{t("footer.feesPublic")}</p>

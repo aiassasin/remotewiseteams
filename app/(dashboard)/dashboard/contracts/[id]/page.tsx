@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { PageTransition } from "@/components/motion/page-transition";
 import type { StoredContract } from "@/lib/store";
 import type { StoredFreelancer } from "@/lib/store";
-import { useT } from "@/components/i18n/language-provider";
+import { useFormat, useT } from "@/components/i18n/language-provider";
 
 export default function ContractDetailPage() {
   const t = useT();
+  const format = useFormat();
   const params = useParams<{ id: string }>();
   const [data, setData] = useState<{ contract: StoredContract; freelancer: StoredFreelancer | null } | null>(null);
 
@@ -37,10 +38,10 @@ export default function ContractDetailPage() {
             {freelancer?.fullName} · {freelancer?.email}
           </p>
           <dl className="mt-4 space-y-2 font-sans text-[13px] text-ink-secondary">
-            <div>{t("contracts.created")} {new Date(contract.createdAt).toLocaleString()}</div>
-            <div>{t("contracts.sent")} {contract.sentAt ? new Date(contract.sentAt).toLocaleString() : "—"}</div>
-            <div>{t("contracts.signed")} {contract.signedAt ? new Date(contract.signedAt).toLocaleString() : "—"}</div>
-            <div>{t("contracts.expires")} {new Date(contract.expiresAt).toLocaleDateString()}</div>
+            <div>{t("contracts.created")} {format.dateTime(contract.createdAt)}</div>
+            <div>{t("contracts.sent")} {contract.sentAt ? format.dateTime(contract.sentAt) : "—"}</div>
+            <div>{t("contracts.signed")} {contract.signedAt ? format.dateTime(contract.signedAt) : "—"}</div>
+            <div>{t("contracts.expires")} {format.date(contract.expiresAt)}</div>
           </dl>
           <p className="mt-4 break-all font-mono text-mono text-ink-secondary">{contract.documentHash}</p>
           <div className="mt-6 space-y-2">
@@ -62,18 +63,18 @@ export default function ContractDetailPage() {
         <section className="rounded-card border border-border bg-card p-6">
           <h2 className="font-display text-card text-ink">{t("contracts.timeline")}</h2>
           <ol className="mt-4 space-y-3 font-sans text-[14px] text-ink-secondary">
-            <li>{t("contracts.createdBy", { name: contract.createdBy, date: new Date(contract.createdAt).toLocaleString() })}</li>
+            <li>{t("contracts.createdBy", { name: contract.createdBy, date: format.dateTime(contract.createdAt) })}</li>
             {contract.sentAt ? (
-              <li>{t("contracts.sentTo", { name: freelancer?.fullName ?? "", date: new Date(contract.sentAt).toLocaleString() })}</li>
+              <li>{t("contracts.sentTo", { name: freelancer?.fullName ?? "", date: format.dateTime(contract.sentAt) })}</li>
             ) : null}
             {contract.viewedAt ? (
-              <li>{t("contracts.viewedBy", { name: freelancer?.fullName ?? "", date: new Date(contract.viewedAt).toLocaleString() })}</li>
+              <li>{t("contracts.viewedBy", { name: freelancer?.fullName ?? "", date: format.dateTime(contract.viewedAt) })}</li>
             ) : null}
             {contract.signedAt ? (
               <li>
                 {t("contracts.signedBy", {
                   name: contract.signerName ?? "",
-                  date: new Date(contract.signedAt).toLocaleString(),
+                  date: format.dateTime(contract.signedAt),
                   ip: contract.signerIp ?? "",
                 })}
               </li>

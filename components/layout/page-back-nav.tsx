@@ -16,6 +16,7 @@ const SEGMENT_KEYS: Record<string, MessageKey> = {
   standups: "nav.standups",
   settings: "nav.settings",
   help: "nav.help",
+  freelancer: "nav.home",
   new: "common.new",
   review: "common.review",
 };

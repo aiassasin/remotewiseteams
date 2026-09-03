@@ -1,4 +1,4 @@
-import type { ContractLanguage } from "@/lib/contracts/i18n";
+import { CONTRACT_LANGUAGES, type ContractLanguage } from "@/lib/contracts/i18n";
 import de from "@/locales/de.json";
 import en from "@/locales/en.json";
 import es from "@/locales/es.json";
@@ -9,6 +9,12 @@ export type AppLanguage = ContractLanguage;
 export type Messages = typeof en;
 export type MessageKey = DotPaths<Messages>;
 export type TranslateVars = Record<string, string | number>;
+
+export const APP_LANGUAGES = CONTRACT_LANGUAGES;
+
+export function isAppLanguage(value: unknown): value is AppLanguage {
+  return typeof value === "string" && (CONTRACT_LANGUAGES as readonly string[]).includes(value);
+}
 
 type DotPaths<T, Prefix extends string = ""> = T extends string
   ? Prefix extends ""
