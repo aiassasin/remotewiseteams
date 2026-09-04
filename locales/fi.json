@@ -138,7 +138,10 @@
     "quickActions": "Pikatoiminnot",
     "activityPaid": "{ref} maksettu",
     "activityPaidBody": "Asiakas maksoi. Valitse vakio- tai Lightning-maksu.",
-    "activityCancelled": "{ref} peruttiin"
+    "activityCancelled": "{ref} peruttiin",
+    "onboardingProgress": "{percent} prosenttia valmis",
+    "stepDone": "Valmis",
+    "stepTodo": "Kesken"
   },
   "invoices": {
     "title": "Laskut",
@@ -303,6 +306,9 @@
     "emailInvalid": "Anna kelvollinen sähköpostiosoite",
     "rateInvalid": "Anna kelvollinen tuntipalkkio",
     "loadingProfile": "Ladataan profiilia…",
+    "profileNotFound": "Freelanceria ei löytynyt.",
+    "profileLoadError": "Profiilia ei voitu ladata.",
+    "profileNotFoundBody": "Tämä henkilö ei ole työtilassasi, tai linkki on virheellinen.",
     "locationUnset": "Sijaintia ei ole asetettu",
     "totalPaid": "Maksettu yhteensä",
     "avgPay": "Keskim. maksu",
@@ -362,13 +368,14 @@
   },
   "settings": {
     "title": "Asetukset",
-    "description": "Profiili, ulkoasu, yritys, jäsenet ja laskutus.",
+    "description": "Profiili, kieli, ulkoasu, yritys, jäsenet ja laskutus.",
     "shortDescription": "Työtila, laskutus ja tilisi.",
     "sections": "Asetusten osiot",
     "loadError": "Asetuksia ei voitu ladata.",
     "loadFailed": "Asetuksia ei voitu ladata.",
     "refreshTry": "Päivitä ja yritä uudelleen.",
     "tabProfile": "Profiili",
+    "tabLanguage": "Kieli",
     "tabAppearance": "Ulkoasu",
     "tabCompany": "Yritys",
     "tabMembers": "Jäsenet",
@@ -440,8 +447,8 @@
     "languageHint": "Valitse kieli koko tuotteelle. Tallennetaan tähän selaimeen ja tiliisi."
   },
   "auth": {
-    "welcomeBack": "Tervetuloa takaisin.",
-    "signInHint": "Kirjaudu hallitsemaan sopimuksia, laskuja ja maksuja.",
+    "welcomeBack": "Kirjaudu hallitsemaan sopimuksia",
+    "signInHint": "Hallitse sopimuksia, laskuja ja maksuja.",
     "signIn": "Kirjaudu sisään",
     "signingIn": "Kirjaudutaan...",
     "signInFailed": "Kirjautuminen epäonnistui",

@@ -32,11 +32,16 @@ export default defineConfig({
     {
       name: "chromium",
       dependencies: ["setup"],
-      testIgnore: /live-e2e\.spec\.ts|auth\.setup\.ts/,
+      testIgnore: /live-e2e\.spec\.ts|auth\.setup\.ts|login-frame\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: "playwright/.auth/owner.json",
       },
+    },
+    {
+      name: "login-frame",
+      testMatch: /login-frame\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
     },
     {
       name: "live-e2e",

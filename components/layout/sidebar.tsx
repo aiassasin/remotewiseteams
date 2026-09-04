@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { LayoutGroup, motion } from "framer-motion";
 import { IsoIcon, type IsoIconName } from "@/components/icons/iso-icon";
 import { RwLogo } from "@/components/brand/rw-logo";
 import { useAppLanguage, useT } from "@/components/i18n/language-provider";
@@ -57,22 +58,24 @@ export function Sidebar({
         <RwLogo href="/dashboard/overview" inverted />
       </div>
 
-      <nav className="flex flex-1 flex-col gap-0.5 px-3 py-4" aria-label={t("common.mainNav")}>
-        {NAV.map((item) => {
-          const active =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
-          return (
-            <LinkItem
-              key={item.href}
-              href={item.href}
-              label={nav[item.key]}
-              icon={item.icon}
-              active={active}
-              onNavigate={onNavigate}
-            />
-          );
-        })}
-      </nav>
+      <LayoutGroup id={onNavigate ? "sidebar-nav-mobile" : "sidebar-nav-desktop"}>
+        <nav className="flex flex-1 flex-col gap-0.5 px-3 py-4" aria-label={t("common.mainNav")}>
+          {NAV.map((item) => {
+            const active =
+              pathname === item.href || pathname.startsWith(`${item.href}/`);
+            return (
+              <LinkItem
+                key={item.href}
+                href={item.href}
+                label={nav[item.key]}
+                icon={item.icon}
+                active={active}
+                onNavigate={onNavigate}
+              />
+            );
+          })}
+        </nav>
+      </LayoutGroup>
 
       <div className="border-t border-white/10 p-4">
         <div className="flex items-center gap-3">
@@ -130,15 +133,24 @@ function LinkItem({
       href={href}
       onClick={onNavigate}
       className={cn(
-        "flex items-center gap-3 rounded-control px-2.5 py-2 font-sans text-[14px] font-medium transition-colors duration-100",
-          active
-          ? "border-l-[3px] border-primary bg-sidebar-active pl-[7px] text-white"
-          : "border-l-[3px] border-transparent text-white/60 hover:bg-sidebar-hover hover:text-white",
+        "relative flex items-center gap-3 rounded-control px-2.5 py-2 font-sans text-[14px] font-medium transition-colors duration-100",
+        active
+          ? "bg-sidebar-active text-white"
+          : "text-white/60 hover:bg-sidebar-hover hover:text-white",
       )}
       aria-current={active ? "page" : undefined}
     >
-      <IsoIcon name={icon} size={26} title={label} />
-      {label}
+      {active ? (
+        <motion.div
+          layoutId="active-indicator"
+          className="absolute left-0 top-0 h-full w-1 rounded-r bg-royal-yellow"
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        />
+      ) : null}
+      <span className="relative z-10 flex items-center gap-3">
+        <IsoIcon name={icon} size={26} title={label} />
+        {label}
+      </span>
     </Link>
   );
 }

@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PageTransition } from "@/components/motion/page-transition";
 import { Button } from "@/components/ui/button";
 import { useAppLanguage, useT } from "@/components/i18n/language-provider";
+import { toContractLanguage } from "@/lib/i18n";
 
 export function ContractTemplatePicker() {
   const t = useT();
@@ -17,7 +18,7 @@ export function ContractTemplatePicker() {
       <PageHeader title={t("contracts.newContract")} description={t("contracts.newDescription")} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
         {TEMPLATE_IDS.map((id) => {
-          const copy = typeCopy(id, language);
+          const copy = typeCopy(id, toContractLanguage(language));
           return (
             <article
               key={id}

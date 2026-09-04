@@ -138,7 +138,10 @@
     "quickActions": "Actions rapides",
     "activityPaid": "{ref} payée",
     "activityPaidBody": "Le client a payé. Choisissez le virement standard ou Lightning.",
-    "activityCancelled": "{ref} a été annulée"
+    "activityCancelled": "{ref} a été annulée",
+    "onboardingProgress": "{percent} pour cent terminé",
+    "stepDone": "Terminé",
+    "stepTodo": "À faire"
   },
   "invoices": {
     "title": "Factures",
@@ -303,6 +306,9 @@
     "emailInvalid": "Saisissez une adresse e-mail valide",
     "rateInvalid": "Saisissez un tarif horaire valide",
     "loadingProfile": "Chargement du profil…",
+    "profileNotFound": "Freelance introuvable.",
+    "profileLoadError": "Le profil n’a pas pu être chargé.",
+    "profileNotFoundBody": "Cette personne n’est pas dans votre espace, ou le lien n’est pas valide.",
     "locationUnset": "Lieu non renseigné",
     "totalPaid": "Total payé",
     "avgPay": "Paiement moy.",
@@ -369,6 +375,7 @@
     "loadFailed": "Impossible de charger les paramètres.",
     "refreshTry": "Actualisez et réessayez.",
     "tabProfile": "Profil",
+    "tabLanguage": "Langue",
     "tabAppearance": "Apparence",
     "tabCompany": "Entreprise",
     "tabMembers": "Membres",
@@ -440,8 +447,8 @@
     "languageHint": "Choisissez la langue de tout le produit. Enregistrée dans ce navigateur et sur votre compte."
   },
   "auth": {
-    "welcomeBack": "Bon retour.",
-    "signInHint": "Connectez-vous pour gérer contrats, factures et paiements.",
+    "welcomeBack": "Connectez-vous pour gérer les contrats",
+    "signInHint": "Gérez les contrats, les factures et les paiements.",
     "signIn": "Se connecter",
     "signingIn": "Connexion...",
     "signInFailed": "Impossible de se connecter",

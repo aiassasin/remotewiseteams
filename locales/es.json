@@ -138,7 +138,10 @@
     "quickActions": "Acciones rápidas",
     "activityPaid": "{ref} pagada",
     "activityPaidBody": "El cliente pagó. Elige el pago estándar o Lightning.",
-    "activityCancelled": "{ref} se canceló"
+    "activityCancelled": "{ref} se canceló",
+    "onboardingProgress": "{percent} por ciento completado",
+    "stepDone": "Hecho",
+    "stepTodo": "Pendiente"
   },
   "invoices": {
     "title": "Facturas",
@@ -303,6 +306,9 @@
     "emailInvalid": "Introduce una dirección de correo válida",
     "rateInvalid": "Introduce una tarifa por hora válida",
     "loadingProfile": "Cargando perfil…",
+    "profileNotFound": "Freelance no encontrado.",
+    "profileLoadError": "No se pudo cargar el perfil.",
+    "profileNotFoundBody": "Esta persona no está en tu espacio de trabajo, o el enlace no es válido.",
     "locationUnset": "Ubicación no indicada",
     "totalPaid": "Total pagado",
     "avgPay": "Pago medio",
@@ -369,6 +375,7 @@
     "loadFailed": "No se pudieron cargar los ajustes.",
     "refreshTry": "Actualiza e inténtalo de nuevo.",
     "tabProfile": "Perfil",
+    "tabLanguage": "Idioma",
     "tabAppearance": "Apariencia",
     "tabCompany": "Empresa",
     "tabMembers": "Miembros",
@@ -440,8 +447,8 @@
     "languageHint": "Elige el idioma de todo el producto. Se guarda en este navegador y en tu cuenta."
   },
   "auth": {
-    "welcomeBack": "Bienvenido de nuevo.",
-    "signInHint": "Inicia sesión para gestionar contratos, facturas y pagos.",
+    "welcomeBack": "Inicia sesión para gestionar contratos",
+    "signInHint": "Gestione contratos, facturas y pagos.",
     "signIn": "Iniciar sesión",
     "signingIn": "Iniciando sesión...",
     "signInFailed": "No se pudo iniciar sesión",

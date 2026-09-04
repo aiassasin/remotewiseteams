@@ -3,8 +3,7 @@ import type { AppLanguage } from "@/lib/i18n";
 export const LOCALE_TAGS: Record<AppLanguage, string> = {
   en: "en-GB",
   fi: "fi-FI",
-  de: "de-DE",
-  fr: "fr-FR",
+  sv: "sv-SE",
   es: "es-ES",
 };
 

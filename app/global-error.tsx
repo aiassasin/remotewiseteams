@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { detectAppLanguage } from "@/lib/contracts/i18n";
-import { translate } from "@/lib/i18n";
+import { detectAppLanguage, translate } from "@/lib/i18n";
 
 export default function GlobalError({
   error,

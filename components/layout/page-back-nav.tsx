@@ -35,7 +35,7 @@ export function PageBackNav() {
     crumbs.length > 1 ? crumbs[crumbs.length - 2].href : "/dashboard/overview";
 
   return (
-    <div className="flex min-w-0 items-center gap-3">
+    <div className="flex min-w-0 items-center gap-3 overflow-hidden">
       <button
         type="button"
         onClick={() => {

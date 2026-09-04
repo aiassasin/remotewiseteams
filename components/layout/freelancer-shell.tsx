@@ -32,10 +32,14 @@ export function FreelancerShell({ children }: { children: ReactNode }) {
             </Link>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2">
-          <PageBackNav />
-          <LanguageSwitcher />
-          <ThemeToggle />
+        <div className="ml-auto flex min-w-0 items-center gap-2">
+          <div className="min-w-0 overflow-hidden">
+            <PageBackNav />
+          </div>
+          <div className="relative z-10 flex shrink-0 items-center gap-2">
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
       <main id="main" className="w-full flex-1 px-6 py-6 lg:px-10">

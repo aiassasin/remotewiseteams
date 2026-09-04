@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -7,6 +8,7 @@ import { ThemeScript } from "@/components/theme/theme-script";
 import { CookieBanner } from "@/components/legal/cookie-banner";
 import { AnalyticsGate } from "@/components/observability/analytics-gate";
 import { SkipToContent } from "@/components/i18n/skip-to-content";
+import { APP_LANGUAGE_COOKIE, normalizeAppLanguage } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import "./globals.css";
 
@@ -40,9 +42,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieLang = cookies().get(APP_LANGUAGE_COOKIE)?.value;
+  const initialLanguage = normalizeAppLanguage(cookieLang);
+
   return (
     <html
-      lang="en"
+      lang={initialLanguage}
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
@@ -51,7 +56,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-page font-sans antialiased">
         <ThemeProvider>
-          <LanguageProvider>
+          <LanguageProvider initialLanguage={initialLanguage}>
             <SkipToContent />
             {children}
             <Toaster />

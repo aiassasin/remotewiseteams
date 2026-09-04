@@ -6,16 +6,21 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { CONTRACT_LANGUAGES, LANGUAGE_LABELS } from "@/lib/contracts/i18n";
 import {
-  CONTRACT_LANGUAGES,
+  APP_LANGUAGE_COOKIE,
+  APP_LANGUAGE_STORAGE_KEY,
   detectAppLanguage,
-  LANGUAGE_LABELS,
-  type ContractLanguage,
-} from "@/lib/contracts/i18n";
-import { isAppLanguage, translate, type MessageKey, type TranslateVars } from "@/lib/i18n";
+  isAppLanguage,
+  normalizeAppLanguage,
+  translate,
+  type AppLanguage,
+  type MessageKey,
+  type TranslateVars,
+} from "@/lib/i18n";
 import {
   formatDate,
   formatDateTime,
@@ -25,38 +30,97 @@ import {
   localeTag,
 } from "@/lib/format";
 
-export const APP_LANGUAGE_KEY = "rw-language";
+export const APP_LANGUAGE_KEY = APP_LANGUAGE_STORAGE_KEY;
 
 export type TranslateFn = (key: MessageKey, vars?: TranslateVars) => string;
 
 type LanguageContextValue = {
-  language: ContractLanguage;
-  setLanguage: (next: ContractLanguage) => void;
+  language: AppLanguage;
+  setLanguage: (next: AppLanguage) => void;
   t: TranslateFn;
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-function readLanguage(): ContractLanguage {
-  if (typeof window === "undefined") return "en";
-  try {
-    const stored = window.localStorage.getItem(APP_LANGUAGE_KEY);
-    if (isAppLanguage(stored)) return stored;
-  } catch {
-    return detectAppLanguage();
+type ClientStore = {
+  language: AppLanguage;
+  bootstrapped: boolean;
+  listeners: Set<() => void>;
+};
+
+function clientStore(): ClientStore | null {
+  if (typeof window === "undefined") return null;
+  const root = window as Window & { __rwLanguageStore?: ClientStore };
+  if (!root.__rwLanguageStore) {
+    root.__rwLanguageStore = {
+      language: "en",
+      bootstrapped: false,
+      listeners: new Set(),
+    };
   }
-  return detectAppLanguage();
+  return root.__rwLanguageStore;
 }
 
-function persistLocal(next: ContractLanguage) {
+function emitLanguage(next: AppLanguage) {
+  const store = clientStore();
+  if (!store) return;
+  store.language = next;
+  store.bootstrapped = true;
+  store.listeners.forEach((listener) => listener());
+}
+
+function subscribeLanguage(listener: () => void) {
+  const store = clientStore();
+  if (!store) return () => undefined;
+  store.listeners.add(listener);
+  return () => store.listeners.delete(listener);
+}
+
+function getLanguageSnapshot(): AppLanguage {
+  return clientStore()?.language ?? "en";
+}
+
+function readStoredRaw(): string | null {
+  if (typeof window === "undefined") return null;
   try {
-    window.localStorage.setItem(APP_LANGUAGE_KEY, next);
+    const stored = window.localStorage.getItem(APP_LANGUAGE_STORAGE_KEY);
+    if (stored) return stored;
+  } catch {
+    return null;
+  }
+  const cookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${APP_LANGUAGE_COOKIE}=`))
+    ?.split("=")[1];
+  return cookie ?? null;
+}
+
+/**
+ * Reads the persisted UI language. Leftover `de` / `fr` values become English.
+ */
+function readLanguage(): AppLanguage | null {
+  const raw = readStoredRaw();
+  if (!raw) return null;
+  return normalizeAppLanguage(raw);
+}
+
+function persistLocal(next: AppLanguage) {
+  try {
+    window.localStorage.setItem(APP_LANGUAGE_STORAGE_KEY, next);
   } catch {
     /* private mode */
   }
 }
 
-function persistRemote(next: ContractLanguage) {
+function persistCookie(next: AppLanguage) {
+  try {
+    document.cookie = `${APP_LANGUAGE_COOKIE}=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
+  } catch {
+    /* private mode */
+  }
+}
+
+function persistRemote(next: AppLanguage) {
   void fetch("/api/settings", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -64,13 +128,35 @@ function persistRemote(next: ContractLanguage) {
   }).catch(() => undefined);
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<ContractLanguage>("en");
+function applyLanguage(next: AppLanguage) {
+  persistLocal(next);
+  persistCookie(next);
+  emitLanguage(next);
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = next;
+  }
+}
+
+export function LanguageProvider({
+  children,
+  initialLanguage = "en",
+}: {
+  children: ReactNode;
+  initialLanguage?: AppLanguage;
+}) {
+  const start = isAppLanguage(initialLanguage) ? initialLanguage : "en";
+  const store = clientStore();
+  if (store && !store.bootstrapped) {
+    store.language = start;
+    store.bootstrapped = true;
+  }
+
+  const language = useSyncExternalStore(subscribeLanguage, getLanguageSnapshot, () => start);
 
   useEffect(() => {
-    const initial = readLanguage();
-    setLanguageState(initial);
-    document.documentElement.lang = initial;
+    const stored = readLanguage();
+    const initial = stored ?? (isAppLanguage(start) ? start : detectAppLanguage());
+    applyLanguage(initial);
 
     let cancelled = false;
     fetch("/api/settings")
@@ -81,20 +167,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       .then((json) => {
         if (cancelled) return;
         const serverLang = json?.settings?.language;
-        let stored: string | null = null;
-        try {
-          stored = window.localStorage.getItem(APP_LANGUAGE_KEY);
-        } catch {
-          stored = null;
-        }
-        if (isAppLanguage(stored)) {
-          if (stored !== serverLang) persistRemote(stored);
+        const local = readLanguage();
+        if (local) {
+          if (local !== serverLang) persistRemote(local);
           return;
         }
         if (isAppLanguage(serverLang)) {
-          setLanguageState(serverLang);
-          document.documentElement.lang = serverLang;
-          persistLocal(serverLang);
+          applyLanguage(serverLang);
+          persistRemote(serverLang);
         }
       })
       .catch(() => undefined);
@@ -102,12 +182,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [start]);
 
-  const setLanguage = useCallback((next: ContractLanguage) => {
-    setLanguageState(next);
-    document.documentElement.lang = next;
-    persistLocal(next);
+  const setLanguage = useCallback((next: AppLanguage) => {
+    applyLanguage(next);
     persistRemote(next);
   }, []);
 
@@ -117,17 +195,31 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo(() => ({ language, setLanguage, t }), [language, setLanguage, t]);
-  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+  return (
+    <LanguageContext.Provider value={value}>
+      <div className="contents" data-app-lang={language} lang={language}>
+        {children}
+      </div>
+    </LanguageContext.Provider>
+  );
 }
 
-const FALLBACK: LanguageContextValue = {
-  language: "en",
-  setLanguage: (_next: ContractLanguage) => undefined,
-  t: (key, vars) => translate("en", key, vars),
-};
-
 export function useAppLanguage() {
-  return useContext(LanguageContext) ?? FALLBACK;
+  const context = useContext(LanguageContext);
+  const language = useSyncExternalStore(
+    subscribeLanguage,
+    getLanguageSnapshot,
+    () => context?.language ?? "en",
+  );
+  const setLanguage = context?.setLanguage ?? ((next: AppLanguage) => {
+    applyLanguage(next);
+    persistRemote(next);
+  });
+  const t = useCallback<TranslateFn>(
+    (key, vars) => translate(language, key, vars),
+    [language],
+  );
+  return { language, setLanguage, t };
 }
 
 /** Re-renders when the app language changes. */

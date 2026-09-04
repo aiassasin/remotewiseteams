@@ -10,6 +10,10 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "rw-cta hover:-translate-y-px active:translate-y-0",
+        soft: "rw-cta-soft hover:-translate-y-px active:translate-y-0",
+        softHoverNavy: "rw-cta-soft rw-cta-soft-navy hover:-translate-y-px active:translate-y-0",
+        softHoverOrange: "rw-cta-soft rw-cta-soft-orange hover:-translate-y-px active:translate-y-0",
+        gold: "rw-cta-gold hover:-translate-y-px active:translate-y-0",
         secondary:
           "border border-border bg-card text-ink hover:border-primary hover:text-primary hover:-translate-y-px active:translate-y-0",
         ghost: "bg-transparent text-ink-secondary hover:bg-page hover:text-primary",

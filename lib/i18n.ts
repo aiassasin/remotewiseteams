@@ -1,19 +1,65 @@
 import { CONTRACT_LANGUAGES, type ContractLanguage } from "@/lib/contracts/i18n";
-import de from "@/locales/de.json";
 import en from "@/locales/en.json";
 import es from "@/locales/es.json";
 import fi from "@/locales/fi.json";
-import fr from "@/locales/fr.json";
+import sv from "@/locales/sv.json";
 
-export type AppLanguage = ContractLanguage;
+/** UI language switcher: English, Finnish, Swedish, Spanish. */
+export const SWITCHER_LANGUAGES = ["en", "fi", "sv", "es"] as const;
+
+export type AppLanguage = (typeof SWITCHER_LANGUAGES)[number];
 export type Messages = typeof en;
 export type MessageKey = DotPaths<Messages>;
 export type TranslateVars = Record<string, string | number>;
 
-export const APP_LANGUAGES = CONTRACT_LANGUAGES;
+export const SWITCHER_LANGUAGE_LABELS: Record<AppLanguage, string> = {
+  en: "English",
+  fi: "Suomi",
+  sv: "Svenska",
+  es: "Español",
+};
 
+/** @deprecated Use SWITCHER_LANGUAGES. Kept as an alias for call sites that import APP_LANGUAGES. */
+export const APP_LANGUAGES = SWITCHER_LANGUAGES;
+export const APP_LANGUAGE_STORAGE_KEY = "rw-language";
+export const APP_LANGUAGE_COOKIE = "rw-language";
+
+const LEGACY_UI_LANGUAGES = new Set(["de", "fr"]);
+
+/**
+ * Returns true when `value` is a switcher locale (en, fi, sv, es).
+ * Stored `de` / `fr` are not accepted — use {@link normalizeAppLanguage}.
+ */
 export function isAppLanguage(value: unknown): value is AppLanguage {
-  return typeof value === "string" && (CONTRACT_LANGUAGES as readonly string[]).includes(value);
+  return typeof value === "string" && (SWITCHER_LANGUAGES as readonly string[]).includes(value);
+}
+
+/**
+ * Maps leftover German/French UI prefs to English; otherwise returns a valid switcher locale.
+ */
+export function normalizeAppLanguage(value: unknown): AppLanguage {
+  if (isAppLanguage(value)) return value;
+  if (typeof value === "string" && LEGACY_UI_LANGUAGES.has(value)) return "en";
+  return "en";
+}
+
+/**
+ * Picks a UI language from the browser, ignoring de/fr (mapped to English).
+ */
+export function detectAppLanguage(): AppLanguage {
+  if (typeof navigator === "undefined") return "en";
+  const code = (navigator.language || "en").slice(0, 2).toLowerCase();
+  return normalizeAppLanguage(code);
+}
+
+/**
+ * Contract documents still use en/fi/de/fr/es. Swedish UI falls back to English templates.
+ */
+export function toContractLanguage(language: string): ContractLanguage {
+  if ((CONTRACT_LANGUAGES as readonly string[]).includes(language)) {
+    return language as ContractLanguage;
+  }
+  return "en";
 }
 
 type DotPaths<T, Prefix extends string = ""> = T extends string
@@ -27,8 +73,7 @@ type DotPaths<T, Prefix extends string = ""> = T extends string
 const CATALOG: Record<AppLanguage, Messages> = {
   en,
   fi: fi as Messages,
-  de: de as Messages,
-  fr: fr as Messages,
+  sv: sv as Messages,
   es: es as Messages,
 };
 

@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Copy, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/empty-state";
 import { PageTransition } from "@/components/motion/page-transition";
 import { initials } from "@/lib/utils";
 import type { StoredFreelancer } from "@/lib/store";
@@ -14,27 +15,100 @@ import { statusMessageKey } from "@/lib/i18n";
 
 const TAB_KEYS = ["overview", "contracts", "invoices", "activity"] as const;
 
-export function FreelancerProfileClient() {
+export type FreelancerProfileData = {
+  freelancer: StoredFreelancer;
+  contracts: {
+    id: string;
+    title: string;
+    type: string;
+    status: string;
+    sentAt: string | null;
+    signedAt: string | null;
+  }[];
+  stats: { totalPaid: number; activeContracts: number; avgPaymentTime: string };
+};
+
+type LoadState =
+  | { status: "loading" }
+  | { status: "error"; message: string }
+  | { status: "ready"; data: FreelancerProfileData };
+
+function paramId(value: string | string[] | undefined) {
+  if (Array.isArray(value)) return value[0] ?? "";
+  return value ?? "";
+}
+
+export function FreelancerProfileClient({
+  initialData = null,
+}: {
+  initialData?: FreelancerProfileData | null;
+}) {
   const t = useT();
   const format = useFormat();
   const params = useParams<{ id: string }>();
+  const id = paramId(params?.id);
   const [tab, setTab] = useState<(typeof TAB_KEYS)[number]>("overview");
-  const [data, setData] = useState<{
-    freelancer: StoredFreelancer;
-    contracts: { id: string; title: string; type: string; status: string; sentAt: string | null; signedAt: string | null }[];
-    stats: { totalPaid: number; activeContracts: number; avgPaymentTime: string };
-  } | null>(null);
+  const [state, setState] = useState<LoadState>(
+    initialData ? { status: "ready", data: initialData } : { status: "loading" },
+  );
 
   useEffect(() => {
-    fetch(`/api/freelancers/${params.id}`)
-      .then((res) => res.json())
-      .then(setData);
-  }, [params.id]);
+    if (initialData) return;
+    if (!id) {
+      setState({ status: "error", message: t("freelancers.profileNotFound") });
+      return;
+    }
 
-  if (!data?.freelancer) {
+    let cancelled = false;
+    setState({ status: "loading" });
+    fetch(`/api/freelancers/${id}`)
+      .then(async (res) => {
+        const json = (await res.json()) as FreelancerProfileData & { message?: string };
+        if (!res.ok || !json.freelancer) {
+          throw new Error(
+            json.message === "Not found" ? t("freelancers.profileNotFound") : json.message || t("freelancers.profileLoadError"),
+          );
+        }
+        return json;
+      })
+      .then((data) => {
+        if (!cancelled) setState({ status: "ready", data });
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setState({
+            status: "error",
+            message: error instanceof Error ? error.message : t("freelancers.profileLoadError"),
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, initialData, t]);
+
+  if (state.status === "loading") {
     return <p className="font-sans text-body text-ink-muted">{t("freelancers.loadingProfile")}</p>;
   }
 
+  if (state.status === "error") {
+    return (
+      <PageTransition>
+        <div className="rw-card">
+          <EmptyState
+            icon="freelancers"
+            title={t("freelancers.profileLoadError")}
+            description={state.message || t("freelancers.profileNotFoundBody")}
+            actionLabel={t("common.back")}
+            actionHref="/dashboard/freelancers"
+          />
+        </div>
+      </PageTransition>
+    );
+  }
+
+  const { data } = state;
   const person = data.freelancer;
 
   return (

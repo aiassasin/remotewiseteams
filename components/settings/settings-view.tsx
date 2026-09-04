@@ -26,6 +26,7 @@ import type { MessageKey } from "@/lib/i18n";
 
 const TAB_KEY: Record<SettingsTab, MessageKey> = {
   profile: "settings.tabProfile",
+  language: "settings.tabLanguage",
   appearance: "settings.tabAppearance",
   company: "settings.tabCompany",
   members: "settings.tabMembers",
@@ -136,6 +137,7 @@ export function SettingsView({ initial }: { initial: SettingsPayload | null }) {
           {tab === "profile" ? (
             <ProfileTab data={data} onChange={setData} />
           ) : null}
+          {tab === "language" ? <LanguageTab /> : null}
           {tab === "appearance" ? (
             <AppearanceTab
               theme={data.theme}
@@ -315,12 +317,25 @@ function AppearanceTab({
           </button>
         ))}
       </div>
-      <div className="mt-8">
-        <p className="rw-label">{t("common.language")}</p>
-        <p className="mt-1 font-sans text-body text-ink-secondary">{t("settings.languageHint")}</p>
-        <div className="mt-3">
-          <LanguageSwitcher />
-        </div>
+      <div className="mt-8 border-t border-border pt-8">
+        <LanguageFields />
+      </div>
+    </div>
+  );
+}
+
+function LanguageTab() {
+  return <LanguageFields />;
+}
+
+function LanguageFields() {
+  const t = useT();
+  return (
+    <div>
+      <h2 className="rw-section-title">{t("settings.tabLanguage")}</h2>
+      <p className="mt-2 font-sans text-body text-ink-secondary">{t("settings.languageHint")}</p>
+      <div className="mt-4">
+        <LanguageSwitcher />
       </div>
     </div>
   );
@@ -518,8 +533,8 @@ function MembersTab({
           required
         />
         <Button type="submit" loading={busy}>
-          Invite
-        </Button>
+            {t("common.invite")}
+          </Button>
       </form>
     </div>
   );

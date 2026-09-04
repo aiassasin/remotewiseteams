@@ -1,4 +1,4 @@
-import type { ContractLanguage } from "@/lib/contracts/i18n";
+import type { AppLanguage } from "@/lib/i18n";
 import { translate } from "@/lib/i18n";
 
 type NavKey =
@@ -24,7 +24,7 @@ const NAV_KEYS: Record<NavKey, `nav.${NavKey}`> = {
   signOut: "nav.signOut",
 };
 
-export function chromeNav(lang: ContractLanguage) {
+export function chromeNav(lang: AppLanguage) {
   return {
     overview: translate(lang, NAV_KEYS.overview),
     freelancers: translate(lang, NAV_KEYS.freelancers),

@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isAppLanguage } from "@/lib/i18n";
+import { normalizeAppLanguage } from "@/lib/i18n";
 import {
   isSettingsTab,
   type CompanyPayload,
@@ -119,7 +119,7 @@ export async function loadSettings(
       settings?.theme === "light" || settings?.theme === "dark" || settings?.theme === "system"
         ? settings.theme
         : "system",
-    language: isAppLanguage(settingsRow?.language) ? settingsRow.language : "en",
+    language: normalizeAppLanguage(settingsRow?.language),
     profile: {
       fullName: asString(profile?.full_name) || fullName,
       headline: asString(profile?.headline),

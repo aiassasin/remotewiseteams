@@ -138,7 +138,10 @@
     "quickActions": "Schnellaktionen",
     "activityPaid": "{ref} bezahlt",
     "activityPaidBody": "Der Kunde hat bezahlt. Wählen Sie Standard- oder Lightning-Auszahlung.",
-    "activityCancelled": "{ref} wurde storniert"
+    "activityCancelled": "{ref} wurde storniert",
+    "onboardingProgress": "{percent} Prozent abgeschlossen",
+    "stepDone": "Erledigt",
+    "stepTodo": "Offen"
   },
   "invoices": {
     "title": "Rechnungen",
@@ -303,6 +306,9 @@
     "emailInvalid": "Geben Sie eine gültige E-Mail-Adresse ein",
     "rateInvalid": "Geben Sie einen gültigen Stundensatz ein",
     "loadingProfile": "Profil wird geladen…",
+    "profileNotFound": "Freelancer nicht gefunden.",
+    "profileLoadError": "Profil wurde nicht geladen.",
+    "profileNotFoundBody": "Diese Person ist nicht in Ihrem Workspace, oder der Link ist ungültig.",
     "locationUnset": "Standort nicht gesetzt",
     "totalPaid": "Gesamt bezahlt",
     "avgPay": "Durchschn. Zahlung",
@@ -369,6 +375,7 @@
     "loadFailed": "Einstellungen konnten nicht geladen werden.",
     "refreshTry": "Aktualisieren und erneut versuchen.",
     "tabProfile": "Profil",
+    "tabLanguage": "Sprache",
     "tabAppearance": "Erscheinungsbild",
     "tabCompany": "Unternehmen",
     "tabMembers": "Mitglieder",
@@ -440,8 +447,8 @@
     "languageHint": "Sprache für das gesamte Produkt. Wird in diesem Browser und in Ihrem Konto gespeichert."
   },
   "auth": {
-    "welcomeBack": "Willkommen zurück.",
-    "signInHint": "Melden Sie sich an, um Verträge, Rechnungen und Auszahlungen zu verwalten.",
+    "welcomeBack": "Melden Sie sich an, um Verträge zu verwalten",
+    "signInHint": "Verwalten Sie Verträge, Rechnungen und Auszahlungen.",
     "signIn": "Anmelden",
     "signingIn": "Anmeldung...",
     "signInFailed": "Anmeldung fehlgeschlagen",
