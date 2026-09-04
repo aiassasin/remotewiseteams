@@ -172,15 +172,16 @@
   }
 
   /*
-   * Overview cash-flow CTA: gold matches login submit.
+   * Overview cash-flow CTA: light yellow rest, dark yellow hover.
    * Send contract = gold / navy text. Invite stays light-blue → orange hover.
    * Never white-on-yellow. Do not paint the rest of Overview gold.
    */
   .rw-cta-gold {
-    background-color: #fada5e;
+    background-color: #fde68a;
     color: #0b1a33;
     box-shadow: none;
     font-weight: 600;
+    transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
   }
 
   .rw-cta-gold:hover,

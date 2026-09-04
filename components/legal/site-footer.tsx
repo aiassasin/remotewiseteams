@@ -67,7 +67,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
-              className="text-[#374151] hover:text-ink"
+              className="text-[#374151] hover:text-ink dark:text-white dark:hover:text-white"
             >
               <LinkedInLogo className="h-4 w-4" />
             </a>
@@ -76,7 +76,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="X (Twitter)"
-              className="text-[#374151] hover:text-ink"
+              className="text-[#374151] hover:text-ink dark:text-white dark:hover:text-white"
             >
               <XLogo className="h-4 w-4" />
             </a>
@@ -85,7 +85,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
-              className="text-[#374151] hover:text-ink"
+              className="text-[#374151] hover:text-ink dark:text-white dark:hover:text-white"
             >
               <FacebookLogo className="h-4 w-4" />
             </a>
@@ -94,7 +94,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="text-[#374151] hover:text-ink"
+              className="text-[#374151] hover:text-ink dark:text-white dark:hover:text-white"
             >
               <InstagramLogo className="h-4 w-4" />
             </a>
@@ -106,7 +106,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
             <Link
               key={link.href}
               href={link.href}
-              className="font-sans text-[13px] font-medium text-primary hover:text-primary-hover"
+              className="font-sans text-[13px] font-medium text-[#E5C94A] hover:text-[#C9A227]"
             >
               {t(link.key)}
             </Link>
