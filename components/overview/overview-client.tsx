@@ -227,7 +227,7 @@ export function OverviewClient({ data, error }: { data: OverviewData | null; err
           <section className="rw-overview-card rw-overview-panel">
             <h2 className="font-display text-card">{t("overview.activity")}</h2>
             {data.activity.length === 0 ? (
-              <p className="mt-3 text-sm text-[#374151]">{t("overview.activityEmpty")}</p>
+              <p className="mt-3 text-sm text-[#374151] dark:text-[#F3F4F6]">{t("overview.activityEmpty")}</p>
             ) : (
               <ul className="mt-4">
                 {data.activity.map((item) => (
@@ -243,7 +243,7 @@ export function OverviewClient({ data, error }: { data: OverviewData | null; err
                 <li key={action.href}>
                   <Link href={action.href} className="rw-overview-action">
                     <IsoIcon name={action.icon} size={28} />
-                    <span className="font-sans text-[14px] font-medium text-[#374151]">{action.label}</span>
+                    <span className="font-sans text-[14px] font-medium text-[#374151] dark:text-[#F3F4F6]">{action.label}</span>
                   </Link>
                 </li>
               ))}

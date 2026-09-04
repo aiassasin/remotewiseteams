@@ -55,7 +55,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
         }`}
       >
         <div>
-          <p className="font-sans text-small text-[#374151]">
+          <p className="font-sans text-small text-[#374151] dark:text-[#F3F4F6]">
             RemoteWise Teams, RW Teams Oy, Finland
           </p>
           {!compact ? (
