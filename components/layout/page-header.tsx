@@ -6,11 +6,13 @@ export function PageHeader({
   description,
   actions,
   className,
+  actionsClassName,
 }: {
   title: string;
   description?: string;
   actions?: ReactNode;
   className?: string;
+  actionsClassName?: string;
 }) {
   return (
     <div
@@ -19,16 +21,16 @@ export function PageHeader({
         className,
       )}
     >
-      <div>
+      <div className="min-w-0">
         <h1 className="rw-page-title">{title}</h1>
         {description ? (
-          <p className="mt-1 font-sans text-body text-ink-secondary">
+          <p className="rw-page-lede mt-1 font-sans text-body text-ink-secondary">
             {description}
           </p>
         ) : null}
       </div>
       {actions ? (
-        <div className="flex flex-wrap items-center gap-2">{actions}</div>
+        <div className={cn("flex flex-wrap items-center gap-2", actionsClassName)}>{actions}</div>
       ) : null}
     </div>
   );

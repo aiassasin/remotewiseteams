@@ -5,32 +5,110 @@ import { useParams } from "next/navigation";
 import { Copy, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/empty-state";
 import { PageTransition } from "@/components/motion/page-transition";
 import { initials } from "@/lib/utils";
 import type { StoredFreelancer } from "@/lib/store";
 import Link from "next/link";
+import { useFormat, useT } from "@/components/i18n/language-provider";
+import { statusMessageKey } from "@/lib/i18n";
 
-const TABS = ["Overview", "Contracts", "Invoices", "Activity"] as const;
+const TAB_KEYS = ["overview", "contracts", "invoices", "activity"] as const;
 
-export function FreelancerProfileClient() {
+export type FreelancerProfileData = {
+  freelancer: StoredFreelancer;
+  contracts: {
+    id: string;
+    title: string;
+    type: string;
+    status: string;
+    sentAt: string | null;
+    signedAt: string | null;
+  }[];
+  stats: { totalPaid: number; activeContracts: number; avgPaymentTime: string };
+};
+
+type LoadState =
+  | { status: "loading" }
+  | { status: "error"; message: string }
+  | { status: "ready"; data: FreelancerProfileData };
+
+function paramId(value: string | string[] | undefined) {
+  if (Array.isArray(value)) return value[0] ?? "";
+  return value ?? "";
+}
+
+export function FreelancerProfileClient({
+  initialData = null,
+}: {
+  initialData?: FreelancerProfileData | null;
+}) {
+  const t = useT();
+  const format = useFormat();
   const params = useParams<{ id: string }>();
-  const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
-  const [data, setData] = useState<{
-    freelancer: StoredFreelancer;
-    contracts: { id: string; title: string; type: string; status: string; sentAt: string | null; signedAt: string | null }[];
-    stats: { totalPaid: number; activeContracts: number; avgPaymentTime: string };
-  } | null>(null);
+  const id = paramId(params?.id);
+  const [tab, setTab] = useState<(typeof TAB_KEYS)[number]>("overview");
+  const [state, setState] = useState<LoadState>(
+    initialData ? { status: "ready", data: initialData } : { status: "loading" },
+  );
 
   useEffect(() => {
-    fetch(`/api/freelancers/${params.id}`)
-      .then((res) => res.json())
-      .then(setData);
-  }, [params.id]);
+    if (initialData) return;
+    if (!id) {
+      setState({ status: "error", message: t("freelancers.profileNotFound") });
+      return;
+    }
 
-  if (!data?.freelancer) {
-    return <p className="font-sans text-body text-ink-muted">Loading profile…</p>;
+    let cancelled = false;
+    setState({ status: "loading" });
+    fetch(`/api/freelancers/${id}`)
+      .then(async (res) => {
+        const json = (await res.json()) as FreelancerProfileData & { message?: string };
+        if (!res.ok || !json.freelancer) {
+          throw new Error(
+            json.message === "Not found" ? t("freelancers.profileNotFound") : json.message || t("freelancers.profileLoadError"),
+          );
+        }
+        return json;
+      })
+      .then((data) => {
+        if (!cancelled) setState({ status: "ready", data });
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setState({
+            status: "error",
+            message: error instanceof Error ? error.message : t("freelancers.profileLoadError"),
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, initialData, t]);
+
+  if (state.status === "loading") {
+    return <p className="font-sans text-body text-ink-muted">{t("freelancers.loadingProfile")}</p>;
   }
 
+  if (state.status === "error") {
+    return (
+      <PageTransition>
+        <div className="rw-card">
+          <EmptyState
+            icon="freelancers"
+            title={t("freelancers.profileLoadError")}
+            description={state.message || t("freelancers.profileNotFoundBody")}
+            actionLabel={t("common.back")}
+            actionHref="/dashboard/freelancers"
+          />
+        </div>
+      </PageTransition>
+    );
+  }
+
+  const { data } = state;
   const person = data.freelancer;
 
   return (
@@ -42,29 +120,29 @@ export function FreelancerProfileClient() {
               {initials(person.fullName)}
             </div>
             <h1 className="mt-4 font-display text-section text-ink">{person.fullName}</h1>
-            <p className="mt-1 font-sans text-[14px] text-ink-slate">{person.role ?? "Freelancer"}</p>
+            <p className="mt-1 font-sans text-[14px] text-ink-slate">{person.role ?? t("common.freelancers")}</p>
             <div className="mt-3">
               <Badge status={person.status}>{person.status}</Badge>
             </div>
             <p className="mt-3 font-sans text-[14px] text-ink-secondary">
-              {person.country ?? "Location not set"}
+              {person.country ?? t("freelancers.locationUnset")}
             </p>
             <div className="mt-6 grid grid-cols-3 gap-2 border-t border-border pt-4">
               <div>
                 <p className="font-display text-[18px] text-success">${data.stats.totalPaid}</p>
-                <p className="font-sans text-small text-ink-muted">Total paid</p>
+                <p className="font-sans text-small text-ink-muted">{t("freelancers.totalPaid")}</p>
               </div>
               <div>
                 <p className="font-display text-[18px] text-ink">{data.stats.activeContracts}</p>
-                <p className="font-sans text-small text-ink-muted">Contracts</p>
+                <p className="font-sans text-small text-ink-muted">{t("nav.contracts")}</p>
               </div>
               <div>
                 <p className="font-display text-[18px] text-ink">{data.stats.avgPaymentTime}</p>
-                <p className="font-sans text-small text-ink-muted">Avg. pay</p>
+                <p className="font-sans text-small text-ink-muted">{t("freelancers.avgPay")}</p>
               </div>
             </div>
             <div className="mt-6 rounded-control border border-border p-3">
-              <p className="font-sans text-small uppercase tracking-[0.05em] text-ink-muted">Rate</p>
+              <p className="font-sans text-small uppercase tracking-[0.05em] text-ink-muted">{t("freelancers.colRate")}</p>
               <p className="mt-1 font-sans text-[14px] font-medium text-ink">
                 {person.hourlyRate ? `${person.currency} ${person.hourlyRate}/hr` : "—"}
               </p>
@@ -74,7 +152,7 @@ export function FreelancerProfileClient() {
                 {person.email}
                 <button
                   type="button"
-                  aria-label="Copy email"
+                  aria-label={t("freelancers.copyEmail")}
                   onClick={() => navigator.clipboard.writeText(person.email)}
                 >
                   <Copy className="h-3.5 w-3.5" />
@@ -88,27 +166,27 @@ export function FreelancerProfileClient() {
             </div>
             <p className="mt-4 font-sans text-[13px]">
               {person.stripeOnboarded ? (
-                <span className="text-success-text">Stripe connected ✓</span>
+                <span className="text-success-text">{t("freelancers.stripeConnected")}</span>
               ) : (
-                <span className="text-warning-text">Not connected</span>
+                <span className="text-warning-text">{t("freelancers.notConnected")}</span>
               )}
             </p>
             <div className="mt-6 space-y-2">
               <Button asChild size="full">
-                <Link href="/dashboard/contracts/new">Send contract</Link>
+                <Link href="/dashboard/contracts/new">{t("freelancers.sendContract")}</Link>
               </Button>
               <Button variant="secondary" size="full">
-                Request invoice
+                {t("freelancers.requestInvoice")}
               </Button>
               <Button variant="ghost" size="full">
-                Send message
+                {t("freelancers.sendMessage")}
               </Button>
             </div>
           </div>
         </aside>
         <section className="min-w-0 flex-1">
           <div className="flex gap-4 border-b border-border">
-            {TABS.map((item) => (
+            {TAB_KEYS.map((item) => (
               <button
                 key={item}
                 type="button"
@@ -119,17 +197,25 @@ export function FreelancerProfileClient() {
                     : "border-transparent text-ink-muted"
                 }`}
               >
-                {item}
+                {item === "overview"
+                  ? t("freelancers.tabOverview")
+                  : item === "contracts"
+                    ? t("freelancers.tabContracts")
+                    : item === "invoices"
+                      ? t("freelancers.tabInvoices")
+                      : t("freelancers.tabActivity")}
               </button>
             ))}
           </div>
           <div className="mt-6">
-            {tab === "Overview" || tab === "Contracts" ? (
+            {tab === "overview" || tab === "contracts" ? (
               data.contracts.length === 0 ? (
-                <p className="font-sans text-body text-ink-slate">No contracts with this freelancer yet.</p>
+                <p className="font-sans text-body text-ink-slate">{t("freelancers.noContracts")}</p>
               ) : (
                 <div className="space-y-3">
-                  {data.contracts.map((row) => (
+                  {data.contracts.map((row) => {
+                    const statusKey = statusMessageKey(row.status);
+                    return (
                     <Link
                       key={row.id}
                       href={`/dashboard/contracts/${row.id}`}
@@ -137,17 +223,18 @@ export function FreelancerProfileClient() {
                     >
                       <p className="font-display text-card text-ink">{row.title}</p>
                       <p className="mt-1 font-sans text-small text-ink-muted">
-                        {row.type} · {row.status}
+                        {row.type} · {statusKey ? t(statusKey) : row.status}
                       </p>
                     </Link>
-                  ))}
+                    );
+                  })}
                 </div>
               )
-            ) : tab === "Invoices" ? (
-              <p className="font-sans text-body text-ink-slate">No invoices yet.</p>
+            ) : tab === "invoices" ? (
+              <p className="font-sans text-body text-ink-slate">{t("freelancers.noInvoices")}</p>
             ) : (
               <p className="font-sans text-body text-ink-slate">
-                Invited {new Date(person.createdAt).toLocaleString()}
+                {t("freelancers.invitedAt", { date: format.dateTime(person.createdAt) })}
               </p>
             )}
           </div>

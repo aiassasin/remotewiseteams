@@ -33,9 +33,7 @@ export function EmptyState({
       <h2 className="mt-5 font-display text-[18px] font-semibold tracking-tight text-ink">
         {title}
       </h2>
-      <p className="mt-3 max-w-[320px] font-sans text-body text-ink-slate">
-        {description}
-      </p>
+      <p className="mt-3 max-w-[320px] text-sm text-[#374151] dark:text-[#F3F4F6]">{description}</p>
       {actionLabel && actionHref ? (
         <Button className="mt-5" asChild>
           <Link href={actionHref}>{actionLabel}</Link>

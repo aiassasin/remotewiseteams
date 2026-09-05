@@ -1,5 +1,9 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/language-provider";
+import { statusMessageKey } from "@/lib/i18n";
 
 const badgeStyles: Record<string, string> = {
   active: "bg-success-light text-success-text",
@@ -22,19 +26,28 @@ const badgeStyles: Record<string, string> = {
 
 export type BadgeStatus = keyof typeof badgeStyles;
 
+function fallbackLabel(value: string) {
+  const spaced = value.replaceAll("_", " ");
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
 export function Badge({
   status,
   children,
   className,
 }: {
   status: BadgeStatus | string;
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
 }) {
-  const label =
-    typeof children === "string"
-      ? children.charAt(0).toUpperCase() + children.slice(1)
-      : children;
+  const t = useT();
+  const raw =
+    typeof children === "string" && children.trim()
+      ? children
+      : String(status);
+  const key = statusMessageKey(raw) ?? statusMessageKey(String(status));
+  const label = key ? t(key) : typeof children === "string" ? fallbackLabel(children) : children ?? fallbackLabel(String(status));
+
   return (
     <span
       className={cn(

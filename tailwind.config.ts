@@ -11,6 +11,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        "royal-yellow": "rgb(var(--rw-royal-yellow) / <alpha-value>)",
+        "deep-navy": "rgb(var(--rw-deep-navy) / <alpha-value>)",
+        "dark-gray": "rgb(var(--rw-dark-gray) / <alpha-value>)",
+        "muted-gray": "rgb(var(--rw-muted-gray) / <alpha-value>)",
+        "slate-gray": "rgb(var(--rw-slate-gray) / <alpha-value>)",
         primary: {
           DEFAULT: "rgb(var(--rw-primary) / <alpha-value>)",
           hover: "rgb(var(--rw-primary-hover) / <alpha-value>)",
@@ -54,8 +59,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "sans-serif"],
-        sans: ["var(--font-sans)", "sans-serif"],
+        display: ["var(--font-display)", "var(--font-arabic)", "sans-serif"],
+        sans: ["var(--font-sans)", "var(--font-arabic)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
       },
       fontSize: {

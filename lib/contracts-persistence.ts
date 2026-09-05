@@ -149,4 +149,9 @@ export async function listWorkspaceContracts(companyId: string) {
   return listContracts(companyId);
 }
 
+export async function listFreelancerContracts(companyId: string, freelancerId: string) {
+  const rows = await listWorkspaceContracts(companyId);
+  return rows.filter((row) => row.freelancerId === freelancerId);
+}
+
 export { getContractByToken };

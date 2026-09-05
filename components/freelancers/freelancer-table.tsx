@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Freelancer } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { countryFlag } from "@/lib/flags";
+import { useT } from "@/components/i18n/language-provider";
 
 export function FreelancerTable({
   rows,
@@ -18,22 +19,30 @@ export function FreelancerTable({
   initials: (name: string) => string;
 }) {
   const router = useRouter();
+  const t = useT();
+  const headings = [
+    t("freelancers.colFreelancer"),
+    t("freelancers.colRole"),
+    t("freelancers.colRate"),
+    t("freelancers.colStatus"),
+    t("freelancers.colContracts"),
+    t("freelancers.colPayment"),
+    "",
+  ];
 
   return (
     <div className="overflow-x-auto rounded-card border border-border bg-card">
       <table className="w-full min-w-[880px] border-collapse text-left">
         <thead>
           <tr className="border-b border-border">
-            {["Freelancer", "Role", "Rate", "Status", "Contracts", "Payment", ""].map(
-              (heading) => (
-                <th
-                  key={heading || "actions"}
-                  className="px-4 py-3 font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-muted"
-                >
-                  {heading}
-                </th>
-              ),
-            )}
+            {headings.map((heading) => (
+              <th
+                key={heading || "actions"}
+                className="px-4 py-3 font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-muted"
+              >
+                {heading}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -92,16 +101,16 @@ export function FreelancerTable({
               </td>
               <td className="px-4 py-3 font-sans text-[13px]">
                 {row.stripeOnboarded ? (
-                  <span className="text-success-text">Connected</span>
+                  <span className="text-success-text">{t("freelancers.connected")}</span>
                 ) : (
-                  <span className="text-warning-text">Not set up</span>
+                  <span className="text-warning-text">{t("freelancers.notSetUp")}</span>
                 )}
               </td>
               <td className="px-4 py-3 text-right" onClick={(event) => event.stopPropagation()}>
                 <Link
                   href={`/dashboard/freelancers/${row.id}`}
                   className="inline-flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-page hover:text-ink"
-                  aria-label={`Open actions for ${row.fullName}`}
+                  aria-label={t("freelancers.openActions", { name: row.fullName })}
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </Link>

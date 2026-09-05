@@ -9,8 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PageTransition } from "@/components/motion/page-transition";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { useT } from "@/components/i18n/language-provider";
 
 export function ProfileOnboarding() {
+  const t = useT();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("Ahmed Hassan");
@@ -44,10 +47,22 @@ export function ProfileOnboarding() {
 
   return (
     <div className="min-h-screen bg-page px-4 py-10">
+      <div className="mx-auto flex w-full max-w-[560px] justify-end">
+        <LanguageSwitcher />
+      </div>
       <PageTransition>
         <div className="mx-auto w-full max-w-[560px]">
           <p className="font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-muted">
-            Step {step} of 3 — {step === 1 ? "Profile details" : step === 2 ? "Payment setup" : "All set"}
+            {t("onboarding.stepOf", {
+              step,
+              total: 3,
+              label:
+                step === 1
+                  ? t("onboarding.stepProfile")
+                  : step === 2
+                    ? t("onboarding.stepPayment")
+                    : t("onboarding.stepDone"),
+            })}
           </p>
           <div className="mt-3 h-1 overflow-hidden rounded-pill bg-border">
             <motion.div
@@ -60,7 +75,7 @@ export function ProfileOnboarding() {
 
           {step === 1 ? (
             <div className="mt-8 rounded-card border border-border bg-card p-8">
-              <h1 className="rw-section-title">Tell us about your work</h1>
+              <h1 className="rw-section-title">{t("onboarding.tellUs")}</h1>
               <div className="mt-6 flex justify-center">
                 <label className="group relative h-[120px] w-[120px] cursor-pointer overflow-hidden rounded-full border border-border bg-page">
                   {photo ? (
@@ -68,7 +83,7 @@ export function ProfileOnboarding() {
                     <img src={photo} alt="" className="h-full w-full object-cover" />
                   ) : (
                     <span className="flex h-full items-center justify-center font-display text-section text-ink-muted">
-                      Photo
+                      {t("onboarding.photo")}
                     </span>
                   )}
                   <span className="absolute inset-0 hidden items-center justify-center bg-black/40 group-hover:flex">
@@ -87,28 +102,28 @@ export function ProfileOnboarding() {
               </div>
               <div className="mt-6 space-y-4">
                 <div>
-                  <Label htmlFor="name">Full name</Label>
+                  <Label htmlFor="name">{t("onboarding.fullName")}</Label>
                   <Input id="name" value={name} onChange={(event) => setName(event.target.value)} />
                 </div>
                 <div>
-                  <Label htmlFor="title">Professional title</Label>
+                  <Label htmlFor="title">{t("onboarding.professionalTitle")}</Label>
                   <Input
                     id="title"
-                    placeholder="Full-Stack Developer"
+                    placeholder={t("onboarding.titlePlaceholder")}
                     value={title}
                     onChange={(event) => setTitle(event.target.value)}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="linkedin">LinkedIn URL</Label>
+                  <Label htmlFor="linkedin">{t("onboarding.linkedin")}</Label>
                   <Input id="linkedin" value={linkedin} onChange={(event) => setLinkedin(event.target.value)} />
                 </div>
                 <div>
-                  <Label htmlFor="website">Personal website</Label>
+                  <Label htmlFor="website">{t("onboarding.website")}</Label>
                   <Input id="website" value={website} onChange={(event) => setWebsite(event.target.value)} />
                 </div>
                 <div>
-                  <Label htmlFor="bio">Bio</Label>
+                  <Label htmlFor="bio">{t("onboarding.bio")}</Label>
                   <Textarea
                     id="bio"
                     maxLength={300}
@@ -121,7 +136,7 @@ export function ProfileOnboarding() {
                 </div>
               </div>
               <Button className="mt-6" size="full" onClick={() => setStep(2)}>
-                Continue to payment setup
+                {t("onboarding.continuePayment")}
               </Button>
             </div>
           ) : null}
@@ -139,31 +154,31 @@ export function ProfileOnboarding() {
                     <Check className="h-8 w-8" />
                   </motion.div>
                   <p className="mt-4 font-sans text-body text-ink">
-                    Your bank account is connected. You&apos;re ready to get paid.
+                    {t("onboarding.bankConnected")}
                   </p>
                 </div>
               ) : (
                 <>
-                  <h1 className="rw-section-title">Connect your bank to get paid</h1>
+                  <h1 className="rw-section-title">{t("onboarding.connectTitle")}</h1>
                   <p className="mt-2 font-sans text-body text-ink-secondary">
-                    RemoteWise uses Stripe to send payments directly to your bank account. Your banking details are never stored on our servers.
+                    {t("onboarding.connectBody")}
                   </p>
                   <div className="mt-8 grid grid-cols-3 gap-4 text-center">
                     <div>
                       <Shield className="mx-auto h-5 w-5 text-primary" />
-                      <p className="mt-2 font-sans text-small text-ink-secondary">Bank-level encryption</p>
+                      <p className="mt-2 font-sans text-small text-ink-secondary">{t("onboarding.encryption")}</p>
                     </div>
                     <div>
                       <Globe className="mx-auto h-5 w-5 text-primary" />
-                      <p className="mt-2 font-sans text-small text-ink-secondary">Available in 40+ countries</p>
+                      <p className="mt-2 font-sans text-small text-ink-secondary">{t("onboarding.countries")}</p>
                     </div>
                     <div>
                       <Clock className="mx-auto h-5 w-5 text-primary" />
-                      <p className="mt-2 font-sans text-small text-ink-secondary">Payouts in 1–2 business days</p>
+                      <p className="mt-2 font-sans text-small text-ink-secondary">{t("onboarding.payoutDays")}</p>
                     </div>
                   </div>
                   <Button className="mt-8" size="full" loading={connecting} onClick={connectBank}>
-                    Connect bank account
+                    {t("onboarding.connectBank")}
                   </Button>
                 </>
               )}
@@ -180,12 +195,12 @@ export function ProfileOnboarding() {
               >
                 <Check className="h-10 w-10" />
               </motion.div>
-              <h1 className="mt-6 font-display text-display text-ink">You&apos;re in, {name.split(" ")[0]}.</h1>
-              <p className="mt-3 font-sans text-body text-ink-secondary">
-                Your workspace will be notified that you&apos;ve joined. You&apos;ll get an email when your first contract is ready to sign.
-              </p>
+              <h1 className="mt-6 font-display text-display text-ink">
+                {t("onboarding.youreIn", { name: name.split(" ")[0] || name })}
+              </h1>
+              <p className="mt-3 font-sans text-body text-ink-secondary">{t("onboarding.joinedBody")}</p>
               <Button className="mt-8" size="full" onClick={() => router.push("/freelancer/dashboard")}>
-                Go to my dashboard
+                {t("onboarding.goDashboard")}
               </Button>
             </div>
           ) : null}

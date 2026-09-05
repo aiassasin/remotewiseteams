@@ -27,7 +27,6 @@ import {
   CONTRACT_LANGUAGES,
   LANGUAGE_LABELS,
   clauseCopy,
-  detectAppLanguage,
   typeCopy,
   uiCopy,
   variableLabel,
@@ -38,6 +37,8 @@ import { TEMPLATE_VARIABLES } from "@/lib/contracts/templates";
 import type { ContractTemplate } from "@/lib/contract-templates";
 import type { CompanyPayload } from "@/lib/settings";
 import type { Freelancer } from "@/lib/types";
+import { useAppLanguage } from "@/components/i18n/language-provider";
+import { toContractLanguage } from "@/lib/i18n";
 
 function plusDays(days: number) {
   const date = new Date();
@@ -51,10 +52,11 @@ function isTemplateId(value: string): value is TemplateId {
 
 export function ContractBuilder({ template }: { template: ContractTemplate }) {
   const router = useRouter();
+  const { language: appLanguage } = useAppLanguage();
   const [templateId, setTemplateId] = useState<TemplateId>(
     isTemplateId(template.id) ? template.id : "nda",
   );
-  const [language, setLanguage] = useState<ContractLanguage>(detectAppLanguage);
+  const [language, setLanguage] = useState<ContractLanguage>(() => toContractLanguage(appLanguage));
   const copy = uiCopy(language);
   const [companyName, setCompanyName] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
@@ -76,6 +78,10 @@ export function ContractBuilder({ template }: { template: ContractTemplate }) {
   const [desktop, setDesktop] = useState(false);
   const [mobilePreview, setMobilePreview] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setLanguage(toContractLanguage(appLanguage));
+  }, [appLanguage]);
 
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");

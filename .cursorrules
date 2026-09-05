@@ -1,0 +1,204 @@
+# REMOTEWISE — 2030 AI ORCHESTRATION RULES
+
+## 🧬 PROJECT IDENTITY
+- **Name:** RemoteWise
+- **Mission:** Become the most trusted contract & billing infrastructure for companies and freelancers, starting in Finland and scaling globally.
+- **Core Promise:** Legal safety, financial transparency, and a premium user experience.
+- **Target Audience:** Finnish companies (incl. sole traders/Toiminimi) and EU/global freelancers.
+
+---
+
+## ⚙️ TECHNOLOGY STACK (THE 2030 PILLARS)
+
+### Frontend (The Experience Layer)
+- **Framework:** Next.js 15 (App Router) with React 19 RC.
+- **Language:** TypeScript 5.7+ (Strict mode: `strict: true`, `noUncheckedIndexedAccess`).
+- **Styling:** Tailwind CSS 4 (Utility-first) + `class-variance-authority` (CVA) for component variants.
+- **UI Library:** shadcn/ui (Radix UI primitives) — customize via `components/ui/*`.
+- **Animations:** `motion` (successor to Framer Motion) — use spring physics for everything.
+- **State Management:**
+  - **Server/API state:** TanStack Query (React Query) v5.
+  - **Client/UI state:** Zustand (with `persist` middleware for themes/preferences).
+- **Forms:** React Hook Form v7 + Zod v3 (strict validation).
+- **Icons:** Lucide React (use `size={16}` or `size={20}` consistently).
+
+### Backend (The Logic & Money Layer)
+- **API Layer:** tRPC (preferred for type-safety) OR Next.js Route Handlers (if tRPC is overkill). Stick to **tRPC** for internal mutations/queries.
+- **Database ORM:** Prisma 6 (with `accelerate` or `optimize` for performance).
+- **Database:** PostgreSQL (Supabase / Neon / Vercel Postgres) — EU region mandatory (e.g., `eu-north-1`).
+- **Authentication:** Auth.js (v5) — use JWT strategy with refresh tokens.
+- **Email:** Resend (for transactional emails like invites, invoice reminders).
+- **Queues/Jobs:** BullMQ (backed by Redis) for generating PDFs, sending bulk emails, and reminding about unpaid invoices.
+- **File Storage:** AWS S3 (or Vercel Blob) — store contract PDFs and signed documents. Use pre-signed URLs for security.
+- **Logging:** Pino (structured JSON logs) — forward to a service like Axiom or Better Stack.
+- **Error Tracking:** Sentry (configured for source maps).
+
+### DevOps & Infrastructure
+- **Hosting:** Vercel (Preview branches for every PR, Production for `main`).
+- **CDN:** Vercel Edge Network for static assets.
+- **Analytics:** Vercel Web Analytics + PostHog (for product analytics).
+- **Testing:**
+  - **Unit/Integration:** Vitest + React Testing Library.
+  - **E2E:** Playwright (critical flows: sign-in, contract creation, invoice generation).
+
+---
+
+## 🎨 DESIGN SYSTEM (THE "GOLD STANDARD" UI)
+
+### 1. Color Palette (Exact Hex Codes)
+*These are absolute. Do not deviate.*
+
+| Role | Hex | Usage |
+| :--- | :--- | :--- |
+| **Brand Royal Yellow** | `#FADA5E` | Primary CTAs (Sign In, Send Contract, Submit) |
+| **Brand Yellow Hover** | `#E5C94A` | Hover state for primary CTAs |
+| **Secondary Orange** | `#FFA500` | ONLY for "Invite Freelancer" / "Create" actions |
+| **Secondary Orange Hover**| `#E69500` | Hover for orange buttons |
+| **Deep Navy (Text/Headings)**| `#0B1A33` | All main headers, numbers, and monetary values |
+| **Slate Gray (Body)** | `#4B5563` | Paragraphs, descriptions, subtext |
+| **Dark Gray (Labels)** | `#374151` | Form labels, input placeholders |
+| **Muted Gray (Footer/Helper)**| `#9CA3AF` | Footers, timestamps, secondary info |
+| **Page Background** | `#F8F9FA` | Main app background |
+| **Card Background** | `#FFFFFF` | Cards, modals, sheets |
+| **Border Default** | `#D1D5DB` | Input borders, dividers |
+| **Border Focus** | `#FADA5E` | Input focus states (with 3px glow) |
+| **Status - Success** | `#10B981` | Paid invoices, active status |
+| **Status - Warning** | `#F59E0B` | Pending, waiting for signature |
+| **Status - Error** | `#EF4444` | Overdue, declined |
+
+### 2. Typography
+- **Font Family:** `Inter` (variable) — load via `next/font/google`.
+- **Scale:**
+  - **H1 (Page Title):** `text-4xl` / `font-bold` / `tracking-tight` / `text-deep-navy`
+  - **H2 (Section Head):** `text-2xl` / `font-semibold` / `text-deep-navy`
+  - **H3 (Card Title):** `text-lg` / `font-semibold` / `text-deep-navy`
+  - **Body:** `text-base` / `font-normal` / `text-slate-gray`
+  - **Label:** `text-sm` / `font-medium` / `text-dark-gray`
+  - **Monetary Value:** `text-2xl` / `font-bold` / `text-deep-navy` (precede with € symbol).
+  - **Small/Footnote:** `text-xs` / `font-normal` / `text-muted-gray`
+
+### 3. Spacing & Layout
+- **Grid:** 8px base unit (multiples of 4 or 8).
+- **Max Container:** `max-w-7xl` (1280px) with `mx-auto` and `px-4 sm:px-6 lg:px-8`.
+- **Card Padding:** `p-6` (24px).
+- **Component Gaps:** `gap-4` (16px) for lists, `gap-6` (24px) for sections.
+
+### 4. Shadows (The "Money" Feel)
+- **Default Card:** `shadow-card` = `0 4px 24px rgba(11, 26, 51, 0.08)`
+- **Hover Card:** `shadow-card-hover` = `0 8px 32px rgba(11, 26, 51, 0.14)`
+- **Dropdown/Drawer:** `shadow-xl` = `0 20px 60px rgba(11, 26, 51, 0.15)`
+
+---
+
+## 🏛️ FINNISH LAW & COMPLIANCE (CRITICAL CONTEXT)
+
+*Every UI decision and backend flow must respect these laws.*
+
+1.  **E-Invoicing (Verkkolasku):**
+    - Law: *Laki sähköisestä laskutuksesta (241/2019)*.
+    - Requirement: Companies with turnover > €10,000 must accept electronic invoices in **EN 16931** format.
+    - **Action:** Build an optional "Verkkolasku" toggle when generating an invoice. Display a badge: `Verkkolasku (EN 16931) compatible`.
+
+2.  **Data Retention (Accounting Act):**
+    - Law: *Kirjanpitolaki (1336/1997)*.
+    - Requirement: Invoices and contracts must be stored for **6 years** from the end of the fiscal year.
+    - **Action:** Never auto-delete data. Add a "Archive" feature instead of "Delete". Show in footer: *"Secure 6-year data retention per Finnish law."*
+
+3.  **GDPR / Data Sovereignty:**
+    - Requirement: EU citizen data cannot leave the EU/EEA without strict safeguards.
+    - **Action:** Ensure your hosting (Vercel/Supabase) is EU-region bound. Write a specific EU Data Processing Agreement (DPA) clause in the footer.
+
+4.  **Tax & VAT:**
+    - Support Finnish VAT rates: `24%` (general), `14%` (food), `10%` (books/transport).
+    - Store `business_id` (Y-tunnus) for every Finnish company client.
+
+---
+
+## 🎬 MICRO-INTERACTIONS & UX PSYCHOLOGY
+
+*Satisfaction is built through frictionless feedback. Apply these rules strictly.*
+
+### Animation Physics (Motion Library)
+- **Default Spring:** `{ type: "spring", stiffness: 500, damping: 30 }` (snappy, not bouncy).
+- **Slow/Modal Spring:** `{ type: "spring", stiffness: 300, damping: 25 }` (for overlays).
+
+### Required Interactions (Checklist)
+- [x] **Button Hover:** `whileHover={{ scale: 1.02 }}` + expand shadow.
+- [x] **Button Tap:** `whileTap={{ scale: 0.97 }}` (feels physically pressed).
+- [x] **Card Hover (metrics):** `whileHover={{ y: -4, boxShadow: "shadow-card-hover" }}`.
+- [x] **Number Updates (Counters):** Use `useSpring` with `useTransform` to animate number changes (e.g., 0 → 25%).
+- [x] **Page Entrance:** `initial={{ opacity: 0, y: 20 }}` → `animate={{ opacity: 1, y: 0 }}`.
+- [x] **List Staggering:** Use `staggerChildren` on parent `motion.div`.
+- [x] **Toast Notifications:** Slide from right with `x: 100` → `x: 0`.
+- [x] **Skeleton Loading:** Use `animate="pulse"` (standard opacity fade).
+
+---
+
+## 📁 CODE ARCHITECTURE & FOLDER STRUCTURE
+
+*Structure for maximum maintainability and scale.* 
+
+---
+
+## 🔐 SECURITY & PERFORMANCE (NON-NEGOTIABLE)
+
+### Security
+- **XSS:** Ensure you use `dangerouslySetInnerHTML` only with DOMPurify sanitization.
+- **CSRF:** Auth.js handles it. Never disable it.
+- **Rate Limiting:** Implement via Upstash Redis `@upstash/ratelimit` on all API routes.
+- **CSP:** Set `Content-Security-Policy` headers in `next.config.mjs`.
+- **Environment:** Prefix public variables with `NEXT_PUBLIC_`. Validate env using Zod on startup.
+
+### Performance (Lighthouse > 95)
+- **Images:** Always use `next/image`. Set `priority` on LCP images.
+- **Fonts:** Use `next/font` with `display="swap"`.
+- **Data Fetching:** Prefer Server Components (fetch directly in `page.tsx`). Use React Query only for client-side interactive data.
+- **Bundle Size:** Use `next/bundle-analyzer` to keep initial JS under 150kb.
+
+---
+
+## 🤖 AI BEHAVIOR & CODING STANDARDS (FOR CURSOR)
+
+*When I give you a task, follow these rules strictly:*
+
+1.  **Think in Finnish Context:** When designing copy or features, always ask: "Is this compliant with Finnish law? Does this sound trustworthy to a Finnish company?"
+2.  **Reuse, Don't Reinvent:** Before writing a new component, check if shadcn/ui already provides it (`components/ui/`). Extend it rather than creating custom raw HTML.
+3.  **Type Safety First:** Never use `any`. If unknown, use `unknown` and narrow down with Zod or type guards.
+4.  **Error Handling:** Every async operation must have a `try/catch` and show a user-friendly toast via `sonner` or `useToast`. Log the full error to console/logger.
+5.  **Accessibility (A11y):** Ensure semantic HTML (`<main>`, `<section>`, `<nav>`). Ensure proper `aria-label` on icon buttons.
+6.  **Responsive Design:** All layouts must work on mobile (375px) to 4K. Use Tailwind breakpoints (`sm:`, `md:`, `lg:`, `xl:`).
+7.  **JSDoc Comments:** Write JSDoc for every exported function and complex component.
+8.  **State Mutation:** Never mutate state directly. Use immutability patterns (`...` spread or `immer`).
+9.  **Performance:** Wrap callbacks in `useCallback`, expensive calculations in `useMemo`, and components in `React.memo` only if they re-render often.
+10. **Zero Black:** Never use `#000000`. Use `#0B1A33` for dark text, or `#1F2937` if you need neutral dark.
+
+---
+
+## 🌍 GLOBAL EXPANSION READY (SCALE LATER)
+
+- **i18n:** Use `next-intl`. Supported locales: `fi`, `en`, `sv`, `de`.
+- **Currencies:** Store all monetary values as `BigInt` (cents) in the DB. Display using `Intl.NumberFormat('fi-FI', { style: 'currency', currency: 'EUR' })`. Support `USD` and `GBP` later via currency conversion middleware.
+- **Timezones:** Store all dates in UTC. Display using `Intl.DateTimeFormat` respecting the user's locale.
+
+---
+
+## 📣 BRAND TONE & SOCIAL PRESENCE
+
+- **Voice:** Professional, direct, and reassuring (Finnish honesty). Never pushy.
+- **Social Links (Place in Footer):**
+  - `LinkedIn`: (Primary for B2B trust) `https://linkedin.com/company/remotewise`
+  - `X (Twitter)`: `https://x.com/remotewise` (Announcements)
+  - `YouTube`: `https://youtube.com/@remotewise` (Tutorials)
+- **Footer Legal String:** `RemoteWise Teams · RemoteWise Oy (in formation) · Finland`
+
+---
+
+## 🚀 DEPLOYMENT & MONITORING
+
+- **Deploy:** Vercel Production with `NODE_ENV=production`.
+- **Preview:** Every Pull Request gets a unique Preview URL.
+- **Monitoring:** Sentry for errors, Vercel Analytics for Core Web Vitals.
+
+---
+
+*"Code as if a Finnish tax auditor is watching. Design as if a high-end freelancer is paying you. Move as if you are the most reliable fintech in the Nordics."* 

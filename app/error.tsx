@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { EmptyState } from "@/components/empty-state";
 import { captureException } from "@/lib/observability";
+import { useT } from "@/components/i18n/language-provider";
 
 export default function ErrorPage({
   error,
@@ -11,6 +12,7 @@ export default function ErrorPage({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useT();
   useEffect(() => {
     captureException(error);
   }, [error]);
@@ -19,9 +21,9 @@ export default function ErrorPage({
     <div className="flex min-h-screen items-center justify-center bg-page px-6">
       <EmptyState
         icon="help"
-        title="Something slipped."
-        description="We logged it. Try again in a moment. If it repeats, write to Help & Support — we reply within 24 hours."
-        actionLabel="Try again"
+        title={t("errors.slippedTitle")}
+        description={t("errors.slippedBody")}
+        actionLabel={t("errors.tryAgain")}
         onAction={reset}
       />
     </div>

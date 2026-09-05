@@ -11,15 +11,15 @@ import { PageTransition } from "@/components/motion/page-transition";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { IsoIcon } from "@/components/icons/iso-icon";
-import { formatCurrency, initials } from "@/lib/utils";
+import { initials } from "@/lib/utils";
 import type { Freelancer, InviteFreelancerInput } from "@/lib/types";
+import { useFormat, useT } from "@/components/i18n/language-provider";
 
 type ViewMode = "table" | "cards";
 type StatusFilter = "all" | "active" | "invited" | "inactive";
 type SortKey = "name" | "createdAt" | "rate" | "status";
 
-function exportCsv(rows: Freelancer[]) {
-  const header = ["Name", "Email", "Role", "Rate", "Currency", "Status", "Country"];
+function exportCsv(rows: Freelancer[], header: string[]) {
   const lines = rows.map((row) =>
     [
       row.fullName,
@@ -49,6 +49,8 @@ export function FreelancersPageClient({
 }: {
   initialFreelancers: Freelancer[];
 }) {
+  const t = useT();
+  const format = useFormat();
   const [inviteOpen, setInviteOpen] = useState(false);
   const [freelancers, setFreelancers] = useState(initialFreelancers);
   const [query, setQuery] = useState("");
@@ -108,21 +110,31 @@ export function FreelancersPageClient({
   return (
     <PageTransition>
       <PageHeader
-        title="Freelancers"
-        description="Invite talent, track status, and keep every contract in one roster."
+        title={t("freelancers.title")}
+        description={t("freelancers.description")}
         actions={
           <>
             <Button
               variant="secondary"
-              onClick={() => exportCsv(filtered)}
+              onClick={() =>
+                exportCsv(filtered, [
+                  t("freelancers.csvName"),
+                  t("freelancers.csvEmail"),
+                  t("freelancers.csvRole"),
+                  t("freelancers.csvRate"),
+                  t("freelancers.csvCurrency"),
+                  t("freelancers.csvStatus"),
+                  t("freelancers.csvCountry"),
+                ])
+              }
               disabled={empty}
             >
               <IsoIcon name="export-csv" size={20} />
-              Export CSV
+              {t("freelancers.exportCsv")}
             </Button>
             <Button onClick={() => setInviteOpen(true)}>
               <IsoIcon name="invite" size={20} />
-              Invite freelancer
+              {t("freelancers.invite")}
             </Button>
           </>
         }
@@ -136,29 +148,29 @@ export function FreelancersPageClient({
               <Input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search by name or email..."
+                placeholder={t("freelancers.searchPlaceholder")}
                 className="pl-9"
-                aria-label="Search freelancers"
+                aria-label={t("freelancers.searchAria")}
               />
             </div>
             <select
               className="rw-input w-full sm:w-[160px]"
               value={status}
               onChange={(event) => setStatus(event.target.value as StatusFilter)}
-              aria-label="Filter by status"
+              aria-label={t("freelancers.filterStatus")}
             >
-              <option value="all">All</option>
-              <option value="active">Active</option>
-              <option value="invited">Invited</option>
-              <option value="inactive">Inactive</option>
+              <option value="all">{t("common.all")}</option>
+              <option value="active">{t("status.active")}</option>
+              <option value="invited">{t("status.invited")}</option>
+              <option value="inactive">{t("status.inactive")}</option>
             </select>
             <select
               className="rw-input w-full sm:w-[180px]"
               value={country}
               onChange={(event) => setCountry(event.target.value)}
-              aria-label="Filter by country"
+              aria-label={t("freelancers.filterCountry")}
             >
-              <option value="all">All countries</option>
+              <option value="all">{t("freelancers.allCountries")}</option>
               {countries.map((item) => (
                 <option key={item} value={item}>
                   {item}
@@ -170,7 +182,7 @@ export function FreelancersPageClient({
             <div className="hidden rounded-control border border-border bg-card p-0.5 md:flex">
               <button
                 type="button"
-                aria-label="Table view"
+                aria-label={t("freelancers.tableView")}
                 aria-pressed={view === "table"}
                 onClick={() => setView("table")}
                 className={`rounded-[6px] p-2 ${view === "table" ? "bg-primary-light text-primary-text" : "text-ink-muted hover:text-ink"}`}
@@ -179,7 +191,7 @@ export function FreelancersPageClient({
               </button>
               <button
                 type="button"
-                aria-label="Card view"
+                aria-label={t("freelancers.cardView")}
                 aria-pressed={view === "cards"}
                 onClick={() => setView("cards")}
                 className={`rounded-[6px] p-2 ${view === "cards" ? "bg-primary-light text-primary-text" : "text-ink-muted hover:text-ink"}`}
@@ -191,12 +203,12 @@ export function FreelancersPageClient({
               className="rw-input w-[160px]"
               value={sort}
               onChange={(event) => setSort(event.target.value as SortKey)}
-              aria-label="Sort by"
+              aria-label={t("freelancers.sortBy")}
             >
-              <option value="name">Sort by name</option>
-              <option value="createdAt">Sort by date added</option>
-              <option value="rate">Sort by rate</option>
-              <option value="status">Sort by status</option>
+              <option value="name">{t("freelancers.sortName")}</option>
+              <option value="createdAt">{t("freelancers.sortDate")}</option>
+              <option value="rate">{t("freelancers.sortRate")}</option>
+              <option value="status">{t("freelancers.sortStatus")}</option>
             </select>
           </div>
         </div>
@@ -206,9 +218,9 @@ export function FreelancersPageClient({
         <div className="rw-card">
           <EmptyState
             icon="invite"
-            title="No freelancers yet."
-            description="Invite your first freelancer to send contracts, collect invoices, and pay them from one workspace."
-            actionLabel="Invite your first freelancer"
+            title={t("freelancers.emptyTitle")}
+            description={t("freelancers.emptyBody")}
+            actionLabel={t("freelancers.inviteFirst")}
             onAction={() => setInviteOpen(true)}
           />
         </div>
@@ -217,7 +229,7 @@ export function FreelancersPageClient({
           <div className="md:hidden">
             <FreelancerCardGrid
               rows={filtered}
-              formatCurrency={formatCurrency}
+              formatCurrency={format.money}
               initials={initials}
             />
           </div>
@@ -225,13 +237,13 @@ export function FreelancersPageClient({
             {view === "table" ? (
               <FreelancerTable
                 rows={filtered}
-                formatCurrency={formatCurrency}
+                formatCurrency={format.money}
                 initials={initials}
               />
             ) : (
               <FreelancerCardGrid
                 rows={filtered}
-                formatCurrency={formatCurrency}
+                formatCurrency={format.money}
                 initials={initials}
               />
             )}
@@ -241,7 +253,7 @@ export function FreelancersPageClient({
 
       {!empty && filtered.length === 0 ? (
         <p className="mt-8 text-center font-sans text-body text-ink-slate">
-          No freelancers match these filters.
+          {t("freelancers.noMatch")}
         </p>
       ) : null}
 

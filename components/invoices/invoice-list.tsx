@@ -15,7 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { MoneyCircle } from "@/components/motion/money-circle";
-import { formatPricingMoney, type PricingCurrency } from "@/lib/pricing";
+import { useFormat, useT } from "@/components/i18n/language-provider";
+import { type PricingCurrency } from "@/lib/pricing";
 import { canCancelInvoice, type InvoiceRecord } from "@/lib/invoices";
 
 export function InvoiceList({
@@ -27,6 +28,8 @@ export function InvoiceList({
   role: "company" | "freelancer";
   createHref?: string;
 }) {
+  const t = useT();
+  const format = useFormat();
   const [rows, setRows] = useState(invoices);
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
@@ -57,7 +60,7 @@ export function InvoiceList({
     };
     setBusyId(null);
     if (!response.ok) {
-      toast.error(json.message || "That action did not complete");
+      toast.error(json.message || t("invoices.actionFailed"));
       return;
     }
     if (json.url) {
@@ -72,7 +75,7 @@ export function InvoiceList({
         ),
       );
     }
-    toast.success("Done.");
+    toast.success(t("common.done"));
   }
 
   if (!rows.length) {
@@ -80,18 +83,23 @@ export function InvoiceList({
       <div className="rw-card">
         <EmptyState
           icon="invoices"
-          title="No invoices yet."
-          description={
-            role === "freelancer"
-              ? "When you land your first client, create one in 60 seconds. Address and bank details fill from your profile."
-              : "When you land billed work against a contract, it appears here."
-          }
-          actionLabel={createHref ? "Create invoice" : undefined}
+          title={t("invoices.emptyTitle")}
+          description={role === "freelancer" ? t("invoices.emptyFreelancer") : t("invoices.emptyCompany")}
+          actionLabel={createHref ? t("invoices.create") : undefined}
           actionHref={createHref}
         />
       </div>
     );
   }
+
+  const heads = [
+    t("invoices.invoiceCol"),
+    t("invoices.clientCol"),
+    t("invoices.amountCol"),
+    t("invoices.youKeep"),
+    t("invoices.statusCol"),
+    "",
+  ];
 
   return (
     <div className="space-y-6">
@@ -99,13 +107,13 @@ export function InvoiceList({
         <MoneyCircle
           keep={totals.keep}
           fees={totals.fees}
-          label="You receive"
-          formattedKeep={formatPricingMoney(totals.keep, "EUR")}
+          label={t("invoices.youReceive")}
+          formattedKeep={format.moneyExact(totals.keep, "EUR")}
           size={140}
         />
         {createHref ? (
           <Button asChild>
-            <Link href={createHref}>New invoice</Link>
+            <Link href={createHref}>{t("invoices.newInvoice")}</Link>
           </Button>
         ) : null}
       </div>
@@ -128,7 +136,7 @@ export function InvoiceList({
         <table className="min-w-[720px] w-full text-left">
           <thead>
             <tr className="border-b border-border">
-              {["Invoice", "Client", "Amount", "You keep", "Status", ""].map((head) => (
+              {heads.map((head) => (
                 <th
                   key={head || "actions"}
                   className="px-4 py-4 font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-slate"
@@ -146,13 +154,13 @@ export function InvoiceList({
                   <td className="px-4 py-3 font-mono text-mono text-ink">{row.invoiceNumber}</td>
                   <td className="px-4 py-3 font-sans text-[14px] text-ink">{row.clientName || "—"}</td>
                   <td className="px-4 py-4 font-sans text-[15px] font-semibold tabular-nums text-ink">
-                    {formatPricingMoney(row.amount, currency)}
+                    {format.moneyExact(row.amount, currency)}
                   </td>
                   <td className="px-4 py-4 font-sans text-[15px] font-semibold tabular-nums text-ink">
-                    {formatPricingMoney(row.youKeep, currency)}
+                    {format.moneyExact(row.youKeep, currency)}
                   </td>
                   <td className="px-4 py-3">
-                    <Badge status={row.status}>{row.status.replaceAll("_", " ")}</Badge>
+                    <Badge status={row.status}>{row.status}</Badge>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <InvoiceActions
@@ -173,14 +181,11 @@ export function InvoiceList({
       <Dialog open={Boolean(cancelId)} onOpenChange={(open) => !open && setCancelId(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel this invoice?</DialogTitle>
-            <DialogDescription>
-              The company is notified and an audit event is stored. You can only cancel while the
-              invoice is draft or sent.
-            </DialogDescription>
+            <DialogTitle>{t("invoices.cancelTitle")}</DialogTitle>
+            <DialogDescription>{t("invoices.cancelBody")}</DialogDescription>
           </DialogHeader>
           <label className="rw-label" htmlFor="cancel-reason">
-            Reason
+            {t("invoices.reason")}
           </label>
           <textarea
             id="cancel-reason"
@@ -190,7 +195,7 @@ export function InvoiceList({
           />
           <DialogFooter>
             <Button variant="secondary" onClick={() => setCancelId(null)}>
-              Keep invoice
+              {t("invoices.keepInvoice")}
             </Button>
             <Button
               variant="danger"
@@ -203,7 +208,7 @@ export function InvoiceList({
                 });
                 const json = (await response.json()) as { invoice?: InvoiceRecord; message?: string };
                 if (!response.ok || !json.invoice) {
-                  toast.error(json.message || "Could not cancel");
+                  toast.error(json.message || t("invoices.cancelFailed"));
                   return;
                 }
                 setRows((current) =>
@@ -211,10 +216,10 @@ export function InvoiceList({
                 );
                 setCancelId(null);
                 setReason("");
-                toast.success("Invoice cancelled. The company was notified.");
+                toast.success(t("invoices.cancelSuccess"));
               }}
             >
-              Cancel invoice
+              {t("invoices.cancelInvoice")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -236,17 +241,19 @@ function InvoiceCard({
   onCancel: () => void;
   onAction: (id: string, path: string, body?: object) => void;
 }) {
+  const t = useT();
+  const format = useFormat();
   const currency = (row.currency as PricingCurrency) || "EUR";
   return (
     <>
       <p className="font-mono text-mono text-ink">{row.invoiceNumber}</p>
-      <p className="mt-1 font-sans text-[14px] text-ink">{row.clientName || "Client"}</p>
-      <p className="rw-figure">{formatPricingMoney(row.amount, currency)}</p>
+      <p className="mt-1 font-sans text-[14px] text-ink">{row.clientName || t("common.client")}</p>
+      <p className="rw-figure">{format.moneyExact(row.amount, currency)}</p>
       <p className="mt-1 font-sans text-small text-ink-slate">
-        You keep {formatPricingMoney(row.youKeep, currency)}
+        {t("invoices.youKeepAmount", { amount: format.moneyExact(row.youKeep, currency) })}
       </p>
       <Badge className="mt-2" status={row.status}>
-        {row.status.replaceAll("_", " ")}
+        {row.status}
       </Badge>
       <div className="mt-3">
         <InvoiceActions row={row} role={role} busy={busy} onCancel={onCancel} onAction={onAction} />
@@ -268,17 +275,18 @@ function InvoiceActions({
   onCancel: () => void;
   onAction: (id: string, path: string, body?: object) => void;
 }) {
+  const t = useT();
   return (
     <div className="flex flex-wrap justify-end gap-2">
       {role === "freelancer" && row.status === "draft" ? (
         <Button size="sm" loading={busy} onClick={() => onAction(row.id, `/api/invoices/${row.id}/send`)}>
-          Send
+          {t("common.sendInvoice")}
         </Button>
       ) : null}
       {role === "company" &&
       ["sent", "pending", "approved"].includes(row.status) ? (
         <Button size="sm" loading={busy} onClick={() => onAction(row.id, `/api/invoices/${row.id}/pay`)}>
-          Pay by card
+          {t("invoices.payByCard")}
         </Button>
       ) : null}
       {role === "freelancer" && row.status === "paid" ? (
@@ -289,20 +297,20 @@ function InvoiceActions({
             loading={busy}
             onClick={() => onAction(row.id, `/api/invoices/${row.id}/payout`, { speed: "standard" })}
           >
-            Standard 24h
+            {t("invoices.standard24h")}
           </Button>
           <Button
             size="sm"
             loading={busy}
             onClick={() => onAction(row.id, `/api/invoices/${row.id}/payout`, { speed: "lightning" })}
           >
-            Lightning 1%
+            {t("invoices.lightning")}
           </Button>
         </>
       ) : null}
       {role === "freelancer" && canCancelInvoice(row.status) ? (
         <Button variant="ghost" size="sm" onClick={onCancel}>
-          Cancel
+          {t("common.cancel")}
         </Button>
       ) : null}
     </div>

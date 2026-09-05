@@ -5,6 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/language-provider";
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -33,7 +34,9 @@ const DialogContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     showCloseButton?: boolean;
   }
->(({ className, children, showCloseButton = true, ...props }, ref) => (
+>(({ className, children, showCloseButton = true, ...props }, ref) => {
+  const t = useT();
+  return (
   <DialogPortal forceMount>
     <AnimatePresence>
       <DialogOverlay />
@@ -54,7 +57,7 @@ const DialogContent = React.forwardRef<
             {showCloseButton ? (
               <DialogPrimitive.Close className="absolute right-4 top-4 rounded-control p-1 text-ink-muted transition-colors hover:bg-page hover:text-ink focus-visible:shadow-focus focus-visible:outline-none">
                 <X className="h-4 w-4" />
-                <span className="sr-only">Close</span>
+                <span className="sr-only">{t("common.close")}</span>
               </DialogPrimitive.Close>
             ) : null}
           </motion.div>
@@ -62,7 +65,8 @@ const DialogContent = React.forwardRef<
       </div>
     </AnimatePresence>
   </DialogPortal>
-));
+  );
+});
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 function DialogHeader({

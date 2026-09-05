@@ -9,8 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageTransition } from "@/components/motion/page-transition";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { RwLogo } from "@/components/brand/rw-logo";
 import { EMAIL_PATTERN } from "@/lib/utils";
 import { WORKSPACE_ACCENTS } from "@/lib/workspace-accents";
+import { useT } from "@/components/i18n/language-provider";
 
 const EMPTY = {
   fullName: "",
@@ -21,6 +23,7 @@ const EMPTY = {
 };
 
 export function SignupWizard() {
+  const t = useT();
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState(EMPTY);
@@ -40,10 +43,10 @@ export function SignupWizard() {
 
   function validateStep1() {
     const next: Record<string, string> = {};
-    if (!form.fullName.trim()) next.fullName = "Enter your full name";
-    if (!form.email.trim()) next.email = "Enter a work email";
-    else if (!EMAIL_PATTERN.test(form.email.trim())) next.email = "Enter a valid email address";
-    if (form.password.length < 8) next.password = "Use at least 8 characters";
+    if (!form.fullName.trim()) next.fullName = t("auth.enterFullName");
+    if (!form.email.trim()) next.email = t("auth.enterWorkEmail");
+    else if (!EMAIL_PATTERN.test(form.email.trim())) next.email = t("auth.emailInvalid");
+    if (form.password.length < 8) next.password = t("auth.passwordMin");
     return next;
   }
 
@@ -53,7 +56,7 @@ export function SignupWizard() {
     setErrors(next);
     if (Object.keys(next).length) return;
     if (!form.companyName.trim()) {
-      const guessed = `${form.fullName.trim().split(" ")[0] || "My"}'s studio`;
+      const guessed = t("auth.studioGuess", { name: form.fullName.trim().split(" ")[0] || t("common.you") });
       setForm((current) => ({ ...current, companyName: guessed }));
     }
     setStep(2);
@@ -62,7 +65,7 @@ export function SignupWizard() {
   async function createWorkspace(event: React.FormEvent) {
     event.preventDefault();
     if (!form.companyName.trim()) {
-      setErrors({ companyName: "Name the workspace your team will share" });
+      setErrors({ companyName: t("auth.workspaceRequired") });
       return;
     }
     setSubmitting(true);
@@ -85,7 +88,7 @@ export function SignupWizard() {
       };
       if (!response.ok) {
         const field = data.field || "companyName";
-        setErrors({ [field]: data.message || "Could not create workspace" });
+        setErrors({ [field]: data.message || t("auth.createFailed") });
         if (field === "email" || field === "password" || field === "fullName") {
           setStep(1);
         }
@@ -103,17 +106,19 @@ export function SignupWizard() {
       <PageTransition>
         <div className="rounded-card border border-border bg-card p-8">
           <div className="mb-6 text-center">
-            <div className="rw-logo-badge mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-control font-display text-[13px] font-semibold text-white">
-              RW
+            <div className="mx-auto mb-4 flex justify-center">
+              <RwLogo href="/" wordmark={false} size={40} />
             </div>
-            <h1 className="font-display text-section text-ink">Create your workspace.</h1>
-            <p className="mt-2 font-sans text-body text-ink-secondary">
-              One place for contracts, invoices, and payouts.
-            </p>
+            <h1 className="font-display text-section text-ink">{t("auth.createTitle")}</h1>
+            <p className="mt-2 font-sans text-body text-ink-secondary">{t("auth.createHint")}</p>
           </div>
 
           <p className="font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-muted">
-            Step {step} of 2 — {step === 1 ? "Your account" : "Your workspace"}
+            {t("auth.stepOf", {
+              step,
+              total: 2,
+              label: step === 1 ? t("auth.yourAccount") : t("auth.yourWorkspace"),
+            })}
           </p>
           <div className="mt-3 h-1 overflow-hidden rounded-pill bg-border">
             <motion.div
@@ -126,7 +131,7 @@ export function SignupWizard() {
           {step === 1 ? (
             <form className="mt-6 space-y-4" onSubmit={goToWorkspace} noValidate>
               <div>
-                <Label htmlFor="fullName">Full name</Label>
+                <Label htmlFor="fullName">{t("auth.fullName")}</Label>
                 <Input
                   id="fullName"
                   autoComplete="name"
@@ -137,7 +142,7 @@ export function SignupWizard() {
                 {errors.fullName ? <p className="rw-field-error">{errors.fullName}</p> : null}
               </div>
               <div>
-                <Label htmlFor="email">Work email</Label>
+                <Label htmlFor="email">{t("auth.workEmail")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -149,7 +154,7 @@ export function SignupWizard() {
                 {errors.email ? <p className="rw-field-error">{errors.email}</p> : null}
               </div>
               <div>
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("common.password")}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -161,16 +166,16 @@ export function SignupWizard() {
                 {errors.password ? <p className="rw-field-error">{errors.password}</p> : null}
               </div>
               <Button type="submit" size="full">
-                Continue to workspace
+                {t("auth.continueWorkspace")}
               </Button>
             </form>
           ) : (
             <form className="mt-6 space-y-4" onSubmit={createWorkspace} noValidate>
               <div>
-                <Label htmlFor="companyName">Workspace name</Label>
+                <Label htmlFor="companyName">{t("auth.workspaceName")}</Label>
                 <Input
                   id="companyName"
-                  placeholder="Studio Oy"
+                  placeholder={t("auth.workspacePlaceholder")}
                   value={form.companyName}
                   invalid={Boolean(errors.companyName)}
                   onChange={(event) => update("companyName", event.target.value)}
@@ -178,8 +183,8 @@ export function SignupWizard() {
                 {errors.companyName ? <p className="rw-field-error">{errors.companyName}</p> : null}
               </div>
               <div>
-                <p className="rw-label">Accent color</p>
-                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Accent color">
+                <p className="rw-label">{t("auth.accentColor")}</p>
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("auth.accentColor")}>
                   {WORKSPACE_ACCENTS.map((accent) => {
                     const selected = form.accentColor === accent.value;
                     return (
@@ -204,18 +209,18 @@ export function SignupWizard() {
                 {errors.accentColor ? <p className="rw-field-error">{errors.accentColor}</p> : null}
               </div>
               <Button type="submit" size="full" loading={submitting}>
-                {submitting ? "Creating workspace..." : "Create workspace"}
+                {submitting ? t("auth.creating") : t("auth.createCta")}
               </Button>
               <Button variant="text" type="button" onClick={() => setStep(1)}>
-                Back
+                {t("common.back")}
               </Button>
             </form>
           )}
 
           <p className="mt-6 text-center font-sans text-[14px] text-ink-secondary">
-            Already have an account?{" "}
+            {t("auth.alreadyHave")}{" "}
             <Link href="/login" className="font-medium text-primary hover:text-primary-hover">
-              Sign in
+              {t("auth.signIn")}
             </Link>
           </p>
         </div>

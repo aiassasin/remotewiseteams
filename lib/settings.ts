@@ -1,7 +1,9 @@
+import type { AppLanguage } from "@/lib/i18n";
 import type { ThemePreference } from "@/lib/theme";
 
 export const SETTINGS_TABS = [
   "profile",
+  "language",
   "appearance",
   "company",
   "members",
@@ -56,6 +58,7 @@ export type NotificationPayload = {
 export type SettingsPayload = {
   tab: SettingsTab;
   theme: ThemePreference;
+  language: AppLanguage;
   profile: ProfilePayload;
   company: CompanyPayload | null;
   members: MemberPayload[];

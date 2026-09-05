@@ -8,17 +8,22 @@ export function cn(...inputs: ClassValue[]) {
 export function formatCurrency(
   amount: number | null | undefined,
   currency: string = "USD",
+  locale: string = "en-GB",
 ): string {
   if (amount === null || amount === undefined || Number.isNaN(amount)) {
     return "—";
   }
 
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(amount);
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${amount} ${currency}`;
+  }
 }
 
 export function initials(name: string): string {

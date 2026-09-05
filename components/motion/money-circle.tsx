@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/language-provider";
 
 const DURATION_MS = 800;
 
@@ -21,6 +22,7 @@ export function MoneyCircle({
   className?: string;
 }) {
   const gid = useId().replaceAll(":", "");
+  const t = useT();
   const total = Math.max(keep + fees, 0.01);
   const keepRatio = Math.min(Math.max(keep / total, 0), 1);
   const radius = 54;
@@ -89,8 +91,8 @@ export function MoneyCircle({
           </p>
         </div>
       </div>
-      <p className="mt-2 font-sans text-small text-ink-muted">
-        <span className="text-success">Green</span> you keep · <span className="text-primary">Blue</span> fees
+          <p className="mt-2 font-sans text-small text-ink-muted">
+        {t("money.keepFees", { green: t("money.greenKeep"), blue: t("money.blueFees") })}
       </p>
     </div>
   );

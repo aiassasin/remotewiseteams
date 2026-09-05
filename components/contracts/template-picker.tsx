@@ -6,17 +6,19 @@ import { TEMPLATE_ICONS, TEMPLATE_IDS, typeCopy } from "@/lib/contracts/i18n";
 import { PageHeader } from "@/components/layout/page-header";
 import { PageTransition } from "@/components/motion/page-transition";
 import { Button } from "@/components/ui/button";
+import { useAppLanguage, useT } from "@/components/i18n/language-provider";
+import { toContractLanguage } from "@/lib/i18n";
 
 export function ContractTemplatePicker() {
+  const t = useT();
+  const { language } = useAppLanguage();
+
   return (
     <PageTransition>
-      <PageHeader
-        title="New contract"
-        description="Choose the agreement that matches the work, or start from scratch."
-      />
+      <PageHeader title={t("contracts.newContract")} description={t("contracts.newDescription")} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
         {TEMPLATE_IDS.map((id) => {
-          const copy = typeCopy(id, "en");
+          const copy = typeCopy(id, toContractLanguage(language));
           return (
             <article
               key={id}
@@ -27,7 +29,7 @@ export function ContractTemplatePicker() {
               <p className="mt-2 flex-1 font-sans text-[13px] leading-relaxed text-ink-slate">{copy.oneLiner}</p>
               <Button asChild variant="secondary" className="mt-4">
                 <Link href={`/dashboard/contracts/new/${id}`}>
-                  {id === "blank" ? "Start blank" : "Use this template"}
+                  {id === "blank" ? t("contracts.startBlank") : t("contracts.useTemplate")}
                 </Link>
               </Button>
             </article>

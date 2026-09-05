@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { sendFreelancerInvite } from "@/lib/invite";
 import { CURRENCIES, type Currency, type InviteFreelancerInput } from "@/lib/types";
 import { EMAIL_PATTERN } from "@/lib/utils";
+import { useT } from "@/components/i18n/language-provider";
 
 type FieldErrors = Partial<Record<"name" | "email" | "rate", string>>;
 
@@ -29,20 +30,23 @@ const EMPTY_FORM = {
   note: "",
 };
 
-function validate(form: typeof EMPTY_FORM): FieldErrors {
+function validate(
+  form: typeof EMPTY_FORM,
+  t: ReturnType<typeof useT>,
+): FieldErrors {
   const errors: FieldErrors = {};
   if (!form.name.trim()) {
-    errors.name = "Full name is required";
+    errors.name = t("freelancers.nameRequired");
   }
   if (!form.email.trim()) {
-    errors.email = "Email is required";
+    errors.email = t("freelancers.emailRequired");
   } else if (!EMAIL_PATTERN.test(form.email.trim())) {
-    errors.email = "Enter a valid email address";
+    errors.email = t("freelancers.emailInvalid");
   }
   if (form.rate.trim()) {
     const parsed = Number(form.rate);
     if (!Number.isFinite(parsed) || parsed <= 0) {
-      errors.rate = "Enter a valid hourly rate";
+      errors.rate = t("freelancers.rateInvalid");
     }
   }
   return errors;
@@ -58,6 +62,7 @@ export function InviteFreelancerModal({
   onInvited?: (payload: InviteFreelancerInput & { inviteId?: string }) => void;
 }) {
   const formId = useId();
+  const t = useT();
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -87,7 +92,7 @@ export function InviteFreelancerModal({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const nextErrors = validate(form);
+    const nextErrors = validate(form, t);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
@@ -107,13 +112,13 @@ export function InviteFreelancerModal({
       setForm(EMPTY_FORM);
       setErrors({});
       onOpenChange(false);
-      toast.success(`Invite sent to ${payload.email}`);
+      toast.success(t("freelancers.inviteSent", { email: payload.email }));
     } catch (error) {
       const err = error as Error & { field?: keyof FieldErrors };
       if (err.field) {
         setErrors({ [err.field]: err.message });
       } else {
-        setErrors({ email: err.message || "Could not send invite" });
+        setErrors({ email: err.message || t("freelancers.inviteFailed") });
       }
     } finally {
       setSubmitting(false);
@@ -129,21 +134,18 @@ export function InviteFreelancerModal({
           aria-labelledby={`${formId}-title`}
         >
           <DialogHeader>
-            <DialogTitle id={`${formId}-title`}>Invite freelancer</DialogTitle>
-            <DialogDescription>
-              Send a workspace invite. They’ll get an email with a secure link
-              to join, sign contracts, and get paid.
-            </DialogDescription>
+            <DialogTitle id={`${formId}-title`}>{t("freelancers.inviteTitle")}</DialogTitle>
+            <DialogDescription>{t("freelancers.inviteBody")}</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div>
-              <Label htmlFor={`${formId}-name`}>Full name</Label>
+              <Label htmlFor={`${formId}-name`}>{t("freelancers.fullName")}</Label>
               <Input
                 id={`${formId}-name`}
                 name="name"
                 autoComplete="name"
-                placeholder="Ahmed Hassan"
+                placeholder={t("freelancers.namePlaceholder")}
                 value={form.name}
                 invalid={Boolean(errors.name)}
                 disabled={submitting}
@@ -157,13 +159,13 @@ export function InviteFreelancerModal({
             </div>
 
             <div>
-              <Label htmlFor={`${formId}-email`}>Email</Label>
+              <Label htmlFor={`${formId}-email`}>{t("common.email")}</Label>
               <Input
                 id={`${formId}-email`}
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="ahmed@studio.co"
+                placeholder={t("freelancers.emailPlaceholder")}
                 value={form.email}
                 invalid={Boolean(errors.email)}
                 disabled={submitting}
@@ -177,11 +179,11 @@ export function InviteFreelancerModal({
             </div>
 
             <div>
-              <Label htmlFor={`${formId}-role`}>Role / title</Label>
+              <Label htmlFor={`${formId}-role`}>{t("freelancers.roleTitle")}</Label>
               <Input
                 id={`${formId}-role`}
                 name="role"
-                placeholder="e.g. UI Designer, Backend Developer"
+                placeholder={t("freelancers.rolePlaceholder")}
                 value={form.role}
                 disabled={submitting}
                 onChange={(event) => update("role", event.target.value)}
@@ -189,7 +191,7 @@ export function InviteFreelancerModal({
             </div>
 
             <div>
-              <Label htmlFor={`${formId}-rate`}>Hourly rate</Label>
+              <Label htmlFor={`${formId}-rate`}>{t("freelancers.hourlyRate")}</Label>
               <div className="flex gap-2">
                 <Input
                   id={`${formId}-rate`}
@@ -198,7 +200,7 @@ export function InviteFreelancerModal({
                   min={0}
                   step="0.01"
                   inputMode="decimal"
-                  placeholder="85"
+                  placeholder={t("freelancers.ratePlaceholder")}
                   value={form.rate}
                   invalid={Boolean(errors.rate)}
                   disabled={submitting}
@@ -208,7 +210,7 @@ export function InviteFreelancerModal({
                 <select
                   id={`${formId}-currency`}
                   name="currency"
-                  aria-label="Currency"
+                  aria-label={t("common.currency")}
                   value={form.currency}
                   disabled={submitting}
                   onChange={(event) =>
@@ -231,11 +233,11 @@ export function InviteFreelancerModal({
             </div>
 
             <div>
-              <Label htmlFor={`${formId}-note`}>Personal note</Label>
+              <Label htmlFor={`${formId}-note`}>{t("freelancers.personalNote")}</Label>
               <Textarea
                 id={`${formId}-note`}
                 name="note"
-                placeholder="Add a personal message to the invite email..."
+                placeholder={t("freelancers.notePlaceholder")}
                 value={form.note}
                 disabled={submitting}
                 onChange={(event) => update("note", event.target.value)}
@@ -250,10 +252,10 @@ export function InviteFreelancerModal({
                 disabled={submitting}
                 onClick={() => handleOpenChange(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button type="submit" loading={submitting}>
-                {submitting ? "Sending invite..." : "Send invite"}
+                {submitting ? t("freelancers.sendingInvite") : t("freelancers.sendInvite")}
               </Button>
             </DialogFooter>
           </form>

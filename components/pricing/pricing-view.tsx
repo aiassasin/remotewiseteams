@@ -8,6 +8,8 @@ import { FeeCalculator } from "@/components/pricing/fee-calculator";
 import { PricingNav } from "@/components/pricing/pricing-nav";
 import { WhyRemoteWise } from "@/components/pricing/why-remotewise";
 import { SiteFooter } from "@/components/legal/site-footer";
+import { useT } from "@/components/i18n/language-provider";
+import type { MessageKey } from "@/lib/i18n";
 import {
   PLATFORM_TAKE_PERCENT,
   SERVICE_FEE_PERCENT,
@@ -16,7 +18,14 @@ import {
 
 type Audience = "freelancer" | "company";
 
+const TAKE = {
+  take: PLATFORM_TAKE_PERCENT,
+  service: SERVICE_FEE_PERCENT,
+  shield: SHIELD_FEE_PERCENT,
+};
+
 export function PricingView() {
+  const t = useT();
   const [audience, setAudience] = useState<Audience>("freelancer");
 
   return (
@@ -26,30 +35,29 @@ export function PricingView() {
       <main id="main" className="rw-aurora w-full px-6 py-12 sm:py-16 lg:px-10">
         <section className="max-w-3xl">
           <p className="font-sans text-small font-medium uppercase tracking-[0.05em] text-primary-text">
-            Pricing
+            {t("pricing.kicker")}
           </p>
           <h1 className="mt-3 font-display text-[36px] font-semibold leading-[1.15] tracking-[-0.6px] text-ink sm:text-[44px]">
-            Invoice the world. Register a company when you are ready.
+            {t("pricing.hero")}
           </h1>
           <p className="mt-4 max-w-2xl font-sans text-[16px] leading-relaxed text-ink-secondary">
-            RemoteWise invoices on your behalf, collects payment, insures the work, and pays you out.
-            You do not need a company to start. Companies manage contractors for free.
+            {t("pricing.subhead")}
           </p>
         </section>
 
         <div
           className="mt-8 inline-flex rounded-control border border-border bg-card p-1"
           role="tablist"
-          aria-label="Pricing audience"
+          aria-label={t("pricing.audienceAria")}
         >
           <AudienceTab
             selected={audience === "freelancer"}
             onSelect={() => setAudience("freelancer")}
           >
-            Freelancers
+            {t("pricing.tabFreelancers")}
           </AudienceTab>
           <AudienceTab selected={audience === "company"} onSelect={() => setAudience("company")}>
-            Companies
+            {t("pricing.tabCompanies")}
           </AudienceTab>
         </div>
 
@@ -103,88 +111,85 @@ function AudienceTab({
 }
 
 function FreelancerPanel() {
+  const t = useT();
   return (
     <section className="mt-8 grid gap-4 lg:grid-cols-3">
       <article className="rounded-card border border-primary bg-card p-6 lg:col-span-2">
         <p className="font-sans text-small font-medium uppercase tracking-[0.05em] text-primary-text">
-          Light entrepreneur
+          {t("pricing.lightEntrepreneur")}
         </p>
         <h2 className="mt-2 font-display text-[28px] font-semibold text-ink">
-          {PLATFORM_TAKE_PERCENT}% all-in
+          {t("pricing.allIn", TAKE)}
         </h2>
-        <p className="mt-2 font-sans text-body text-ink-secondary">
-          {SERVICE_FEE_PERCENT}% service fee plus {SHIELD_FEE_PERCENT}% RemoteWise Shield. Lowest total
-          fee in Finland for this model. No monthly subscription to send invoices.
-        </p>
+        <p className="mt-2 font-sans text-body text-ink-secondary">{t("pricing.lightBody", TAKE)}</p>
         <ul className="mt-6 space-y-3 font-sans text-[14px] text-ink">
-          <li>Invoice any client in EUR, USD, GBP, RUB, or CNY. We are the billing entity.</li>
-          <li>Shield covers accident, liability, and legal-expense on invoiced work.</li>
-          <li>Standard payout in 24 hours after the client pays. Free.</li>
-          <li>Lightning Pay: 1% (minimum €5) when you need the money now.</li>
-          <li>Invoice financing: 4% + €10 if you want to be paid before the client pays.</li>
+          <li>{t("pricing.feat1")}</li>
+          <li>{t("pricing.feat2")}</li>
+          <li>{t("pricing.feat3")}</li>
+          <li>{t("pricing.feat4")}</li>
+          <li>{t("pricing.feat5")}</li>
         </ul>
         <div className="mt-8">
           <Button asChild>
-            <Link href="/signup?role=freelancer">Start invoicing</Link>
+            <Link href="/signup?role=freelancer">{t("pricing.startInvoicing")}</Link>
           </Button>
         </div>
       </article>
       <article className="rounded-card border border-border bg-card p-6">
         <p className="font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-muted">
-          When you incorporate
+          {t("pricing.whenIncorporate")}
         </p>
-        <h2 className="mt-2 font-display text-section text-ink">Business path</h2>
-        <p className="mt-2 font-sans text-body text-ink-secondary">
-          $49 once, then $9.90/month for bookkeeping. Same product. Your own business ID when you want
-          it.
-        </p>
-        <p className="mt-6 font-sans text-small text-ink-muted">
-          Optional later: debt collection at 8% of recovered amounts, only if we collect.
-        </p>
+        <h2 className="mt-2 font-display text-section text-ink">{t("pricing.businessPath")}</h2>
+        <p className="mt-2 font-sans text-body text-ink-secondary">{t("pricing.businessBody")}</p>
+        <p className="mt-6 font-sans text-small text-ink-muted">{t("pricing.debtNote")}</p>
       </article>
     </section>
   );
 }
 
+const FREE_ITEMS: MessageKey[] = ["pricing.free1", "pricing.free2", "pricing.free3", "pricing.free4"];
+const GROWTH_ITEMS: MessageKey[] = [
+  "pricing.growth1",
+  "pricing.growth2",
+  "pricing.growth3",
+  "pricing.growth4",
+];
+const SCALE_ITEMS: MessageKey[] = ["pricing.scale1", "pricing.scale2", "pricing.scale3", "pricing.scale4"];
+
 function CompanyPanel() {
+  const t = useT();
   return (
     <section className="mt-8 grid gap-4 md:grid-cols-3">
       <PlanCard
-        name="Free"
+        name={t("pricing.planFree")}
         price="$0"
-        cadence="forever"
-        pitch="The contractor OS. Unlimited people. Unlimited invoices."
-        cta="Create a workspace"
+        cadence={t("pricing.forever")}
+        pitch={t("pricing.freePitch")}
+        cta={t("pricing.freeCta")}
         href="/signup"
         featured
-        items={[
-          "Unlimited freelancer invites",
-          "Pay invoices by card or transfer",
-          "Monthly spend dashboard",
-          "Auto tax reporting when you pay through us",
-        ]}
+        items={FREE_ITEMS.map((key) => t(key))}
       />
       <PlanCard
-        name="Growth"
+        name={t("pricing.planGrowth")}
         price="$49"
-        cadence="/mo"
-        pitch="Contracts, analytics, and seats when the roster grows."
-        cta="Start free, upgrade later"
+        cadence={t("pricing.perMonth")}
+        pitch={t("pricing.growthPitch")}
+        cta={t("pricing.growthCta")}
         href="/signup"
-        items={["E-signature contracts", "Advanced analytics", "Team seats", "Everything in Free"]}
+        items={GROWTH_ITEMS.map((key) => t(key))}
       />
       <PlanCard
-        name="Scale"
+        name={t("pricing.planScale")}
         price="$149"
-        cadence="/mo"
-        pitch="Finance, API, and custom cover for operators."
-        cta="Talk to us after you start"
+        cadence={t("pricing.perMonth")}
+        pitch={t("pricing.scalePitch")}
+        cta={t("pricing.scaleCta")}
         href="/signup"
-        items={["Group invoicing", "API access", "Priority support", "Custom insurance"]}
+        items={SCALE_ITEMS.map((key) => t(key))}
       />
       <p className="md:col-span-3 font-sans text-small text-ink-secondary">
-        Payment processing is 1.5% on top of the freelancer&apos;s {PLATFORM_TAKE_PERCENT}%. We do not
-        hide it inside the contractor&apos;s payout.
+        {t("pricing.companyProcessingNote", TAKE)}
       </p>
     </section>
   );
@@ -209,6 +214,7 @@ function PlanCard({
   items: string[];
   featured?: boolean;
 }) {
+  const t = useT();
   return (
     <article
       className={`flex flex-col rounded-card border bg-card p-6 ${
@@ -217,7 +223,7 @@ function PlanCard({
     >
       {featured ? (
         <p className="font-sans text-small font-medium uppercase tracking-[0.05em] text-primary-text">
-          Start here
+          {t("pricing.startHere")}
         </p>
       ) : (
         <p className="font-sans text-small font-medium uppercase tracking-[0.05em] text-ink-muted">
@@ -245,44 +251,27 @@ function PlanCard({
 }
 
 function PricingFaq() {
+  const t = useT();
   const items = [
-    {
-      q: "Do I need to register a company?",
-      a: "No. Light entrepreneur mode lets you invoice as yourself. RemoteWise is the billing entity. You report the payout as income in your country. When you want a business ID, the $49 path is there.",
-    },
-    {
-      q: "When do I get paid?",
-      a: "After the client pays, unless you buy invoice financing. Standard payout is 24 hours and free. Lightning Pay is 1% with a €5 minimum.",
-    },
-    {
-      q: "What is RemoteWise Shield?",
-      a: `Mandatory cover on invoiced work: accident, liability, and legal-expense. It is ${SHIELD_FEE_PERCENT}% of the VAT-exclusive amount. Every paid invoice gets a certificate.`,
-    },
-    {
-      q: "Who handles tax?",
-      a: "You do, in this phase. We do not withhold. Country modules (US 1099, UK, Estonia, India, Philippines) land later without changing this fee model.",
-    },
-    {
-      q: "What is the total fee?",
-      a: `${PLATFORM_TAKE_PERCENT}% all-in (${SERVICE_FEE_PERCENT}% service + ${SHIELD_FEE_PERCENT}% Shield). That is the number we quote before you sign up.`,
-    },
-    {
-      q: "What do companies pay?",
-      a: `The contractor tool is free. Growth is $49/month. Scale is $149/month. Paying through RemoteWise adds 1.5% processing on the invoice amount. That 1.5% is not taken from the freelancer.`,
-    },
+    { q: t("pricing.faq1q"), a: t("pricing.faq1a"), open: true },
+    { q: t("pricing.faq2q"), a: t("pricing.faq2a") },
+    { q: t("pricing.faq3q"), a: t("pricing.faq3a", TAKE) },
+    { q: t("pricing.faq4q"), a: t("pricing.faq4a") },
+    { q: t("pricing.faq5q"), a: t("pricing.faq5a", TAKE) },
+    { q: t("pricing.faq6q"), a: t("pricing.faq6a") },
   ];
 
   return (
     <section className="mt-16 mb-8" aria-labelledby="faq-heading">
       <h2 id="faq-heading" className="rw-section-title">
-        Questions we hear first
+        {t("pricing.faqTitle")}
       </h2>
       <div className="mt-6 space-y-3">
         {items.map((item) => (
           <details
             key={item.q}
             className="rounded-card border border-border bg-card px-5 py-4"
-            open={item.q.startsWith("Do I need")}
+            open={item.open}
           >
             <summary className="cursor-pointer font-display text-card text-ink">{item.q}</summary>
             <p className="mt-3 font-sans text-[14px] leading-relaxed text-ink-secondary">{item.a}</p>

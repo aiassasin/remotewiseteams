@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { normalizeAppLanguage } from "@/lib/i18n";
 import {
   isSettingsTab,
   type CompanyPayload,
@@ -111,12 +112,14 @@ export async function loadSettings(
     });
   }
 
+  const settingsRow = settings as Record<string, unknown> | null;
   const payload: SettingsPayload = {
     tab: isSettingsTab(settings?.settings_tab) ? settings.settings_tab : "profile",
     theme:
       settings?.theme === "light" || settings?.theme === "dark" || settings?.theme === "system"
         ? settings.theme
         : "system",
+    language: normalizeAppLanguage(settingsRow?.language),
     profile: {
       fullName: asString(profile?.full_name) || fullName,
       headline: asString(profile?.headline),

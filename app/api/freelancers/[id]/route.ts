@@ -1,36 +1,64 @@
 import { NextResponse } from "next/server";
-import { getFreelancer, listContracts, updateContract } from "@/lib/store";
+import { getCurrentWorkspace } from "@/lib/auth/session";
+import { listFreelancerContracts } from "@/lib/contracts-persistence";
+import { loadFreelancer } from "@/lib/invite-persistence";
+import { saveFreelancer } from "@/lib/store";
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } },
+export const dynamic = "force-dynamic";
+
+function profileResponse(
+  freelancer: NonNullable<Awaited<ReturnType<typeof loadFreelancer>>>,
+  contracts: Awaited<ReturnType<typeof listFreelancerContracts>>,
 ) {
-  const freelancer = getFreelancer(params.id);
-  if (!freelancer) {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
-  }
-  const contracts = listContracts().filter((row) => row.freelancerId === params.id);
-  return NextResponse.json({
+  return {
     freelancer,
-    contracts,
+    contracts: contracts.map((row) => ({
+      id: row.id,
+      title: row.title,
+      type: row.type,
+      status: row.status,
+      sentAt: row.sentAt,
+      signedAt: row.signedAt,
+    })),
     invoices: [],
     stats: {
       totalPaid: 0,
       activeContracts: contracts.filter((row) => row.status !== "cancelled").length,
       avgPaymentTime: "—",
     },
-  });
+  };
+}
+
+export async function GET(
+  _request: Request,
+  { params }: { params: { id: string } },
+) {
+  const current = await getCurrentWorkspace();
+  if (!current) {
+    return NextResponse.json({ message: "Sign in to continue" }, { status: 401 });
+  }
+  const freelancer = await loadFreelancer(params.id);
+  if (!freelancer || freelancer.companyId !== current.workspace.id) {
+    return NextResponse.json({ message: "Not found" }, { status: 404 });
+  }
+  const contracts = await listFreelancerContracts(current.workspace.id, freelancer.id);
+  return NextResponse.json(profileResponse(freelancer, contracts));
 }
 
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } },
 ) {
-  const freelancer = getFreelancer(params.id);
-  if (!freelancer) {
+  const current = await getCurrentWorkspace();
+  if (!current) {
+    return NextResponse.json({ message: "Sign in to continue" }, { status: 401 });
+  }
+  const freelancer = await loadFreelancer(params.id);
+  if (!freelancer || freelancer.companyId !== current.workspace.id) {
     return NextResponse.json({ message: "Not found" }, { status: 404 });
   }
   const body = (await request.json()) as Record<string, unknown>;
   Object.assign(freelancer, body);
+  saveFreelancer(freelancer);
   return NextResponse.json({ freelancer });
 }

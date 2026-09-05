@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { Menu, X } from "lucide-react";
+import { motion } from "framer-motion";
 import { Sidebar } from "@/components/layout/sidebar";
 import { PageBackNav } from "@/components/layout/page-back-nav";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -29,7 +30,7 @@ export function DashboardShell({
   const t = useT();
 
   return (
-    <div className="flex min-h-screen bg-page">
+    <div className="rw-dashboard-canvas flex min-h-screen">
       <div className="hidden lg:flex">
         <Sidebar
           userName={userName}
@@ -61,7 +62,7 @@ export function DashboardShell({
         </div>
       ) : null}
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="rw-dashboard-canvas flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border bg-card/90 px-4 backdrop-blur lg:px-10">
           <Button
             variant="ghost"
@@ -72,18 +73,27 @@ export function DashboardShell({
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 overflow-hidden">
             <PageBackNav />
           </div>
-          <LanguageSwitcher />
-          <ThemeToggle />
-          {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
-          ) : null}
+          <div className="relative z-10 flex shrink-0 items-center gap-2">
+            <LanguageSwitcher />
+            <ThemeToggle />
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+            ) : null}
+          </div>
         </header>
-        <main id="main" className="w-full flex-1 px-6 py-8 lg:px-12">
-          {children}
+        <main id="main" className="rw-dashboard-canvas flex w-full flex-1 flex-col">
+          <motion.div
+            className="flex-1 px-6 py-8 lg:px-12"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
         </main>
         <SiteFooter compact />
       </div>

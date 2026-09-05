@@ -96,13 +96,21 @@ export function calculateCompanyCharge(
   };
 }
 
-export function formatPricingMoney(amount: number, currency: PricingCurrency) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
+export function formatPricingMoney(
+  amount: number,
+  currency: PricingCurrency,
+  locale: string = "en-GB",
+) {
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${amount.toFixed(2)} ${currency}`;
+  }
 }
 
 export function formatTakePercent(rate: number) {

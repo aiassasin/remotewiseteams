@@ -3,6 +3,7 @@ import { getCurrentWorkspace, getSessionUser } from "@/lib/auth/session";
 import { isSettingsTab } from "@/lib/settings";
 import { loadSettings } from "@/lib/settings-server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isAppLanguage } from "@/lib/i18n";
 import type { ThemePreference } from "@/lib/theme";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,7 @@ export async function GET() {
 type PatchBody = {
   tab?: string;
   theme?: ThemePreference;
+  language?: string;
   profile?: { fullName?: string; headline?: string };
   company?: {
     name?: string;
@@ -71,6 +73,14 @@ export async function PATCH(request: Request) {
     await supabase.from("user_settings").upsert({
       user_id: user.id,
       theme: body.theme,
+      updated_at: new Date().toISOString(),
+    });
+  }
+
+  if (isAppLanguage(body.language)) {
+    await supabase.from("user_settings").upsert({
+      user_id: user.id,
+      language: body.language,
       updated_at: new Date().toISOString(),
     });
   }
