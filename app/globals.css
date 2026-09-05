@@ -314,8 +314,9 @@
 
   .rw-overview-onboarding {
     border: 2px solid #ea580c;
+    border-left: 4px solid #fada5e;
     border-radius: 12px;
-    background-color: #2563eb;
+    background-color: #0d9488;
     color: #ffffff;
     padding: 1.25rem 1.35rem;
     box-shadow: 0 4px 24px rgba(11, 26, 51, 0.08);
@@ -335,7 +336,7 @@
   }
 
   .rw-overview-step.is-done {
-    color: #6ee7b7;
+    color: #fada5e;
   }
 
   .rw-overview-step-mark {
@@ -347,16 +348,16 @@
     justify-content: center;
     margin-top: 0.05rem;
     border-radius: 999px;
-    border: 1.5px solid rgba(255, 255, 255, 0.45);
+    border: 1.5px solid #9ca3af;
     font-size: 10px;
     font-weight: 700;
     line-height: 1;
   }
 
   .rw-overview-step.is-done .rw-overview-step-mark {
-    border-color: #6ee7b7;
-    background-color: #059669;
-    color: #ffffff;
+    border-color: #fada5e;
+    background-color: #fada5e;
+    color: #0b1a33;
   }
 
   .rw-overview-panel {

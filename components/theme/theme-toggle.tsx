@@ -13,10 +13,14 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setPreference(next)}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-control border border-border bg-card text-ink transition-colors hover:border-border-hover"
+      className="group inline-flex h-9 w-9 items-center justify-center rounded-control border border-border bg-card text-ink transition-colors hover:border-border-hover"
       aria-label={resolved === "dark" ? t("theme.light") : t("theme.dark")}
     >
-      {resolved === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {resolved === "dark" ? (
+        <Sun className="h-4 w-4 transition-colors group-hover:text-[#FADA5E]" />
+      ) : (
+        <Moon className="h-4 w-4" />
+      )}
     </button>
   );
 }

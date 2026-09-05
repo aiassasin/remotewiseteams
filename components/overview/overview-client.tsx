@@ -41,15 +41,6 @@ type MetricCard = {
 
 type ActivityItem = OverviewData["activity"][number];
 
-/** Progress fill: light green at 25%, stepping darker through 50 / 75 / 100. */
-export function onboardingProgressFill(percent: number): string {
-  if (percent >= 100) return "#059669";
-  if (percent >= 75) return "#10B981";
-  if (percent >= 50) return "#34D399";
-  if (percent >= 25) return "#6EE7B7";
-  return "#A7F3D0";
-}
-
 export function OverviewClient({ data, error }: { data: OverviewData | null; error?: string | null }) {
   const t = useT();
   const { language } = useAppLanguage();
@@ -267,7 +258,10 @@ function OnboardingCard({
   t: TranslateFn;
 }) {
   return (
-    <section className="rw-overview-onboarding" aria-labelledby="overview-onboarding-title">
+    <section
+      className={cn("rw-overview-onboarding border-l-4 border-royal-yellow")}
+      aria-labelledby="overview-onboarding-title"
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
           <IsoIcon name="checklist" size={40} title={t("overview.getStarted")} />
@@ -278,22 +272,19 @@ function OnboardingCard({
             <p className="mt-0.5 font-sans text-small text-white/80">{t("overview.firstPayoutHint")}</p>
           </div>
         </div>
-        <p className="shrink-0 font-sans text-small font-medium text-white" aria-hidden>
+        <p className="shrink-0 font-sans text-small font-medium text-deep-navy dark:text-white" aria-hidden>
           {progress}%
         </p>
       </div>
       <div
-        className="mt-4 h-2 overflow-hidden rounded-pill bg-white/30"
+        className="mt-4 h-2 overflow-hidden rounded-pill bg-deep-navy dark:bg-gray-700"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={progress}
         aria-label={t("overview.onboardingProgress", { percent: progress })}
       >
-        <div
-          className="h-full transition-all duration-500"
-          style={{ width: `${progress}%`, backgroundColor: onboardingProgressFill(progress) }}
-        />
+        <div className="h-full bg-royal-yellow transition-all duration-500" style={{ width: `${progress}%` }} />
       </div>
       <motion.div
         className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4"
@@ -310,14 +301,22 @@ function OnboardingCard({
           return (
             <motion.div
               key={step.key}
-              className={cn("rw-overview-step", complete && "is-done")}
+              className={cn("rw-overview-step", complete && "is-done text-royal-yellow")}
               role="listitem"
               variants={{
                 hidden: { opacity: 0, x: -10 },
                 visible: { opacity: 1, x: 0 },
               }}
             >
-              <span className="rw-overview-step-mark" aria-hidden>
+              <span
+                className={cn(
+                  "rw-overview-step-mark",
+                  complete
+                    ? "border-royal-yellow bg-royal-yellow text-[#0B1A33]"
+                    : "border-muted-gray text-muted-gray",
+                )}
+                aria-hidden
+              >
                 {complete ? "✓" : ""}
               </span>
               <span>
