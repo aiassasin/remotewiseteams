@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageTransition } from "@/components/motion/page-transition";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { RwLogo } from "@/components/brand/rw-logo";
 import { EMAIL_PATTERN } from "@/lib/utils";
 import { WORKSPACE_ACCENTS } from "@/lib/workspace-accents";
 import { useT } from "@/components/i18n/language-provider";
@@ -105,8 +106,8 @@ export function SignupWizard() {
       <PageTransition>
         <div className="rounded-card border border-border bg-card p-8">
           <div className="mb-6 text-center">
-            <div className="rw-logo-badge mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-control font-display text-[13px] font-semibold text-white">
-              RW
+            <div className="mx-auto mb-4 flex justify-center">
+              <RwLogo href="/" wordmark={false} size={40} />
             </div>
             <h1 className="font-display text-section text-ink">{t("auth.createTitle")}</h1>
             <p className="mt-2 font-sans text-body text-ink-secondary">{t("auth.createHint")}</p>

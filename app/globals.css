@@ -81,6 +81,26 @@
 
   html {
     @apply antialiased;
+    scroll-behavior: smooth;
+    scroll-padding-top: 7rem;
+  }
+
+  html[dir="rtl"] {
+    font-family: var(--font-arabic), var(--font-sans), sans-serif;
+  }
+
+  html[dir="rtl"] body,
+  html[dir="rtl"] .font-sans {
+    font-family: var(--font-arabic), var(--font-sans), sans-serif;
+  }
+
+  html[dir="rtl"] .font-display:not([lang="en"]) {
+    font-family: var(--font-arabic), var(--font-display), sans-serif;
+    letter-spacing: 0;
+  }
+
+  html[dir="rtl"] [lang="en"] {
+    font-family: var(--font-display), var(--font-sans), sans-serif;
   }
 
   body {

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageTransition } from "@/components/motion/page-transition";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { RwLogo } from "@/components/brand/rw-logo";
 import { useT } from "@/components/i18n/language-provider";
 import { cn } from "@/lib/utils";
 
@@ -62,18 +63,18 @@ export function LoginForm() {
           className={cn("rw-login-frame rounded-card border p-8", signedIn && "rw-login-frame-success")}
         >
           <div className="mb-6 text-center">
-            <div className="rw-logo-badge mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-control font-display text-[13px] font-semibold text-white">
-              RW
+            <div className="mx-auto mb-4 flex justify-center">
+              <RwLogo href="/" wordmark={false} size={40} />
             </div>
             <h1 className="rw-login-heading font-display text-section">{t("auth.welcomeBack")}</h1>
             <p className="rw-login-lede mt-2 font-sans text-body">{t("auth.signInHint")}</p>
           </div>
           <form className="space-y-4" onSubmit={onSubmit} noValidate>
-            <div className="mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 border-l-4 border-royal-yellow rounded">
+            <div className="mb-4 rounded border-s-4 border-royal-yellow bg-slate-50 p-3 dark:bg-slate-800/50">
               <p className="text-sm text-dark-gray dark:text-gray-300">
-                🛡️ RemoteWise Oy (in formation) · Helsinki
+                {t("auth.trustLine")}
                 <br />
-                All contracts comply with Finnish tax, GDPR, and e‑invoicing regulations.
+                {t("auth.trustBody")}
               </p>
             </div>
             <div>

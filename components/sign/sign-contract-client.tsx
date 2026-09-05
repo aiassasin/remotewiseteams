@@ -129,7 +129,7 @@ export function SignContractClient({ token }: { token: string }) {
           <article className="rounded-card border border-border bg-card p-4">
             <StoredContractBody body={data.contractHtml ?? ""} title={data.title} />
             <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="border-l-[3px] border-success bg-success-light p-4">
+              <div className="border-s-[3px] border-success bg-success-light p-4">
                 <p className="font-sans text-small uppercase text-ink-muted">{data.companyName}</p>
                 <p className="mt-2 font-[cursive] text-[24px] text-ink">{data.companyName}</p>
                 <p className="font-sans text-small text-ink-secondary">{t("sign.alreadySigned")}</p>

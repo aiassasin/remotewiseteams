@@ -19,7 +19,7 @@ export function ThemeToggle() {
       {resolved === "dark" ? (
         <Sun className="h-4 w-4 transition-colors group-hover:text-[#FADA5E]" />
       ) : (
-        <Moon className="h-4 w-4" />
+        <Moon className="h-4 w-4 transition-colors group-hover:fill-[#94A3B8] group-hover:text-[#0B1A33]" />
       )}
     </button>
   );

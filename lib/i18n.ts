@@ -1,11 +1,12 @@
 import { CONTRACT_LANGUAGES, type ContractLanguage } from "@/lib/contracts/i18n";
+import ar from "@/locales/ar.json";
 import en from "@/locales/en.json";
 import es from "@/locales/es.json";
 import fi from "@/locales/fi.json";
 import sv from "@/locales/sv.json";
 
-/** UI language switcher: English, Finnish, Swedish, Spanish. */
-export const SWITCHER_LANGUAGES = ["en", "fi", "sv", "es"] as const;
+/** UI language switcher: English, Finnish, Swedish, Spanish, Arabic. */
+export const SWITCHER_LANGUAGES = ["en", "fi", "sv", "es", "ar"] as const;
 
 export type AppLanguage = (typeof SWITCHER_LANGUAGES)[number];
 export type Messages = typeof en;
@@ -17,7 +18,13 @@ export const SWITCHER_LANGUAGE_LABELS: Record<AppLanguage, string> = {
   fi: "Suomi",
   sv: "Svenska",
   es: "Español",
+  ar: "العربية",
 };
+
+/** Arabic is the only RTL locale in the switcher. */
+export function isRtlLanguage(language: string): boolean {
+  return language === "ar";
+}
 
 /** @deprecated Use SWITCHER_LANGUAGES. Kept as an alias for call sites that import APP_LANGUAGES. */
 export const APP_LANGUAGES = SWITCHER_LANGUAGES;
@@ -27,7 +34,7 @@ export const APP_LANGUAGE_COOKIE = "rw-language";
 const LEGACY_UI_LANGUAGES = new Set(["de", "fr"]);
 
 /**
- * Returns true when `value` is a switcher locale (en, fi, sv, es).
+ * Returns true when `value` is a switcher locale (en, fi, sv, es, ar).
  * Stored `de` / `fr` are not accepted — use {@link normalizeAppLanguage}.
  */
 export function isAppLanguage(value: unknown): value is AppLanguage {
@@ -75,6 +82,7 @@ const CATALOG: Record<AppLanguage, Messages> = {
   fi: fi as Messages,
   sv: sv as Messages,
   es: es as Messages,
+  ar: ar as Messages,
 };
 
 function lookup(messages: Messages, key: string): string | undefined {

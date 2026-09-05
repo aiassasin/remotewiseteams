@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { detectAppLanguage, translate } from "@/lib/i18n";
+import { detectAppLanguage, isRtlLanguage, translate } from "@/lib/i18n";
 
 export default function GlobalError({
   error,
@@ -18,7 +18,7 @@ export default function GlobalError({
   const t = (key: Parameters<typeof translate>[1]) => translate(lang, key);
 
   return (
-    <html lang={lang}>
+    <html lang={lang} dir={isRtlLanguage(lang) ? "rtl" : "ltr"}>
       <body className="min-h-screen bg-slate-50 px-6 py-16 font-sans text-slate-900">
         <main className="mx-auto max-w-md text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">RemoteWise</p>

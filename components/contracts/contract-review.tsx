@@ -54,7 +54,7 @@ export function ContractReview({ contractId }: { contractId: string }) {
       <article className="rounded-card border border-border bg-card p-6">
         <StoredContractBody body={contract.bodyHtml} title={contract.title} />
         <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="border-l-[3px] border-success bg-success-light p-4">
+          <div className="border-s-[3px] border-success bg-success-light p-4">
             <p className="font-sans text-small uppercase tracking-[0.05em] text-ink-muted">{t("contracts.company")}</p>
             <p className="mt-2 font-[cursive] text-[22px] text-ink">{companyLabel}</p>
             <p className="font-sans text-small text-ink-secondary">

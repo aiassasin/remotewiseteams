@@ -59,8 +59,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "sans-serif"],
-        sans: ["var(--font-sans)", "sans-serif"],
+        display: ["var(--font-display)", "var(--font-arabic)", "sans-serif"],
+        sans: ["var(--font-sans)", "var(--font-arabic)", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
       },
       fontSize: {

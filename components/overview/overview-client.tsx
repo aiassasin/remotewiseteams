@@ -113,16 +113,16 @@ export function OverviewClient({ data, error }: { data: OverviewData | null; err
             className="mb-0"
             title={t("overview.title")}
             description={t("overview.description")}
-            actionsClassName="w-full sm:w-auto"
+            actionsClassName="w-full flex-col items-stretch sm:w-max"
             actions={
               <>
-                <Button asChild variant="gold" className="min-h-11 w-full sm:w-auto">
+                <Button asChild variant="gold" className="h-11 min-h-11 w-full">
                   <Link href="/dashboard/contracts/new" className="inline-flex items-center justify-center gap-2">
                     <IsoIcon name="send-contract" size={22} />
                     {t("overview.sendContract")}
                   </Link>
                 </Button>
-                <Button asChild variant="softHoverOrange" className="min-h-11 w-full sm:w-auto">
+                <Button asChild variant="softHoverOrange" className="h-11 min-h-11 w-full">
                   <Link href="/dashboard/freelancers" className="inline-flex items-center justify-center gap-2">
                     <IsoIcon name="invite" size={22} />
                     {t("overview.inviteFreelancer")}
@@ -259,7 +259,7 @@ function OnboardingCard({
 }) {
   return (
     <section
-      className={cn("rw-overview-onboarding border-l-4 border-royal-yellow")}
+      className={cn("rw-overview-onboarding border-s-4 border-royal-yellow")}
       aria-labelledby="overview-onboarding-title"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

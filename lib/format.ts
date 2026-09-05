@@ -5,7 +5,11 @@ export const LOCALE_TAGS: Record<AppLanguage, string> = {
   fi: "fi-FI",
   sv: "sv-SE",
   es: "es-ES",
+  ar: "ar",
 };
+
+/** Western digits on invoices and money — expected in a Finnish EUR product. */
+const NUMBERING: Intl.NumberFormatOptions = { numberingSystem: "latn" };
 
 export function localeTag(language: AppLanguage | string): string {
   if (language in LOCALE_TAGS) return LOCALE_TAGS[language as AppLanguage];
@@ -22,6 +26,7 @@ export function formatMoney(
   }
   try {
     return new Intl.NumberFormat(localeTag(language), {
+      ...NUMBERING,
       style: "currency",
       currency,
       minimumFractionDigits: 0,
@@ -39,6 +44,7 @@ export function formatMoneyExact(
 ): string {
   try {
     return new Intl.NumberFormat(localeTag(language), {
+      ...NUMBERING,
       style: "currency",
       currency,
       minimumFractionDigits: 2,
@@ -57,6 +63,7 @@ export function formatDate(
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
   return new Intl.DateTimeFormat(localeTag(language), {
+    numberingSystem: "latn",
     dateStyle: "medium",
   }).format(date);
 }
@@ -69,6 +76,7 @@ export function formatDateTime(
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
   return new Intl.DateTimeFormat(localeTag(language), {
+    numberingSystem: "latn",
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
@@ -79,5 +87,5 @@ export function formatNumber(
   language: AppLanguage | string = "en",
   options?: Intl.NumberFormatOptions,
 ): string {
-  return new Intl.NumberFormat(localeTag(language), options).format(value);
+  return new Intl.NumberFormat(localeTag(language), { ...NUMBERING, ...options }).format(value);
 }

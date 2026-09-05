@@ -15,6 +15,7 @@ import {
   APP_LANGUAGE_STORAGE_KEY,
   detectAppLanguage,
   isAppLanguage,
+  isRtlLanguage,
   normalizeAppLanguage,
   translate,
   type AppLanguage,
@@ -134,6 +135,7 @@ function applyLanguage(next: AppLanguage) {
   emitLanguage(next);
   if (typeof document !== "undefined") {
     document.documentElement.lang = next;
+    document.documentElement.dir = isRtlLanguage(next) ? "rtl" : "ltr";
   }
 }
 
@@ -197,7 +199,7 @@ export function LanguageProvider({
   const value = useMemo(() => ({ language, setLanguage, t }), [language, setLanguage, t]);
   return (
     <LanguageContext.Provider value={value}>
-      <div className="contents" data-app-lang={language} lang={language}>
+      <div className="contents" data-app-lang={language} lang={language} dir={isRtlLanguage(language) ? "rtl" : "ltr"}>
         {children}
       </div>
     </LanguageContext.Provider>

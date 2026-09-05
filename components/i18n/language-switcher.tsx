@@ -16,7 +16,7 @@ export function LanguageSwitcher({ inverted = false }: { inverted?: boolean }) {
         className={
           inverted
             ? "h-9 w-full min-w-[8.5rem] rounded-control border border-white/20 bg-white/10 px-2 font-sans text-[13px] font-medium text-white"
-            : "h-9 min-w-[8.5rem] shrink-0 rounded-control border border-border bg-card px-2 font-sans text-[13px] font-medium text-ink transition-colors hover:border-primary"
+            : "h-9 min-w-[9.5rem] shrink-0 rounded-control border border-border bg-card px-2 font-sans text-[13px] font-medium text-ink transition-colors hover:border-primary"
         }
         value={value}
         aria-label={label}

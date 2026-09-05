@@ -143,7 +143,7 @@ function LinkItem({
       {active ? (
         <motion.div
           layoutId="active-indicator"
-          className="absolute left-0 top-0 h-full w-1 rounded-r bg-royal-yellow"
+          className="absolute start-0 top-0 h-full w-1 rounded-e bg-royal-yellow"
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
       ) : null}
