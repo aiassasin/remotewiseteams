@@ -44,6 +44,14 @@ function InstagramLogo({ className }: { className?: string }) {
   );
 }
 
+function YouTubeLogo({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className={className} fill="currentColor">
+      <path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.55 12 3.55 12 3.55s-7.54 0-9.38.5A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.84.5 9.38.5 9.38.5s7.54 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.75 15.02V8.98L15.84 12 9.75 15.02z" />
+    </svg>
+  );
+}
+
 export function SiteFooter({ compact = false }: { compact?: boolean }) {
   const t = useT();
 
@@ -56,7 +64,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
       >
         <div>
           <p className="font-sans text-small text-[#374151] dark:text-[#F3F4F6]">
-            RemoteWise Teams, RW Teams Oy, Finland
+            RemoteWise Teams - RW Teams Oy
           </p>
           {!compact ? (
             <p className="mt-1 max-w-xl font-sans text-small text-ink-muted">{t("footer.feesPublic")}</p>
@@ -98,6 +106,15 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
             >
               <InstagramLogo className="h-4 w-4" />
             </a>
+            <a
+              href="https://youtube.com/@remotewise"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+              className="text-[#374151] hover:text-ink dark:text-white dark:hover:text-white"
+            >
+              <YouTubeLogo className="h-4 w-4" />
+            </a>
           </div>
         </div>
         <nav className="flex flex-wrap items-center gap-x-4 gap-y-2" aria-label={t("common.legal")}>
@@ -106,7 +123,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
             <Link
               key={link.href}
               href={link.href}
-              className="font-sans text-[13px] font-medium text-[#E5C94A] hover:text-[#C9A227]"
+              className="font-sans text-[13px] font-medium text-[#60A5FA] hover:text-[#3B82F6] dark:text-[#E5C94A] dark:hover:text-[#C9A227]"
             >
               {t(link.key)}
             </Link>
